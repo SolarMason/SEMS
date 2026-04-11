@@ -1,6 +1,10 @@
+import { withBase } from "../../../lib/basePath";
+
 export const metadata = {
   title: "GeoBuilder — SEMS Tools",
 };
+
+const src = withBase("/legacy/SolarMason_GeoBuilder.html");
 
 export default function GeoBuilderPage() {
   return (
@@ -13,7 +17,7 @@ export default function GeoBuilderPage() {
           </p>
         </div>
         <a
-          href="/legacy/SolarMason_GeoBuilder.html"
+          href={src}
           target="_blank"
           rel="noreferrer"
           className="btn-secondary"
@@ -23,7 +27,7 @@ export default function GeoBuilderPage() {
       </div>
       <div className="overflow-hidden rounded-xl border border-sems-navy/10 shadow-sm">
         <iframe
-          src="/legacy/SolarMason_GeoBuilder.html"
+          src={src}
           className="h-[85vh] w-full"
           title="SEMS GeoBuilder"
         />

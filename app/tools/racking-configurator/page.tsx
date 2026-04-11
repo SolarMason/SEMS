@@ -1,6 +1,10 @@
+import { withBase } from "../../../lib/basePath";
+
 export const metadata = {
   title: "Racking Configurator — SEMS Tools",
 };
+
+const src = withBase("/legacy/SolarMason_Racking_Configurator.html");
 
 export default function RackingConfiguratorPage() {
   return (
@@ -13,7 +17,7 @@ export default function RackingConfiguratorPage() {
           </p>
         </div>
         <a
-          href="/legacy/SolarMason_Racking_Configurator.html"
+          href={src}
           target="_blank"
           rel="noreferrer"
           className="btn-secondary"
@@ -23,7 +27,7 @@ export default function RackingConfiguratorPage() {
       </div>
       <div className="overflow-hidden rounded-xl border border-sems-navy/10 shadow-sm">
         <iframe
-          src="/legacy/SolarMason_Racking_Configurator.html"
+          src={src}
           className="h-[85vh] w-full"
           title="SEMS Racking Configurator"
         />

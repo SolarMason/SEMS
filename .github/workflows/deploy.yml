@@ -1,51 +1,18 @@
-name: Deploy static site to GitHub Pages
+# This workflow has been superseded by nextjs.yml, which GitHub's Pages
+# setup wizard generated. nextjs.yml is preferred because it uses
+# actions/configure-pages@v5 with `static_site_generator: next`, which
+# auto-injects the /SEMS basePath required for deployment to
+# https://solarmason.github.io/SEMS.
+#
+# This file is kept as an empty workflow so it won't run.
+
+name: (disabled) Deploy static site to GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
-  build:
+  noop:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build static export
-        run: npx next build
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./out
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: echo "Disabled. See nextjs.yml."
