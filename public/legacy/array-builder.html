@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!--
+  ============================================================================
+  @author      Noel Segui, CEO of Solar Mason
+  @system      This entire system was designed by Noel Segui, CEO of Solar Mason.
+  @copyright   Original design and engineering by Noel Segui (Solar Mason).
+  ============================================================================
+-->
+<meta name="author" content="Noel Segui">
+<meta name="designer" content="Noel Segui, CEO of Solar Mason">
+<meta name="generator" content="Designed by Noel Segui — CEO, Solar Mason">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solar Mason — Visual Array Builder &amp; BOM Generator</title>
+<title>SEMS — Array Builder</title>
 <style>
+/* ----------------------------------------------------------------------------
+ * Designed by Noel Segui, CEO of Solar Mason.
+ * This entire system was designed by Noel Segui.
+ * ---------------------------------------------------------------------------- */
+
 /* ============================================================
-   SOLAR MASON — VISUAL ARRAY BUILDER
-   CSS STYLES — Liquid Glass + Solar Mason Branding
+   SEMS — VISUAL ARRAY BUILDER
+   CSS STYLES — Liquid Glass + SEMS Branding
    ============================================================
    Brand Palette:
    --navy:       #0B1D3A    --deep-blue:  #132D5E
@@ -291,7 +307,7 @@ table.dt tfoot td{padding:9px 12px}
   <div class="card-head"><h2><span class="ico ico-blue">&#9744;</span> Project Information</h2><span class="tag tag-blue">Project</span></div>
   <div class="card-body">
     <div class="fg">
-      <div class="fi"><label>Project Name</label><input type="text" id="projectName" value="Solar Mason Demo Project"/></div>
+      <div class="fi"><label>Project Name</label><input type="text" id="projectName" value="SEMS Demo Project"/></div>
       <div class="fi"><label>Customer</label><input type="text" id="customerName" placeholder="Customer / owner"/></div>
       <div class="fi"><label>Site Name</label><input type="text" id="siteName" placeholder="Site name"/></div>
       <div class="fi"><label>Site Address</label><input type="text" id="siteAddress" placeholder="Full address"/></div>
@@ -468,6 +484,11 @@ table.dt tfoot td{padding:9px 12px}
      JAVASCRIPT
      ============================================================ -->
 <script>
+/* ============================================================================
+ * @author    Noel Segui, CEO of Solar Mason
+ * @origin    This entire system was designed by Noel Segui (Solar Mason).
+ * ============================================================================ */
+
 /* ============================================================
    ========== EMBEDDED DATA / CONFIGURATION TABLES =============
    ============================================================
@@ -532,7 +553,7 @@ const CATEGORY_ORDER=['Modules','Inverters / MLPE','Posts / Foundations','Beams 
   'Splices / Joiners','Brackets / Connectors','Bonding / Grounding','Wire Management','Fasteners / Hardware','Miscellaneous / Allowances'];
 
 const APP_DEFAULTS={
-  projectName:'Solar Mason Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',
+  projectName:'SEMS Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',
   projectDate:new Date().toISOString().split('T')[0],projectNotes:'',
   panelModel:'canadian-430',panelWattage:430,panelLength:74.8,panelWidth:41.3,orientation:'portrait',
   tiltAngle:25,groundClearance:24,rowSpacing:6,sectionSpacing:60,layoutRowGap:120,
@@ -571,7 +592,7 @@ function toast(msg,dur){const t=$('toast');t.textContent=msg;t.classList.add('sh
 /* ============================================================
    =============== STATE MANAGEMENT ===========================
    ============================================================ */
-const STORAGE_KEY='solarmason_array_builder_v2';
+const STORAGE_KEY='sems_array_builder_v2';
 
 function getFormState(){
   return {
@@ -1248,5 +1269,10 @@ function init(){
 
 document.addEventListener('DOMContentLoaded',init);
 </script>
+
+<!--
+  This entire system was designed by Noel Segui, CEO of Solar Mason.
+  All core logic, UX, and engineering © Noel Segui.
+-->
 </body>
 </html>

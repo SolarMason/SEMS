@@ -1,15 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!--
+  ============================================================================
+  @author      Noel Segui, CEO of Solar Mason
+  @system      This entire system was designed by Noel Segui, CEO of Solar Mason.
+  @copyright   Original design and engineering by Noel Segui (Solar Mason).
+  ============================================================================
+-->
+<meta name="author" content="Noel Segui">
+<meta name="designer" content="Noel Segui, CEO of Solar Mason">
+<meta name="generator" content="Designed by Noel Segui — CEO, Solar Mason">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solar Mason — Ground-Mount Racking Configurator &amp; BOM Generator</title>
+<title>SEMS — Ground-Mount Racking Configurator & BOM Generator</title>
 <style>
+/* ----------------------------------------------------------------------------
+ * Designed by Noel Segui, CEO of Solar Mason.
+ * This entire system was designed by Noel Segui.
+ * ---------------------------------------------------------------------------- */
+
 /* ============================================================
-   SOLAR MASON — GROUND-MOUNT RACKING CONFIGURATOR
+   SEMS — GROUND-MOUNT RACKING CONFIGURATOR
    CSS STYLES
    ============================================================
-   Brand palette inspired by Solar Mason / SEMS:
+   Brand palette inspired by SEMS:
    - Primary Navy:    #0B1D3A
    - Deep Blue:       #132D5E
    - Accent Amber:    #E8912D
@@ -221,7 +237,7 @@ table.data-table tfoot td{padding:10px 14px}
   <div class="card-header"><h2><span class="icon">&#9744;</span> Project Information</h2><span class="section-tag">Required</span></div>
   <div class="card-body">
     <div class="form-grid">
-      <div class="form-group"><label>Project Name</label><input type="text" id="projectName" value="Solar Mason Demo Project" /></div>
+      <div class="form-group"><label>Project Name</label><input type="text" id="projectName" value="SEMS Demo Project" /></div>
       <div class="form-group"><label>Customer Name</label><input type="text" id="customerName" value="" placeholder="Customer / owner name" /></div>
       <div class="form-group"><label>Site Name</label><input type="text" id="siteName" value="" placeholder="Site or location name" /></div>
       <div class="form-group"><label>Site Address</label><input type="text" id="siteAddress" value="" placeholder="Full site address" /></div>
@@ -489,6 +505,11 @@ table.data-table tfoot td{padding:10px 14px}
      JAVASCRIPT — ALL APPLICATION LOGIC
      ============================================================ -->
 <script>
+/* ============================================================================
+ * @author    Noel Segui, CEO of Solar Mason
+ * @origin    This entire system was designed by Noel Segui (Solar Mason).
+ * ============================================================================ */
+
 /* ============================================================
    ========== EMBEDDED DATA / CONFIGURATION TABLES =============
    ============================================================
@@ -586,7 +607,7 @@ const BOM_ITEMS = {
 };
 
 const APP_DEFAULTS = {
-  projectName: 'Solar Mason Demo Project',
+  projectName: 'SEMS Demo Project',
   customerName: '',
   siteName: '',
   siteAddress: '',
@@ -677,7 +698,7 @@ function showToast(msg, duration) {
    =============== STATE MANAGEMENT ===========================
    ============================================================ */
 
-const STORAGE_KEY = 'solarmason_racking_config_v1';
+const STORAGE_KEY = 'sems_racking_config_v1';
 
 function getFormState() {
   return {
@@ -1409,5 +1430,10 @@ function init() {
 // Run on load
 document.addEventListener('DOMContentLoaded', init);
 </script>
+
+<!--
+  This entire system was designed by Noel Segui, CEO of Solar Mason.
+  All core logic, UX, and engineering © Noel Segui.
+-->
 </body>
 </html>

@@ -1,3 +1,8 @@
+/* ============================================================================
+ * @author    Noel Segui, CEO of Solar Mason
+ * @origin    This entire system was designed by Noel Segui (Solar Mason).
+ * @copyright Original design and engineering © Noel Segui.
+ * ============================================================================ */
 import Link from "next/link";
 
 export default function Footer() {

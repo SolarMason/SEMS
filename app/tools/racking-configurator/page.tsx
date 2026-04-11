@@ -1,37 +1,52 @@
+/* ============================================================================
+ * @author    Noel Segui, CEO of Solar Mason
+ * @origin    This entire system was designed by Noel Segui (Solar Mason).
+ * ============================================================================ */
 import { withBase } from "../../../lib/basePath";
 
 export const metadata = {
   title: "Racking Configurator — SEMS Tools",
 };
 
-const src = withBase("/legacy/SolarMason_Racking_Configurator.html");
+const toolHref = withBase("/legacy/racking-configurator.html");
 
 export default function RackingConfiguratorPage() {
   return (
-    <div className="container-xl py-10">
-      <div className="mb-6 flex items-end justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Racking Configurator</h1>
-          <p className="mt-2 text-sems-steel">
-            Legacy tool — preserved and embedded here until rebuilt as a native React module.
-          </p>
+    <article className="container-xl py-20">
+      <div className="max-w-3xl">
+        <p className="text-sm font-semibold uppercase tracking-wider text-sems-sun">
+          SEMS Tools
+        </p>
+        <h1 className="mt-3 text-4xl font-bold md:text-5xl">
+          Racking Configurator
+        </h1>
+        <p className="mt-6 text-lg text-sems-steel">
+          Configure Avans Rac, Utilitas Trac, and TST systems. Define materials,
+          spans, and foundation parameters, then generate a complete bill of
+          materials.
+        </p>
+        <p className="mt-4 text-sm text-sems-steel">
+          The configurator runs as a standalone, fast-loading HTML app. Click
+          below to launch it in a new tab — it won&apos;t load anything until
+          you open it, keeping this page light.
+        </p>
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <a
+            href={toolHref}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center rounded-lg bg-sems-navy px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sems-navy/90"
+          >
+            Launch Racking Configurator →
+          </a>
+          <a
+            href={toolHref}
+            className="text-sm font-medium text-sems-navy underline underline-offset-4"
+          >
+            Open in same tab
+          </a>
         </div>
-        <a
-          href={src}
-          target="_blank"
-          rel="noreferrer"
-          className="btn-secondary"
-        >
-          Open in new tab
-        </a>
       </div>
-      <div className="overflow-hidden rounded-xl border border-sems-navy/10 shadow-sm">
-        <iframe
-          src={src}
-          className="h-[85vh] w-full"
-          title="SEMS Racking Configurator"
-        />
-      </div>
-    </div>
+    </article>
   );
 }

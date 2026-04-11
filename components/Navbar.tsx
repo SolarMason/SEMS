@@ -1,3 +1,7 @@
+/* ============================================================================
+ * @author   Noel Segui, CEO of Solar Mason
+ * @origin   This entire system was designed by Noel Segui (Solar Mason).
+ * ============================================================================ */
 import Link from "next/link";
 
 const products = [

@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!--
+  ============================================================================
+  @author      Noel Segui, CEO of Solar Mason
+  @system      This entire system was designed by Noel Segui, CEO of Solar Mason.
+  @copyright   Original design and engineering by Noel Segui (Solar Mason).
+  ============================================================================
+-->
+<meta name="author" content="Noel Segui">
+<meta name="designer" content="Noel Segui, CEO of Solar Mason">
+<meta name="generator" content="Designed by Noel Segui — CEO, Solar Mason">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solar Mason — Ground-Mount Array Builder &amp; BOM Generator</title>
+<title>SEMS — GeoBuilder</title>
 <style>
+/* ----------------------------------------------------------------------------
+ * Designed by Noel Segui, CEO of Solar Mason.
+ * This entire system was designed by Noel Segui.
+ * ---------------------------------------------------------------------------- */
+
 /* ============================================================
-   SOLAR MASON — GROUND-MOUNT ARRAY BUILDER (GEOBUILDER)
-   CSS STYLES — Enhanced Liquid Glass + Solar Mason Branding
+   SEMS — GROUND-MOUNT ARRAY BUILDER (GEOBUILDER)
+   CSS STYLES — Enhanced Liquid Glass + SEMS Branding
    ============================================================ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -264,10 +280,10 @@ body{font-family:var(--font);background:var(--page);color:var(--text);line-heigh
   <div class="h-inner">
     <div class="brand">
       <div class="brand-logo">
-        <img src="data:image/png;base64,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" alt="Solar Mason Logo"/>
+        <img src="data:image/png;base64,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" alt="SEMS Logo"/>
       </div>
       <div class="brand-text">
-        <h1><span class="mason">SOLAR MASON</span></h1>
+        <h1><span class="mason">SEMS</span></h1>
         <div class="brand-sub">Ground-Mount · Array Builder</div>
       </div>
     </div>
@@ -285,7 +301,7 @@ body{font-family:var(--font);background:var(--page);color:var(--text);line-heigh
     <div class="coll-body open" id="project-body">
       <div class="card-body">
         <div class="fg">
-          <div class="fi"><label>Project Name</label><input type="text" id="projectName" value="Solar Mason Demo Project"/></div>
+          <div class="fi"><label>Project Name</label><input type="text" id="projectName" value="SEMS Demo Project"/></div>
           <div class="fi"><label>Customer Name</label><input type="text" id="customerName" placeholder="Acme Corporation"/></div>
           <div class="fi"><label>Site Name</label><input type="text" id="siteName" placeholder="Main Facility"/></div>
           <div class="fi"><label>Site Address</label><input type="text" id="siteAddress" placeholder="123 Solar Way, Sunville, CA"/></div>
@@ -474,6 +490,11 @@ body{font-family:var(--font);background:var(--page);color:var(--text);line-heigh
 </div>
 
 <script>
+/* ============================================================================
+ * @author    Noel Segui, CEO of Solar Mason
+ * @origin    This entire system was designed by Noel Segui (Solar Mason).
+ * ============================================================================ */
+
 const PANELS=[
   {id:'canadian-430',manufacturer:'Canadian Solar',model:'CS6R-430MS',wattage:430,lengthIn:74.8,widthIn:41.3,cellType:'Mono PERC',notes:'HiKu6 series'},
   {id:'jinko-445',manufacturer:'Jinko Solar',model:'JKM445M-54HL4-V',wattage:445,lengthIn:75.6,widthIn:41.8,cellType:'Mono Half-Cell',notes:'Tiger Neo N-type'},
@@ -519,7 +540,7 @@ const CATEGORY_ORDER=['Modules','Inverters / MLPE','Posts / Foundations','Beams 
   'Splices / Joiners','Brackets / Connectors','Bonding / Grounding','Wire Management','Fasteners / Hardware','Miscellaneous / Allowances'];
 
 const APP_DEFAULTS={
-  projectName:'Solar Mason Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',
+  projectName:'SEMS Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',
   projectDate:new Date().toISOString().split('T')[0],projectNotes:'',
   panelModel:'canadian-430',panelWattage:430,panelLength:74.8,panelWidth:41.3,azimuth:180,
   tiltAngle:25,groundClearance:24,rowSpacing:6,sectionSpacing:60,layoutRowGap:120,
@@ -528,7 +549,7 @@ const APP_DEFAULTS={
 };
 
 const CALC_CONSTANTS={extraClampPct:.03,extraWireMgmtPct:.05,miscAdderQty:1,bracketPerPost:1};
-const STORAGE_KEY='solarmason_geobuilder_v2';
+const STORAGE_KEY='sems_geobuilder_v2';
 
 let layoutState=[{rowId:1,sections:[]}];
 let _nextSectionId=1;
@@ -1005,5 +1026,10 @@ function init(){
 
 document.addEventListener('DOMContentLoaded',init);
 </script>
+
+<!--
+  This entire system was designed by Noel Segui, CEO of Solar Mason.
+  All core logic, UX, and engineering © Noel Segui.
+-->
 </body>
 </html>
