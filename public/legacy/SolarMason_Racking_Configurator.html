@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Mason — Ground-Mount Racking Configurator &amp; BOM Generator</title>
+<style>
+/* ============================================================
+   SOLAR MASON — GROUND-MOUNT RACKING CONFIGURATOR
+   CSS STYLES
+   ============================================================
+   Brand palette inspired by Solar Mason / SEMS:
+   - Primary Navy:    #0B1D3A
+   - Deep Blue:       #132D5E
+   - Accent Amber:    #E8912D
+   - Accent Gold:     #F5A623
+   - Light Sky:       #E8F0FE
+   - Success Green:   #27AE60
+   - Warning Red:     #E74C3C
+   - Neutral Gray:    #6B7B8D
+   - Card BG:         #FFFFFF
+   - Page BG:         #F4F6F9
+   ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:#0B1D3A;
+  --deep-blue:#132D5E;
+  --accent:#E8912D;
+  --accent-gold:#F5A623;
+  --sky:#E8F0FE;
+  --green:#27AE60;
+  --red:#E74C3C;
+  --gray:#6B7B8D;
+  --gray-light:#A0AEC0;
+  --card:#FFFFFF;
+  --page:#F4F6F9;
+  --border:#DDE3EA;
+  --text:#1A202C;
+  --text-sec:#4A5568;
+  --radius:8px;
+  --shadow:0 1px 3px rgba(11,29,58,.08),0 4px 12px rgba(11,29,58,.06);
+  --shadow-lg:0 4px 16px rgba(11,29,58,.12);
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mono:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;
+}
+
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--page);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+
+/* ---------- HEADER ---------- */
+.app-header{background:#E8EAED;color:#1A202C;padding:22px 0 20px;position:relative;overflow:hidden;border-bottom:1px solid rgba(11,29,58,.08)}
+.app-header::after{content:none}
+.header-inner{max-width:1320px;margin:0 auto;padding:0 28px;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{display:flex;align-items:center;flex-shrink:0}
+.brand-logo img{height:42px;width:auto;display:block}
+.brand-sub{font-size:.76rem;color:#6B7B8D;font-weight:500;letter-spacing:.3px;margin-top:1px}
+.header-badge{background:rgba(11,29,58,.06);border:1px solid rgba(11,29,58,.1);border-radius:6px;padding:6px 14px;font-size:.72rem;color:#6B7B8D;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+
+/* ---------- LAYOUT ---------- */
+.container{max-width:1320px;margin:0 auto;padding:0 28px}
+.main-grid{display:grid;grid-template-columns:1fr;gap:24px;padding:28px 0 48px}
+
+/* ---------- CARDS ---------- */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}
+.card-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-header h2{font-size:1rem;font-weight:700;color:var(--navy);letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.card-header h2 .icon{width:22px;height:22px;background:var(--sky);border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--deep-blue);flex-shrink:0}
+.card-body{padding:22px}
+.card-footer{padding:14px 22px;border-top:1px solid var(--border);background:var(--page)}
+
+/* ---------- SECTION BADGES ---------- */
+.section-tag{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--sky);color:var(--deep-blue)}
+.section-tag.amber{background:rgba(232,145,45,.12);color:#B5700F}
+.section-tag.green{background:rgba(39,174,96,.1);color:#1D8348}
+
+/* ---------- FORMS ---------- */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px 20px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:.74rem;font-weight:600;color:var(--text-sec);letter-spacing:.2px;text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{
+  font-family:var(--font);font-size:.88rem;padding:8px 12px;border:1px solid var(--border);border-radius:6px;
+  background:#fff;color:var(--text);transition:border-color .15s,box-shadow .15s;outline:none;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,145,45,.12)}
+.form-group textarea{resize:vertical;min-height:56px}
+.form-group select{cursor:pointer}
+.form-group .hint{font-size:.68rem;color:var(--gray-light);margin-top:1px}
+
+.toggle-row{display:flex;align-items:center;gap:10px;padding:4px 0}
+.toggle-row label{font-size:.82rem;font-weight:500;color:var(--text);text-transform:none;letter-spacing:0;cursor:pointer}
+.toggle-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+
+.form-divider{grid-column:1/-1;border:none;border-top:1px solid var(--border);margin:4px 0}
+
+/* ---------- SUMMARY GRID ---------- */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.stat-card{background:var(--page);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.stat-card .stat-label{font-size:.68rem;font-weight:600;color:var(--gray);letter-spacing:.4px;text-transform:uppercase}
+.stat-card .stat-value{font-size:1.3rem;font-weight:800;color:var(--navy);letter-spacing:-.4px}
+.stat-card .stat-unit{font-size:.72rem;color:var(--text-sec);font-weight:400}
+.stat-card.highlight{background:linear-gradient(135deg,var(--navy),var(--deep-blue));border-color:transparent}
+.stat-card.highlight .stat-label{color:rgba(255,255,255,.6)}
+.stat-card.highlight .stat-value{color:#fff}
+.stat-card.highlight .stat-unit{color:rgba(255,255,255,.7)}
+.stat-card.accent{border-left:3px solid var(--accent)}
+
+/* ---------- TABLES ---------- */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.data-table{width:100%;border-collapse:collapse;font-size:.82rem}
+table.data-table thead{background:var(--navy);color:#fff}
+table.data-table thead th{padding:10px 14px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;font-size:.7rem;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;position:relative}
+table.data-table thead th:hover{background:var(--deep-blue)}
+table.data-table thead th .sort-arrow{margin-left:4px;opacity:.4;font-size:.6rem}
+table.data-table thead th.sorted-asc .sort-arrow,table.data-table thead th.sorted-desc .sort-arrow{opacity:1;color:var(--accent-gold)}
+table.data-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+table.data-table tbody tr:hover{background:rgba(232,240,254,.4)}
+table.data-table tbody td{padding:9px 14px;vertical-align:top}
+table.data-table tbody tr.cat-header{background:var(--sky);font-weight:700}
+table.data-table tbody tr.cat-header td{color:var(--deep-blue);font-size:.78rem;letter-spacing:.2px;padding:8px 14px}
+table.data-table tbody tr.subtotal{background:rgba(232,240,254,.5);font-weight:600}
+table.data-table tfoot{background:var(--navy);color:#fff;font-weight:700}
+table.data-table tfoot td{padding:10px 14px}
+
+/* ---------- SECTION BREAKDOWN CARDS ---------- */
+.section-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.sec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(11,29,58,.05)}
+.sec-card-head{padding:12px 16px;background:var(--sky);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.sec-card-head .sec-num{font-weight:800;font-size:.92rem;color:var(--navy)}
+.sec-card-body{padding:14px 16px}
+.sec-card-body .detail-row{display:flex;justify-content:space-between;padding:4px 0;font-size:.8rem;border-bottom:1px solid rgba(0,0,0,.04)}
+.sec-card-body .detail-row:last-child{border-bottom:none}
+.sec-card-body .detail-row .dl{color:var(--text-sec)}
+.sec-card-body .detail-row .dv{font-weight:600;color:var(--navy)}
+
+/* ---------- BUTTONS ---------- */
+.btn{font-family:var(--font);font-size:.82rem;font-weight:600;padding:9px 18px;border-radius:6px;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.1px}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#D17D1F}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--deep-blue)}
+.btn-outline{background:transparent;color:var(--navy);border:1px solid var(--border)}.btn-outline:hover{background:var(--sky)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#219A52}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#C0392B}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- COLLAPSIBLE ---------- */
+.collapsible-toggle{cursor:pointer;user-select:none}
+.collapsible-toggle .chevron{display:inline-block;transition:transform .2s;font-size:.7rem;margin-left:6px}
+.collapsible-toggle.open .chevron{transform:rotate(90deg)}
+.collapsible-body{display:none;padding:16px 22px}
+.collapsible-body.open{display:block}
+
+/* ---------- NOTIFICATION ---------- */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 22px;border-radius:var(--radius);font-size:.84rem;font-weight:500;box-shadow:var(--shadow-lg);z-index:9999;opacity:0;transform:translateY(12px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+
+/* ---------- VALIDATION ---------- */
+.form-group.error input,.form-group.error select{border-color:var(--red);box-shadow:0 0 0 3px rgba(231,76,60,.1)}
+.form-group .error-msg{font-size:.68rem;color:var(--red);display:none}
+.form-group.error .error-msg{display:block}
+
+/* ---------- PRINT STYLES ---------- */
+@media print{
+  body{background:#fff;font-size:12px}
+  .app-header{background:#E8EAED!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;border-bottom:1px solid #ccc!important}
+  .app-header .brand-logo img{height:38px!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .no-print,.btn-group,.export-panel .card-body{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+  table.data-table thead{background:var(--navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .stat-card.highlight{background:var(--navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .collapsible-body{display:block!important}
+  .main-grid{gap:16px}
+}
+@media print and (not print){
+  .bom-print-only{display:none}
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:768px){
+  .header-inner{flex-direction:column;align-items:flex-start}
+  .form-grid{grid-template-columns:1fr 1fr}
+  .summary-grid{grid-template-columns:1fr 1fr}
+  .section-cards{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .form-grid{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <!-- SEMS Logo — embedded PNG with transparent background -->
+        <img src="data:image/png;base64,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" alt="SEMS" height="42" style="display:block;height:42px;width:auto" />
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+      <div class="header-badge">Internal Engineering Tool — v1.0</div>
+      <div class="brand-sub">Ground-Mount Racking Configurator &amp; BOM Generator</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="container">
+<div class="main-grid">
+
+<!-- ============ 1. PROJECT INFORMATION ============ -->
+<div class="card" id="card-project">
+  <div class="card-header"><h2><span class="icon">&#9744;</span> Project Information</h2><span class="section-tag">Required</span></div>
+  <div class="card-body">
+    <div class="form-grid">
+      <div class="form-group"><label>Project Name</label><input type="text" id="projectName" value="Solar Mason Demo Project" /></div>
+      <div class="form-group"><label>Customer Name</label><input type="text" id="customerName" value="" placeholder="Customer / owner name" /></div>
+      <div class="form-group"><label>Site Name</label><input type="text" id="siteName" value="" placeholder="Site or location name" /></div>
+      <div class="form-group"><label>Site Address</label><input type="text" id="siteAddress" value="" placeholder="Full site address" /></div>
+      <div class="form-group"><label>Quote / Job #</label><input type="text" id="jobNumber" value="" placeholder="SM-2026-0001" /></div>
+      <div class="form-group"><label>Prepared By</label><input type="text" id="preparedBy" value="" placeholder="Your name" /></div>
+      <div class="form-group"><label>Date</label><input type="date" id="projectDate" /></div>
+      <div class="form-group" style="grid-column:1/-1"><label>Notes</label><textarea id="projectNotes" placeholder="General project notes, site conditions, special requirements…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2. SYSTEM CONFIGURATION ============ -->
+<div class="card" id="card-config">
+  <div class="card-header"><h2><span class="icon">&#9881;</span> System Configuration</h2><span class="section-tag amber">Config</span></div>
+  <div class="card-body">
+    <div class="form-grid">
+      <!-- Section Config -->
+      <div class="form-group">
+        <label>Number of Sections</label>
+        <input type="number" id="sectionCount" min="1" max="500" value="10" />
+        <span class="hint">Each section = 2 rows of modules</span>
+      </div>
+      <div class="form-group">
+        <label>Section Type</label>
+        <select id="sectionType">
+          <option value="8">8 Panels per Section (4+4)</option>
+          <option value="10" selected>10 Panels per Section (5+5)</option>
+        </select>
+      </div>
+
+      <hr class="form-divider"/>
+
+      <!-- Panel Config -->
+      <div class="form-group">
+        <label>Panel Model</label>
+        <select id="panelModel"></select>
+      </div>
+      <div class="form-group">
+        <label>Panel Wattage (W)</label>
+        <input type="number" id="panelWattage" min="100" max="800" value="430" />
+      </div>
+      <div class="form-group">
+        <label>Panel Length (in)</label>
+        <input type="number" id="panelLength" min="20" max="120" step="0.1" value="74.8" />
+      </div>
+      <div class="form-group">
+        <label>Panel Width (in)</label>
+        <input type="number" id="panelWidth" min="20" max="60" step="0.1" value="41.3" />
+      </div>
+      <div class="form-group">
+        <label>Orientation</label>
+        <select id="orientation">
+          <option value="portrait" selected>Portrait</option>
+          <option value="landscape">Landscape</option>
+        </select>
+      </div>
+
+      <hr class="form-divider"/>
+
+      <!-- Structural Config -->
+      <div class="form-group">
+        <label>Tilt Angle (°)</label>
+        <input type="number" id="tiltAngle" min="5" max="60" value="25" />
+      </div>
+      <div class="form-group">
+        <label>Ground Clearance (in)</label>
+        <input type="number" id="groundClearance" min="6" max="96" value="24" />
+      </div>
+      <div class="form-group">
+        <label>Row Spacing (in)</label>
+        <input type="number" id="rowSpacing" min="1" max="120" value="6" />
+        <span class="hint">Gap between rows within a section</span>
+      </div>
+      <div class="form-group">
+        <label>Section Spacing (in)</label>
+        <input type="number" id="sectionSpacing" min="6" max="360" value="60" />
+        <span class="hint">Gap between adjacent sections</span>
+      </div>
+      <div class="form-group">
+        <label>Foundation Type</label>
+        <select id="foundationType">
+          <option value="ground-screw">Ground Screw</option>
+          <option value="driven-pile" selected>Driven Pile (W-Beam)</option>
+          <option value="ballast">Ballast Block</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Post Type</label>
+        <select id="postType">
+          <option value="w6x9" selected>W6x9 Steel Post</option>
+          <option value="w6x12">W6x12 Steel Post</option>
+          <option value="pipe-3in">3" Round Pipe Post</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Beam / Rail Type</label>
+        <select id="beamType">
+          <option value="c-channel" selected>C-Channel Steel Rail</option>
+          <option value="unistrut">Unistrut P1000</option>
+          <option value="aluminum-rail">Aluminum Extrusion Rail</option>
+        </select>
+      </div>
+
+      <hr class="form-divider"/>
+
+      <!-- Inverter / Electrical -->
+      <div class="form-group">
+        <label>Inverter Model</label>
+        <select id="inverterModel"></select>
+      </div>
+      <div class="form-group toggle-row" style="align-self:end">
+        <input type="checkbox" id="optimizerEnabled" checked />
+        <label for="optimizerEnabled">Enable Module-Level Power Electronics (MLPE / Optimizers)</label>
+      </div>
+
+      <hr class="form-divider"/>
+
+      <!-- Adders / Waste -->
+      <div class="form-group">
+        <label>Spare / Waste Factor (%)</label>
+        <input type="number" id="wasteFactor" min="0" max="25" step="0.5" value="3" />
+      </div>
+      <div class="form-group toggle-row" style="align-self:end">
+        <input type="checkbox" id="extraHardware" />
+        <label for="extraHardware">Extra Hardware Allowance</label>
+      </div>
+      <div class="form-group toggle-row" style="align-self:end">
+        <input type="checkbox" id="miscAdders" />
+        <label for="miscAdders">Miscellaneous Adders</label>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Engineering Notes</label>
+        <textarea id="engNotes" placeholder="Structural notes, site-specific considerations, custom requirements…"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3. LIVE PROJECT SUMMARY ============ -->
+<div class="card" id="card-summary">
+  <div class="card-header"><h2><span class="icon">&#9889;</span> Live Project Summary</h2><span class="section-tag green">Auto-Updated</span></div>
+  <div class="card-body">
+    <div class="summary-grid" id="summaryGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4. SECTION-BY-SECTION BREAKDOWN ============ -->
+<div class="card" id="card-sections">
+  <div class="card-header">
+    <h2><span class="icon">&#9635;</span> Section-by-Section Breakdown</h2>
+    <span class="section-tag">Structural</span>
+  </div>
+  <div class="card-body">
+    <div class="section-cards" id="sectionCards">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ============ 5. BILL OF MATERIALS ============ -->
+<div class="card" id="card-bom">
+  <div class="card-header">
+    <h2><span class="icon">&#9783;</span> Bill of Materials</h2>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="section-tag amber">Procurement</span>
+    </div>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table" id="bomTable">
+        <thead>
+          <tr>
+            <th data-col="category">Category <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="item">Item <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="partNumber">Part # / SKU <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="unit">Unit <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="baseQty">Base Qty <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="wastePct">Waste % <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="finalQty">Final Qty <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="notes">Notes <span class="sort-arrow">&#9650;</span></th>
+          </tr>
+        </thead>
+        <tbody id="bomBody">
+          <!-- Populated by JS -->
+        </tbody>
+        <tfoot id="bomFoot">
+          <tr><td colspan="8"></td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 6. ASSUMPTIONS / ENGINEERING LOGIC ============ -->
+<div class="card" id="card-assumptions">
+  <div class="card-header collapsible-toggle" data-target="assumptionsBody">
+    <h2><span class="icon">&#9432;</span> Assumptions &amp; Engineering Logic</h2>
+    <span class="chevron">&#9654;</span>
+  </div>
+  <div class="collapsible-body" id="assumptionsBody">
+    <div style="font-size:.84rem;color:var(--text-sec);line-height:1.7;max-width:860px">
+      <p><strong>Section Structure:</strong> Every section contains exactly 2 rows. An 8-panel section has 4 modules per row; a 10-panel section has 5 modules per row.</p>
+      <p style="margin-top:10px"><strong>Post Count:</strong> Each section uses 4 posts (2 per row, at each end of the beam). This is a simplified assumption; real designs may add intermediate posts for longer spans.</p>
+      <p style="margin-top:10px"><strong>Beam / Rail Count:</strong> Each section uses 2 beams (1 per row). Each beam spans the full width of its row.</p>
+      <p style="margin-top:10px"><strong>Clamp Logic:</strong> Mid clamps are placed between adjacent modules in a row. End clamps are placed at the outer edges. For N panels per row: mid clamps = (N−1)×2 per section, end clamps = 4 per section (2 per row × 2 ends).</p>
+      <p style="margin-top:10px"><strong>Splices / Joiners:</strong> 2 per section — assumes one splice per beam for field-joined rail segments.</p>
+      <p style="margin-top:10px"><strong>Bonding / Grounding:</strong> 1 bonding clip per panel, 1 grounding lug per section. Simplified for estimating.</p>
+      <p style="margin-top:10px"><strong>Footprint Estimation:</strong> In portrait orientation, panel width is the horizontal span per module and panel length is the slope span. In landscape, these swap. Section width = panels per row × module horizontal span. Section depth = 2 × slope span + row spacing. Total array width = section width (uniform). Total array length = sections × section depth + (sections−1) × section spacing.</p>
+      <p style="margin-top:10px"><strong>Inverter Sizing:</strong> Base logic is 1 inverter per system up to the inverter's max DC input. If total DC exceeds max input, count increases by ratio (rounded up). This is a simplified placeholder.</p>
+      <p style="margin-top:10px"><strong>Waste Factor:</strong> Applied to structural hardware categories (clamps, splices, wire mgmt, fasteners, brackets, bonding). Not applied to modules, inverters, or optimizers.</p>
+      <p style="margin-top:10px"><strong>Extra Hardware Allowance:</strong> When enabled, adds 3% extra clamps and 5% extra wire management clips on top of base quantities (before waste factor).</p>
+      <p style="margin-top:10px"><strong>Miscellaneous Adders:</strong> When enabled, adds one "Miscellaneous Hardware Allowance" line item per project at a fixed quantity of 1 kit.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 7. DEVELOPER DATA MAPPING GUIDE ============ -->
+<div class="card" id="card-devguide">
+  <div class="card-header collapsible-toggle" data-target="devGuideBody">
+    <h2><span class="icon">&lt;/&gt;</span> Developer Data Mapping Guide</h2>
+    <span class="chevron">&#9654;</span>
+  </div>
+  <div class="collapsible-body" id="devGuideBody">
+    <div style="font-size:.82rem;color:var(--text-sec);line-height:1.75;max-width:860px;font-family:var(--font)">
+      <p>All embedded data lives at the top of the <code>&lt;script&gt;</code> section in clearly labeled constants. When migrating from spreadsheets, replace or extend these arrays/objects:</p>
+      <p style="margin-top:12px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const PANELS = [...]</code> — Panel catalog. Each entry: id, manufacturer, model, wattage, lengthIn, widthIn, cellType, notes.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const INVERTERS = [...]</code> — Inverter catalog. Each entry: id, manufacturer, model, acKw, dcMaxKw, notes.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const FOUNDATIONS = [...]</code> — Foundation/post types with id, name, description.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const STRUCTURAL_MEMBERS = [...]</code> — Beam/rail types with id, name, description.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const SECTION_RULES = {...}</code> — Per-section BOM rules keyed by section type ("8" or "10"). Each defines posts, beams, midClamps, endClamps, splices, bondingClips, groundLugs, wireMgmt, hardwareKits.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const BOM_ITEMS = {...}</code> — Master item reference keyed by item key. Each has name, category, unit, sku, wasteEligible flag.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const APP_DEFAULTS = {...}</code> — Default form values for reset.</p>
+      <p style="margin-top:6px"><code style="background:var(--sky);padding:2px 6px;border-radius:3px">const CALC_CONSTANTS = {...}</code> — Thresholds (inverter sizing ratio), extra hardware percentages, misc adder quantities.</p>
+      <p style="margin-top:14px">To add new section types (e.g., 12-panel sections), add a new key to <code>SECTION_RULES</code> and a new <code>&lt;option&gt;</code> to the Section Type dropdown.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 8. EXPORT / PRINT / UTILITY ============ -->
+<div class="card export-panel no-print" id="card-export">
+  <div class="card-header"><h2><span class="icon">&#8681;</span> Export, Print &amp; Utilities</h2></div>
+  <div class="card-body">
+    <div class="btn-group">
+      <button class="btn btn-navy" onclick="printFullReport()">&#128424; Print Full Report</button>
+      <button class="btn btn-navy" onclick="printBomOnly()">&#128424; Print BOM Only</button>
+      <button class="btn btn-primary" onclick="exportBomCsv()">&#128196; Export BOM CSV</button>
+      <button class="btn btn-primary" onclick="exportSummaryCsv()">&#128196; Export Summary CSV</button>
+      <button class="btn btn-outline" onclick="copyBomToClipboard()">&#128203; Copy BOM to Clipboard</button>
+      <button class="btn btn-green" onclick="saveProject()">&#128190; Save Project Locally</button>
+      <button class="btn btn-outline" onclick="restoreProject()">&#128194; Restore Saved Project</button>
+      <button class="btn btn-red" onclick="resetForm()">&#8634; Reset to Defaults</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-grid -->
+</div><!-- /container -->
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     JAVASCRIPT — ALL APPLICATION LOGIC
+     ============================================================ -->
+<script>
+/* ============================================================
+   ========== EMBEDDED DATA / CONFIGURATION TABLES =============
+   ============================================================
+   DEVELOPER NOTE:
+   All product catalogs, section rules, BOM item masters, and
+   calculation constants are defined here. When importing from
+   spreadsheets, replace or extend these data structures.
+
+   Structure overview:
+   - PANELS[]           → Panel catalog (drop-in from spreadsheet)
+   - INVERTERS[]        → Inverter catalog
+   - FOUNDATIONS[]      → Foundation / post type options
+   - STRUCTURAL_MEMBERS[] → Beam / rail type options
+   - SECTION_RULES{}    → Per-section BOM component rules (keyed by "8" or "10")
+   - BOM_ITEMS{}        → Master item reference (name, category, unit, sku, wasteEligible)
+   - APP_DEFAULTS{}     → Default form values for reset
+   - CALC_CONSTANTS{}   → Sizing thresholds, waste logic, extra hardware %
+   ============================================================ */
+
+const PANELS = [
+  { id: 'canadian-430', manufacturer: 'Canadian Solar', model: 'CS6R-430MS', wattage: 430, lengthIn: 74.8, widthIn: 41.3, cellType: 'Mono PERC', notes: 'HiKu6 series, mainstream residential/commercial' },
+  { id: 'jinko-445',    manufacturer: 'Jinko Solar',    model: 'JKM445M-54HL4-V', wattage: 445, lengthIn: 75.6, widthIn: 41.8, cellType: 'Mono Half-Cell', notes: 'Tiger Neo N-type, high efficiency' },
+  { id: 'longi-440',    manufacturer: 'LONGi',          model: 'LR5-54HTH-440M', wattage: 440, lengthIn: 75.2, widthIn: 41.5, cellType: 'Mono PERC HiMO6', notes: 'Hi-MO 6 Explorer series' },
+];
+
+const INVERTERS = [
+  { id: 'se11400',  manufacturer: 'SolarEdge', model: 'SE11400H-US',    acKw: 11.4,  dcMaxKw: 17.1,  notes: 'HD-Wave residential/small commercial' },
+  { id: 'sma77',    manufacturer: 'SMA',       model: 'Sunny Boy 7.7-US', acKw: 7.7,  dcMaxKw: 11.55, notes: 'Residential string inverter' },
+  { id: 'se33',     manufacturer: 'SolarEdge', model: 'SE33.3K-USR',    acKw: 33.3,  dcMaxKw: 45.0,  notes: 'Three-phase commercial inverter' },
+];
+
+const FOUNDATIONS = [
+  { id: 'ground-screw', name: 'Ground Screw',           description: 'Helical ground screw foundation' },
+  { id: 'driven-pile',  name: 'Driven Pile (W-Beam)',   description: 'Driven W-beam pile foundation' },
+  { id: 'ballast',      name: 'Ballast Block',          description: 'Concrete ballast block foundation' },
+];
+
+const STRUCTURAL_MEMBERS = [
+  { id: 'c-channel',     name: 'C-Channel Steel Rail',       description: 'Hot-rolled C-channel purlin' },
+  { id: 'unistrut',      name: 'Unistrut P1000',             description: 'Standard Unistrut channel rail' },
+  { id: 'aluminum-rail', name: 'Aluminum Extrusion Rail',    description: 'Extruded aluminum mounting rail' },
+];
+
+/* SECTION_RULES: keyed by panelsPerSection ("8" or "10").
+   Each value defines the quantity of structural components per section. */
+const SECTION_RULES = {
+  '8': {
+    modules: 8,
+    rows: 2,
+    panelsPerRow: 4,
+    posts: 4,
+    beams: 2,
+    midClamps: 6,
+    endClamps: 4,
+    splices: 2,
+    bondingClips: 4,
+    groundLugs: 1,
+    wireMgmtPacks: 1,
+    hardwareKits: 1,
+  },
+  '10': {
+    modules: 10,
+    rows: 2,
+    panelsPerRow: 5,
+    posts: 4,
+    beams: 2,
+    midClamps: 8,
+    endClamps: 4,
+    splices: 2,
+    bondingClips: 5,
+    groundLugs: 1,
+    wireMgmtPacks: 1,
+    hardwareKits: 1,
+  }
+};
+
+/* BOM_ITEMS: Master item reference table.
+   Each key corresponds to a BOM line item. The wasteEligible flag
+   controls whether the waste factor is applied. */
+const BOM_ITEMS = {
+  modules:       { name: 'Solar Module',                category: 'Modules',                 unit: 'ea',   sku: 'MOD-PANEL',     wasteEligible: false },
+  inverter:      { name: 'String Inverter',             category: 'Inverters / MLPE',        unit: 'ea',   sku: 'INV-STRING',    wasteEligible: false },
+  optimizer:     { name: 'DC Optimizer (MLPE)',          category: 'Inverters / MLPE',        unit: 'ea',   sku: 'OPT-MLPE',      wasteEligible: false },
+  post:          { name: 'Structural Post',             category: 'Posts / Foundations',      unit: 'ea',   sku: 'STR-POST',      wasteEligible: false },
+  beam:          { name: 'Primary Beam / Rail',         category: 'Beams / Rails',           unit: 'ea',   sku: 'STR-BEAM',      wasteEligible: false },
+  midClamp:      { name: 'Mid Clamp',                   category: 'Mid Clamps',              unit: 'ea',   sku: 'CLP-MID',       wasteEligible: true },
+  endClamp:      { name: 'End Clamp',                   category: 'End Clamps',              unit: 'ea',   sku: 'CLP-END',       wasteEligible: true },
+  splice:        { name: 'Rail Splice / Joiner',        category: 'Splices / Joiners',       unit: 'ea',   sku: 'SPL-JOIN',      wasteEligible: true },
+  bracket:       { name: 'Post-to-Beam Bracket',        category: 'Brackets / Connectors',   unit: 'ea',   sku: 'BRK-PTB',       wasteEligible: true },
+  bondingClip:   { name: 'Module Bonding Clip',         category: 'Bonding / Grounding',     unit: 'ea',   sku: 'GND-BOND',      wasteEligible: true },
+  groundLug:     { name: 'Equipment Grounding Lug',     category: 'Bonding / Grounding',     unit: 'ea',   sku: 'GND-LUG',       wasteEligible: true },
+  wireMgmt:      { name: 'Wire Management Clip Pack',   category: 'Wire Management',         unit: 'pk',   sku: 'WIR-MGMT',      wasteEligible: true },
+  hardwareKit:   { name: 'Section Hardware Kit',        category: 'Fasteners / Hardware',     unit: 'kit',  sku: 'HW-KIT',        wasteEligible: true },
+  miscAllowance: { name: 'Miscellaneous Hardware Allow.',category: 'Miscellaneous / Allowances', unit: 'kit', sku: 'MISC-ALLOW', wasteEligible: false },
+};
+
+const APP_DEFAULTS = {
+  projectName: 'Solar Mason Demo Project',
+  customerName: '',
+  siteName: '',
+  siteAddress: '',
+  jobNumber: '',
+  preparedBy: '',
+  projectDate: new Date().toISOString().split('T')[0],
+  projectNotes: '',
+  sectionCount: 10,
+  sectionType: '10',
+  panelModel: 'canadian-430',
+  panelWattage: 430,
+  panelLength: 74.8,
+  panelWidth: 41.3,
+  orientation: 'portrait',
+  tiltAngle: 25,
+  groundClearance: 24,
+  rowSpacing: 6,
+  sectionSpacing: 60,
+  foundationType: 'driven-pile',
+  postType: 'w6x9',
+  beamType: 'c-channel',
+  inverterModel: 'se11400',
+  optimizerEnabled: true,
+  wasteFactor: 3,
+  extraHardware: false,
+  miscAdders: false,
+  engNotes: '',
+};
+
+/* Calculation constants — sizing thresholds, extra hardware percentages */
+const CALC_CONSTANTS = {
+  extraClampPct: 0.03,       // 3% extra clamps when extra hardware is on
+  extraWireMgmtPct: 0.05,   // 5% extra wire management when extra hardware is on
+  miscAdderQty: 1,           // 1 misc kit per project when adders toggle is on
+  bracketPerPost: 1,         // 1 post-to-beam bracket per post
+};
+
+/* ============================================================
+   =============== CATEGORY DISPLAY ORDER =====================
+   ============================================================ */
+const CATEGORY_ORDER = [
+  'Modules',
+  'Inverters / MLPE',
+  'Posts / Foundations',
+  'Beams / Rails',
+  'Mid Clamps',
+  'End Clamps',
+  'Splices / Joiners',
+  'Brackets / Connectors',
+  'Bonding / Grounding',
+  'Wire Management',
+  'Fasteners / Hardware',
+  'Miscellaneous / Allowances',
+];
+
+/* ============================================================
+   =============== UTILITY HELPERS ============================
+   ============================================================ */
+
+function $(id) { return document.getElementById(id); }
+function qs(sel) { return document.querySelector(sel); }
+function qsa(sel) { return document.querySelectorAll(sel); }
+
+function numVal(id, fallback) {
+  const v = parseFloat($(id).value);
+  return isNaN(v) ? (fallback || 0) : v;
+}
+
+function intVal(id, fallback) {
+  const v = parseInt($(id).value, 10);
+  return isNaN(v) ? (fallback || 0) : v;
+}
+
+function fmt(n, decimals) {
+  if (typeof decimals === 'undefined') decimals = 0;
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function showToast(msg, duration) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), duration || 2500);
+}
+
+/* ============================================================
+   =============== STATE MANAGEMENT ===========================
+   ============================================================ */
+
+const STORAGE_KEY = 'solarmason_racking_config_v1';
+
+function getFormState() {
+  return {
+    projectName:      $('projectName').value,
+    customerName:     $('customerName').value,
+    siteName:         $('siteName').value,
+    siteAddress:      $('siteAddress').value,
+    jobNumber:        $('jobNumber').value,
+    preparedBy:       $('preparedBy').value,
+    projectDate:      $('projectDate').value,
+    projectNotes:     $('projectNotes').value,
+    sectionCount:     intVal('sectionCount', 10),
+    sectionType:      $('sectionType').value,
+    panelModel:       $('panelModel').value,
+    panelWattage:     numVal('panelWattage', 430),
+    panelLength:      numVal('panelLength', 74.8),
+    panelWidth:       numVal('panelWidth', 41.3),
+    orientation:      $('orientation').value,
+    tiltAngle:        numVal('tiltAngle', 25),
+    groundClearance:  numVal('groundClearance', 24),
+    rowSpacing:       numVal('rowSpacing', 6),
+    sectionSpacing:   numVal('sectionSpacing', 60),
+    foundationType:   $('foundationType').value,
+    postType:         $('postType').value,
+    beamType:         $('beamType').value,
+    inverterModel:    $('inverterModel').value,
+    optimizerEnabled: $('optimizerEnabled').checked,
+    wasteFactor:      numVal('wasteFactor', 3),
+    extraHardware:    $('extraHardware').checked,
+    miscAdders:       $('miscAdders').checked,
+    engNotes:         $('engNotes').value,
+  };
+}
+
+function setFormState(s) {
+  $('projectName').value     = s.projectName     || '';
+  $('customerName').value    = s.customerName    || '';
+  $('siteName').value        = s.siteName        || '';
+  $('siteAddress').value     = s.siteAddress     || '';
+  $('jobNumber').value       = s.jobNumber       || '';
+  $('preparedBy').value      = s.preparedBy      || '';
+  $('projectDate').value     = s.projectDate     || '';
+  $('projectNotes').value    = s.projectNotes    || '';
+  $('sectionCount').value    = s.sectionCount    || 10;
+  $('sectionType').value     = s.sectionType     || '10';
+  $('panelModel').value      = s.panelModel      || PANELS[0].id;
+  $('panelWattage').value    = s.panelWattage    || 430;
+  $('panelLength').value     = s.panelLength     || 74.8;
+  $('panelWidth').value      = s.panelWidth      || 41.3;
+  $('orientation').value     = s.orientation     || 'portrait';
+  $('tiltAngle').value       = s.tiltAngle       || 25;
+  $('groundClearance').value = s.groundClearance || 24;
+  $('rowSpacing').value      = s.rowSpacing      || 6;
+  $('sectionSpacing').value  = s.sectionSpacing  || 60;
+  $('foundationType').value  = s.foundationType  || 'driven-pile';
+  $('postType').value        = s.postType        || 'w6x9';
+  $('beamType').value        = s.beamType        || 'c-channel';
+  $('inverterModel').value   = s.inverterModel   || INVERTERS[0].id;
+  $('optimizerEnabled').checked = s.optimizerEnabled !== false;
+  $('wasteFactor').value     = s.wasteFactor     || 3;
+  $('extraHardware').checked = !!s.extraHardware;
+  $('miscAdders').checked    = !!s.miscAdders;
+  $('engNotes').value        = s.engNotes        || '';
+}
+
+function autoSave() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getFormState()));
+  } catch(e) { /* localStorage unavailable */ }
+}
+
+function autoRestore() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      setFormState(s);
+      return true;
+    }
+  } catch(e) { /* ignore */ }
+  return false;
+}
+
+/* ============================================================
+   =============== CALCULATION ENGINE =========================
+   ============================================================ */
+
+function calculateSectionBreakdown(sectionIndex, sectionType, state) {
+  const rules = SECTION_RULES[sectionType];
+  if (!rules) return null;
+
+  let midClamps = rules.midClamps;
+  let endClamps = rules.endClamps;
+  let wireMgmt  = rules.wireMgmtPacks;
+
+  // Extra hardware allowance adjustments (applied to base qty before waste)
+  if (state.extraHardware) {
+    midClamps = Math.ceil(midClamps * (1 + CALC_CONSTANTS.extraClampPct));
+    endClamps = Math.ceil(endClamps * (1 + CALC_CONSTANTS.extraClampPct));
+    wireMgmt  = Math.ceil(wireMgmt  * (1 + CALC_CONSTANTS.extraWireMgmtPct));
+  }
+
+  return {
+    sectionNumber: sectionIndex + 1,
+    sectionType: sectionType,
+    modules: rules.modules,
+    rows: rules.rows,
+    panelsPerRow: rules.panelsPerRow,
+    posts: rules.posts,
+    beams: rules.beams,
+    midClamps: midClamps,
+    endClamps: endClamps,
+    splices: rules.splices,
+    brackets: rules.posts * CALC_CONSTANTS.bracketPerPost,
+    bondingClips: rules.bondingClips,
+    groundLugs: rules.groundLugs,
+    wireMgmtPacks: wireMgmt,
+    hardwareKits: rules.hardwareKits,
+    optimizers: state.optimizerEnabled ? rules.modules : 0,
+  };
+}
+
+function calculateProjectTotals(state) {
+  const sections = [];
+  for (let i = 0; i < state.sectionCount; i++) {
+    sections.push(calculateSectionBreakdown(i, state.sectionType, state));
+  }
+
+  // Aggregate
+  const totals = {
+    modules: 0, posts: 0, beams: 0, midClamps: 0, endClamps: 0,
+    splices: 0, brackets: 0, bondingClips: 0, groundLugs: 0,
+    wireMgmtPacks: 0, hardwareKits: 0, optimizers: 0,
+  };
+  sections.forEach(sec => {
+    Object.keys(totals).forEach(k => { totals[k] += sec[k]; });
+  });
+
+  // Panel & DC
+  const totalPanels = totals.modules;
+  const totalDcWatts = totalPanels * state.panelWattage;
+  const totalDcKw = totalDcWatts / 1000;
+
+  // Inverter sizing
+  const inv = INVERTERS.find(i => i.id === state.inverterModel) || INVERTERS[0];
+  let inverterCount = Math.max(1, Math.ceil(totalDcKw / inv.dcMaxKw));
+
+  // Footprint
+  const pLen = state.panelLength;
+  const pWid = state.panelWidth;
+  const panelsPerRow = SECTION_RULES[state.sectionType].panelsPerRow;
+  let moduleHorizontal, moduleSlope;
+  if (state.orientation === 'portrait') {
+    moduleHorizontal = pWid;
+    moduleSlope = pLen;
+  } else {
+    moduleHorizontal = pLen;
+    moduleSlope = pWid;
+  }
+  const sectionWidthIn = panelsPerRow * moduleHorizontal;
+  const sectionDepthIn = 2 * moduleSlope + state.rowSpacing;
+  const totalArrayWidthIn = sectionWidthIn;
+  const totalArrayLengthIn = state.sectionCount * sectionDepthIn + Math.max(0, state.sectionCount - 1) * state.sectionSpacing;
+  const totalArrayWidthFt = totalArrayWidthIn / 12;
+  const totalArrayLengthFt = totalArrayLengthIn / 12;
+  const footprintSqFt = totalArrayWidthFt * totalArrayLengthFt;
+
+  return {
+    sections,
+    totals,
+    totalPanels,
+    totalDcWatts,
+    totalDcKw,
+    inverterCount,
+    inverter: inv,
+    panelsPerRow,
+    sectionWidthFt: sectionWidthIn / 12,
+    sectionDepthFt: sectionDepthIn / 12,
+    totalArrayWidthFt,
+    totalArrayLengthFt,
+    footprintSqFt,
+  };
+}
+
+/* ============================================================
+   =============== BOM ENGINE =================================
+   ============================================================ */
+
+function applyWasteFactor(baseQty, wastePct, isEligible) {
+  if (!isEligible || wastePct <= 0) return baseQty;
+  return Math.ceil(baseQty * (1 + wastePct / 100));
+}
+
+function generateBom(state, calc) {
+  const wastePct = state.wasteFactor;
+  const lines = [];
+
+  function addLine(key, baseQty, noteOverride) {
+    const item = BOM_ITEMS[key];
+    if (!item) return;
+    const finalQty = applyWasteFactor(baseQty, wastePct, item.wasteEligible);
+    lines.push({
+      key,
+      category: item.category,
+      item: item.name,
+      partNumber: item.sku,
+      unit: item.unit,
+      baseQty,
+      wastePct: item.wasteEligible ? wastePct : 0,
+      finalQty,
+      notes: noteOverride || '',
+    });
+  }
+
+  // Modules
+  const panel = PANELS.find(p => p.id === state.panelModel) || PANELS[0];
+  addLine('modules', calc.totalPanels, panel.manufacturer + ' ' + panel.model + ' (' + panel.wattage + 'W)');
+
+  // Inverters
+  addLine('inverter', calc.inverterCount, calc.inverter.manufacturer + ' ' + calc.inverter.model);
+
+  // Optimizers
+  if (state.optimizerEnabled) {
+    addLine('optimizer', calc.totals.optimizers, '1 per module');
+  }
+
+  // Posts
+  addLine('post', calc.totals.posts, state.postType + ' — ' + (FOUNDATIONS.find(f=>f.id===state.foundationType)||{}).name);
+
+  // Beams
+  addLine('beam', calc.totals.beams, (STRUCTURAL_MEMBERS.find(s=>s.id===state.beamType)||{}).name);
+
+  // Mid clamps
+  addLine('midClamp', calc.totals.midClamps, state.extraHardware ? 'Incl. 3% extra hardware allowance' : '');
+
+  // End clamps
+  addLine('endClamp', calc.totals.endClamps, state.extraHardware ? 'Incl. 3% extra hardware allowance' : '');
+
+  // Splices
+  addLine('splice', calc.totals.splices, '');
+
+  // Brackets
+  addLine('bracket', calc.totals.brackets, '1 per post');
+
+  // Bonding clips
+  addLine('bondingClip', calc.totals.bondingClips, '1 per module position');
+
+  // Ground lugs
+  addLine('groundLug', calc.totals.groundLugs, '1 per section');
+
+  // Wire management
+  addLine('wireMgmt', calc.totals.wireMgmtPacks, state.extraHardware ? 'Incl. 5% extra hardware allowance' : '1 pack per section');
+
+  // Hardware kits
+  addLine('hardwareKit', calc.totals.hardwareKits, '1 kit per section');
+
+  // Misc adders
+  if (state.miscAdders) {
+    addLine('miscAllowance', CALC_CONSTANTS.miscAdderQty, 'Project-level misc hardware allowance');
+  }
+
+  return lines;
+}
+
+function aggregateBomLines(bomLines) {
+  // Group by category
+  const groups = {};
+  CATEGORY_ORDER.forEach(cat => { groups[cat] = []; });
+  bomLines.forEach(line => {
+    if (!groups[line.category]) groups[line.category] = [];
+    groups[line.category].push(line);
+  });
+  return groups;
+}
+
+/* ============================================================
+   =============== RENDERING FUNCTIONS ========================
+   ============================================================ */
+
+function populateDropdowns() {
+  const panelSel = $('panelModel');
+  panelSel.innerHTML = PANELS.map(p =>
+    '<option value="' + p.id + '">' + p.manufacturer + ' ' + p.model + ' (' + p.wattage + 'W)</option>'
+  ).join('');
+
+  const invSel = $('inverterModel');
+  invSel.innerHTML = INVERTERS.map(i =>
+    '<option value="' + i.id + '">' + i.manufacturer + ' ' + i.model + ' (' + i.acKw + ' kW AC)</option>'
+  ).join('');
+}
+
+function syncPanelFields() {
+  const panel = PANELS.find(p => p.id === $('panelModel').value);
+  if (panel) {
+    $('panelWattage').value = panel.wattage;
+    $('panelLength').value  = panel.lengthIn;
+    $('panelWidth').value   = panel.widthIn;
+  }
+}
+
+function renderSummary(state, calc) {
+  const grid = $('summaryGrid');
+  const panel = PANELS.find(p => p.id === state.panelModel) || PANELS[0];
+  const bomLines = generateBom(state, calc);
+
+  const items = [
+    { label: 'Sections',        value: state.sectionCount,                        unit: '',       cls: '' },
+    { label: 'Section Type',    value: state.sectionType + '-Panel',              unit: '(' + SECTION_RULES[state.sectionType].panelsPerRow + '+' + SECTION_RULES[state.sectionType].panelsPerRow + ')', cls: '' },
+    { label: 'Panels / Section',value: SECTION_RULES[state.sectionType].modules,  unit: 'ea',     cls: '' },
+    { label: 'Rows / Section',  value: 2,                                         unit: '',       cls: '' },
+    { label: 'Panels / Row',    value: calc.panelsPerRow,                         unit: 'ea',     cls: '' },
+    { label: 'Total Panels',    value: fmt(calc.totalPanels),                     unit: 'modules',cls: 'highlight' },
+    { label: 'Total DC',        value: fmt(calc.totalDcKw, 2),                    unit: 'kW DC',  cls: 'highlight' },
+    { label: 'Total DC Watts',  value: fmt(calc.totalDcWatts),                    unit: 'W',      cls: 'accent' },
+    { label: 'Panel Model',     value: panel.model,                               unit: panel.manufacturer, cls: '' },
+    { label: 'Inverter',        value: calc.inverter.model,                       unit: calc.inverterCount + ' unit(s)', cls: '' },
+    { label: 'Optimizer',       value: state.optimizerEnabled ? 'Enabled' : 'Disabled', unit: state.optimizerEnabled ? calc.totals.optimizers + ' units' : '—', cls: '' },
+    { label: 'Array Width',     value: fmt(calc.totalArrayWidthFt, 1),            unit: 'ft',     cls: '' },
+    { label: 'Array Length',    value: fmt(calc.totalArrayLengthFt, 1),           unit: 'ft',     cls: '' },
+    { label: 'Footprint',       value: fmt(calc.footprintSqFt, 0),               unit: 'sq ft',  cls: 'accent' },
+    { label: 'Est. Posts',      value: fmt(calc.totals.posts),                    unit: 'ea',     cls: '' },
+    { label: 'Est. Beams',      value: fmt(calc.totals.beams),                    unit: 'ea',     cls: '' },
+    { label: 'Est. Clamps',     value: fmt(calc.totals.midClamps + calc.totals.endClamps), unit: 'mid + end', cls: '' },
+    { label: 'BOM Lines',       value: bomLines.length,                           unit: 'unique', cls: '' },
+  ];
+
+  grid.innerHTML = items.map(it =>
+    '<div class="stat-card ' + it.cls + '">' +
+      '<span class="stat-label">' + it.label + '</span>' +
+      '<span class="stat-value">' + it.value + '</span>' +
+      '<span class="stat-unit">' + it.unit + '</span>' +
+    '</div>'
+  ).join('');
+}
+
+function renderSectionCards(calc) {
+  const container = $('sectionCards');
+  // Limit rendered cards to avoid DOM bloat; show summary for large counts
+  const maxCards = 50;
+  const showAll = calc.sections.length <= maxCards;
+  const displaySections = showAll ? calc.sections : calc.sections.slice(0, 6);
+
+  let html = '';
+  displaySections.forEach(sec => {
+    html += '<div class="sec-card">' +
+      '<div class="sec-card-head">' +
+        '<span class="sec-num">Section ' + sec.sectionNumber + '</span>' +
+        '<span class="section-tag">' + sec.sectionType + '-Panel</span>' +
+      '</div>' +
+      '<div class="sec-card-body">' +
+        detailRow('Modules', sec.modules) +
+        detailRow('Rows', sec.rows) +
+        detailRow('Panels / Row', sec.panelsPerRow) +
+        detailRow('Posts', sec.posts) +
+        detailRow('Beams / Rails', sec.beams) +
+        detailRow('Mid Clamps', sec.midClamps) +
+        detailRow('End Clamps', sec.endClamps) +
+        detailRow('Splices', sec.splices) +
+        detailRow('Brackets', sec.brackets) +
+        detailRow('Bonding Clips', sec.bondingClips) +
+        detailRow('Ground Lugs', sec.groundLugs) +
+        detailRow('Wire Mgmt Packs', sec.wireMgmtPacks) +
+        detailRow('Hardware Kits', sec.hardwareKits) +
+        (sec.optimizers > 0 ? detailRow('Optimizers', sec.optimizers) : '') +
+      '</div>' +
+    '</div>';
+  });
+
+  if (!showAll) {
+    html += '<div class="sec-card" style="display:flex;align-items:center;justify-content:center;min-height:120px;background:var(--sky)">' +
+      '<div style="text-align:center;padding:20px">' +
+        '<div style="font-size:1.1rem;font-weight:700;color:var(--navy)">+ ' + (calc.sections.length - 6) + ' more identical sections</div>' +
+        '<div style="font-size:.8rem;color:var(--text-sec);margin-top:6px">All ' + calc.sections.length + ' sections share the same ' + calc.sections[0].sectionType + '-panel configuration</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function detailRow(label, value) {
+  return '<div class="detail-row"><span class="dl">' + label + '</span><span class="dv">' + value + '</span></div>';
+}
+
+function renderBomTable(state, calc) {
+  const bomLines = generateBom(state, calc);
+  const groups = aggregateBomLines(bomLines);
+  const tbody = $('bomBody');
+  let html = '';
+  let grandTotalItems = 0;
+  let uniqueLines = 0;
+
+  CATEGORY_ORDER.forEach(cat => {
+    const lines = groups[cat];
+    if (!lines || lines.length === 0) return;
+
+    html += '<tr class="cat-header"><td colspan="8">' + cat + '</td></tr>';
+    let catTotal = 0;
+
+    lines.forEach(line => {
+      html += '<tr>' +
+        '<td>' + line.category + '</td>' +
+        '<td>' + line.item + '</td>' +
+        '<td style="font-family:var(--mono);font-size:.78rem">' + line.partNumber + '</td>' +
+        '<td>' + line.unit + '</td>' +
+        '<td style="text-align:right;font-weight:600">' + fmt(line.baseQty) + '</td>' +
+        '<td style="text-align:right">' + (line.wastePct > 0 ? line.wastePct + '%' : '—') + '</td>' +
+        '<td style="text-align:right;font-weight:700;color:var(--navy)">' + fmt(line.finalQty) + '</td>' +
+        '<td style="font-size:.76rem;color:var(--text-sec)">' + line.notes + '</td>' +
+      '</tr>';
+      catTotal += line.finalQty;
+      uniqueLines++;
+    });
+
+    html += '<tr class="subtotal"><td colspan="6" style="text-align:right">Subtotal — ' + cat + '</td><td style="text-align:right">' + fmt(catTotal) + '</td><td></td></tr>';
+    grandTotalItems += catTotal;
+  });
+
+  tbody.innerHTML = html;
+
+  $('bomFoot').innerHTML = '<tr>' +
+    '<td colspan="4" style="text-align:right">Grand Total</td>' +
+    '<td></td><td></td>' +
+    '<td style="text-align:right;font-size:1rem">' + fmt(grandTotalItems) + ' items</td>' +
+    '<td>' + uniqueLines + ' unique lines</td>' +
+  '</tr>';
+
+  // Store for export
+  window._lastBomLines = bomLines;
+  window._lastCalc = calc;
+  window._lastState = state;
+}
+
+/* ---------- BOM TABLE SORTING ---------- */
+function initTableSorting() {
+  const headers = qsa('#bomTable thead th');
+  headers.forEach(th => {
+    th.addEventListener('click', function() {
+      const col = this.getAttribute('data-col');
+      if (!col) return;
+      const currentDir = this.classList.contains('sorted-asc') ? 'asc' : (this.classList.contains('sorted-desc') ? 'desc' : 'none');
+      headers.forEach(h => { h.classList.remove('sorted-asc','sorted-desc'); });
+      const newDir = currentDir === 'asc' ? 'desc' : 'asc';
+      this.classList.add('sorted-' + newDir);
+
+      if (!window._lastBomLines) return;
+      const lines = [...window._lastBomLines];
+      lines.sort((a, b) => {
+        let va = a[col] || '', vb = b[col] || '';
+        if (typeof va === 'number' && typeof vb === 'number') {
+          return newDir === 'asc' ? va - vb : vb - va;
+        }
+        va = String(va).toLowerCase();
+        vb = String(vb).toLowerCase();
+        if (va < vb) return newDir === 'asc' ? -1 : 1;
+        if (va > vb) return newDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      // Re-render with sorted lines (flat, no grouping)
+      const tbody = $('bomBody');
+      let html = '';
+      lines.forEach(line => {
+        html += '<tr>' +
+          '<td>' + line.category + '</td>' +
+          '<td>' + line.item + '</td>' +
+          '<td style="font-family:var(--mono);font-size:.78rem">' + line.partNumber + '</td>' +
+          '<td>' + line.unit + '</td>' +
+          '<td style="text-align:right;font-weight:600">' + fmt(line.baseQty) + '</td>' +
+          '<td style="text-align:right">' + (line.wastePct > 0 ? line.wastePct + '%' : '—') + '</td>' +
+          '<td style="text-align:right;font-weight:700;color:var(--navy)">' + fmt(line.finalQty) + '</td>' +
+          '<td style="font-size:.76rem;color:var(--text-sec)">' + line.notes + '</td>' +
+        '</tr>';
+      });
+      tbody.innerHTML = html;
+    });
+  });
+}
+
+/* ============================================================
+   =============== EXPORT / PRINT HELPERS =====================
+   ============================================================ */
+
+function csvEscape(val) {
+  const s = String(val == null ? '' : val);
+  if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function downloadCsv(filename, csvContent) {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportBomCsv() {
+  if (!window._lastBomLines) { showToast('No BOM data to export'); return; }
+  const headers = ['Category','Item','Part # / SKU','Unit','Base Qty','Waste %','Final Qty','Notes'];
+  let csv = headers.map(csvEscape).join(',') + '\n';
+  window._lastBomLines.forEach(line => {
+    csv += [line.category, line.item, line.partNumber, line.unit, line.baseQty,
+            line.wastePct > 0 ? line.wastePct + '%' : '', line.finalQty, line.notes]
+      .map(csvEscape).join(',') + '\n';
+  });
+  const jobNum = $('jobNumber').value || 'SM-BOM';
+  downloadCsv(jobNum + '_BOM_' + new Date().toISOString().split('T')[0] + '.csv', csv);
+  showToast('BOM CSV exported');
+}
+
+function exportSummaryCsv() {
+  if (!window._lastCalc || !window._lastState) { showToast('No summary data'); return; }
+  const s = window._lastState;
+  const c = window._lastCalc;
+  const rows = [
+    ['Project Name', s.projectName],
+    ['Customer', s.customerName],
+    ['Site', s.siteName],
+    ['Address', s.siteAddress],
+    ['Job #', s.jobNumber],
+    ['Prepared By', s.preparedBy],
+    ['Date', s.projectDate],
+    ['Sections', s.sectionCount],
+    ['Section Type', s.sectionType + '-Panel'],
+    ['Total Panels', c.totalPanels],
+    ['Total DC kW', c.totalDcKw.toFixed(2)],
+    ['Panel Model', (PANELS.find(p=>p.id===s.panelModel)||{}).model || ''],
+    ['Inverter', c.inverter.model],
+    ['Inverter Count', c.inverterCount],
+    ['Optimizer Enabled', s.optimizerEnabled ? 'Yes' : 'No'],
+    ['Array Width (ft)', c.totalArrayWidthFt.toFixed(1)],
+    ['Array Length (ft)', c.totalArrayLengthFt.toFixed(1)],
+    ['Footprint (sq ft)', c.footprintSqFt.toFixed(0)],
+    ['Waste Factor %', s.wasteFactor],
+    ['Notes', s.projectNotes],
+  ];
+  let csv = 'Field,Value\n';
+  rows.forEach(r => { csv += r.map(csvEscape).join(',') + '\n'; });
+  const jobNum = $('jobNumber').value || 'SM-Summary';
+  downloadCsv(jobNum + '_Summary_' + new Date().toISOString().split('T')[0] + '.csv', csv);
+  showToast('Summary CSV exported');
+}
+
+function copyBomToClipboard() {
+  if (!window._lastBomLines) { showToast('No BOM data'); return; }
+  const headers = ['Category','Item','Part #','Unit','Base Qty','Waste %','Final Qty','Notes'];
+  let text = headers.join('\t') + '\n';
+  window._lastBomLines.forEach(line => {
+    text += [line.category, line.item, line.partNumber, line.unit, line.baseQty,
+             line.wastePct > 0 ? line.wastePct + '%' : '', line.finalQty, line.notes].join('\t') + '\n';
+  });
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('BOM copied to clipboard');
+  }).catch(() => {
+    showToast('Clipboard copy failed — try Export CSV instead');
+  });
+}
+
+function printFullReport() {
+  // Ensure collapsible panels are open for print
+  qsa('.collapsible-body').forEach(el => el.classList.add('open'));
+  window.print();
+}
+
+function printBomOnly() {
+  // Hide everything except BOM for printing
+  const style = document.createElement('style');
+  style.id = 'bom-print-style';
+  style.textContent = '@media print { .card:not(#card-bom):not(#card-project) { display:none!important } .app-header { display:none!important } }';
+  document.head.appendChild(style);
+  window.print();
+  setTimeout(() => {
+    const el = document.getElementById('bom-print-style');
+    if (el) el.remove();
+  }, 1000);
+}
+
+function saveProject() {
+  autoSave();
+  showToast('Project saved to local storage');
+}
+
+function restoreProject() {
+  if (autoRestore()) {
+    recalculate();
+    showToast('Project restored from local storage');
+  } else {
+    showToast('No saved project found');
+  }
+}
+
+function resetForm() {
+  if (!confirm('Reset all fields to defaults? Unsaved changes will be lost.')) return;
+  setFormState(APP_DEFAULTS);
+  syncPanelFields();
+  recalculate();
+  showToast('Form reset to defaults');
+}
+
+/* ============================================================
+   =============== VALIDATION =================================
+   ============================================================ */
+
+function validate() {
+  let valid = true;
+  const numericFields = [
+    { id: 'sectionCount', min: 1, max: 500 },
+    { id: 'panelWattage', min: 100, max: 800 },
+    { id: 'panelLength',  min: 20, max: 120 },
+    { id: 'panelWidth',   min: 20, max: 60 },
+    { id: 'tiltAngle',    min: 5,  max: 60 },
+    { id: 'groundClearance', min: 6, max: 96 },
+    { id: 'rowSpacing',   min: 1,  max: 120 },
+    { id: 'sectionSpacing', min: 6, max: 360 },
+    { id: 'wasteFactor',  min: 0,  max: 25 },
+  ];
+
+  numericFields.forEach(f => {
+    const el = $(f.id);
+    const fg = el.closest('.form-group');
+    const v = parseFloat(el.value);
+    if (isNaN(v) || v < f.min || v > f.max) {
+      fg.classList.add('error');
+      let errEl = fg.querySelector('.error-msg');
+      if (!errEl) {
+        errEl = document.createElement('span');
+        errEl.className = 'error-msg';
+        fg.appendChild(errEl);
+      }
+      errEl.textContent = 'Value must be between ' + f.min + ' and ' + f.max;
+      valid = false;
+    } else {
+      fg.classList.remove('error');
+    }
+  });
+
+  return valid;
+}
+
+/* ============================================================
+   =============== MASTER RECALCULATE =========================
+   ============================================================ */
+
+function recalculate() {
+  if (!validate()) return;
+
+  const state = getFormState();
+  const calc = calculateProjectTotals(state);
+
+  renderSummary(state, calc);
+  renderSectionCards(calc);
+  renderBomTable(state, calc);
+  autoSave();
+}
+
+/* ============================================================
+   =============== COLLAPSIBLE PANELS =========================
+   ============================================================ */
+
+function initCollapsibles() {
+  qsa('.collapsible-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      const targetId = this.getAttribute('data-target');
+      const body = $(targetId);
+      if (body) {
+        body.classList.toggle('open');
+        this.classList.toggle('open');
+      }
+    });
+  });
+}
+
+/* ============================================================
+   =============== INITIALIZATION =============================
+   ============================================================ */
+
+function init() {
+  // Populate dropdowns
+  populateDropdowns();
+
+  // Set default date
+  $('projectDate').value = APP_DEFAULTS.projectDate;
+
+  // Attempt to restore saved state
+  const restored = autoRestore();
+  if (!restored) {
+    setFormState(APP_DEFAULTS);
+  }
+
+  // Sync panel fields from dropdown
+  syncPanelFields();
+
+  // Bind panel model change to auto-fill wattage/dimensions
+  $('panelModel').addEventListener('change', function() {
+    syncPanelFields();
+    recalculate();
+  });
+
+  // Bind all inputs to recalculate
+  const allInputs = qsa('#card-config input, #card-config select, #card-config textarea');
+  allInputs.forEach(el => {
+    const evt = (el.type === 'checkbox' || el.tagName === 'SELECT') ? 'change' : 'input';
+    el.addEventListener(evt, recalculate);
+  });
+
+  // Project info fields — save but don't recalculate
+  const projectInputs = qsa('#card-project input, #card-project textarea');
+  projectInputs.forEach(el => {
+    el.addEventListener('input', autoSave);
+  });
+
+  // Init collapsibles
+  initCollapsibles();
+
+  // Init table sorting
+  initTableSorting();
+
+  // Initial render
+  recalculate();
+}
+
+// Run on load
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

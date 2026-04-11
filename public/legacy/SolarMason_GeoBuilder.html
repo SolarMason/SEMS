@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Mason — Ground-Mount Array Builder &amp; BOM Generator</title>
+<style>
+/* ============================================================
+   SOLAR MASON — GROUND-MOUNT ARRAY BUILDER (GEOBUILDER)
+   CSS STYLES — Enhanced Liquid Glass + Solar Mason Branding
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1D3A;--deep:#132D5E;--accent:#E8912D;--gold:#F5A623;
+  --sky:#E8F0FE;--green:#27AE60;--red:#E74C3C;--gray:#6B7B8D;
+  --graylt:#A0AEC0;--border:rgba(255,255,255,.35);--bordero:rgba(11,29,58,.1);
+  --text:#1A202C;--tsec:#4A5568;--page:#EEF1F6;
+  --glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.42);
+  --glass3:rgba(255,255,255,.75);--glassborder:rgba(255,255,255,.55);
+  --blur:saturate(200%) blur(24px);--blur-sm:saturate(160%) blur(14px);
+  --radius:14px;--radius-sm:10px;--radius-xs:7px;
+  --shadow:0 2px 8px rgba(11,29,58,.08),0 8px 32px rgba(11,29,58,.1);
+  --shadow-lg:0 8px 40px rgba(11,29,58,.18);
+  --shadow-glow:0 0 0 1px rgba(255,255,255,.3) inset,0 1px 0 rgba(255,255,255,.4) inset;
+  --glass-shine:linear-gradient(135deg,rgba(255,255,255,.4) 0%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 100%);
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mono:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;
+  --s8:#3B82F6;--s10:#8B5CF6;
+}
+html{font-size:14.5px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--page);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(232,145,45,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(19,45,94,.06) 0%,transparent 50%);
+  min-height:100vh}
+
+.glass{background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glassborder);border-radius:var(--radius);box-shadow:var(--shadow),var(--shadow-glow);
+  position:relative;overflow:hidden}
+.glass::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--glass-shine);pointer-events:none;opacity:.3}
+.glass2{background:var(--glass2);backdrop-filter:var(--blur-sm);-webkit-backdrop-filter:var(--blur-sm);
+  border:1px solid rgba(255,255,255,.4);border-radius:var(--radius);box-shadow:var(--shadow),inset 0 1px 1px rgba(255,255,255,.3);
+  position:relative;overflow:hidden}
+.glass2::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--glass-shine);pointer-events:none;opacity:.2}
+.glass3{background:var(--glass3);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.5);border-radius:var(--radius-sm);box-shadow:0 1px 4px rgba(11,29,58,.06),inset 0 1px 1px rgba(255,255,255,.4),inset 0 -1px 1px rgba(0,0,0,.02);
+  position:relative;overflow:hidden}
+.glass3::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--glass-shine);pointer-events:none;opacity:.25}
+
+.app-header{background:#E8EAED;color:var(--text);padding:20px 0 18px;position:relative;overflow:hidden;
+  border-bottom:1px solid rgba(11,29,58,.08)}
+.h-inner{max-width:1400px;margin:0 auto;padding:0 28px;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{display:flex;align-items:center;flex-shrink:0}
+.brand-logo img{height:42px;width:auto;display:block}
+.brand-text{display:flex;align-items:center;gap:0}
+.brand-text h1{font-size:1.55rem;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:#2D3338}
+.brand-sub{font-size:.7rem;color:var(--gray);font-weight:500;letter-spacing:.3px;margin-top:1px}
+.h-badge{background:rgba(11,29,58,.08);border:1px solid rgba(11,29,58,.12);border-radius:7px;padding:5px 12px;
+  font-size:.66rem;color:var(--gray);letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+
+.container{max-width:1400px;margin:0 auto;padding:0 28px}
+.main{display:flex;flex-direction:column;gap:22px;padding:24px 0 52px}
+
+.card{overflow:hidden;animation:slideUp .4s ease-out}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:1px solid rgba(11,29,58,.08)}
+.card-head h2{font-size:.92rem;font-weight:700;color:var(--navy);letter-spacing:-.15px;display:flex;align-items:center;gap:8px}
+.card-head h2 .ico{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;flex-shrink:0}
+.ico-blue{background:rgba(59,130,246,.12);color:#2563EB}
+.ico-amber{background:rgba(232,145,45,.12);color:#B5700F}
+.ico-green{background:rgba(39,174,96,.12);color:#1D8348}
+.ico-purple{background:rgba(139,92,246,.12);color:#6D28D9}
+.card-body{padding:20px}
+.tag{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px}
+.tag-blue{background:rgba(59,130,246,.1);color:#2563EB}
+.tag-amber{background:rgba(232,145,45,.1);color:#B5700F}
+.tag-green{background:rgba(39,174,96,.08);color:#1D8348}
+.tag-purple{background:rgba(139,92,246,.1);color:#6D28D9}
+
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 18px}
+.fi{display:flex;flex-direction:column;gap:3px}
+.fi label{font-size:.68rem;font-weight:600;color:var(--tsec);letter-spacing:.2px;text-transform:uppercase}
+.fi input,.fi select,.fi textarea{font-family:var(--font);font-size:.84rem;padding:8px 11px;
+  border:1px solid var(--bordero);border-radius:var(--radius-xs);background:rgba(255,255,255,.75);
+  color:var(--text);transition:all .2s;outline:none;backdrop-filter:blur(4px)}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,145,45,.12);background:#fff;transform:translateY(-1px)}
+.fi textarea{resize:vertical;min-height:48px}
+.fi .hint{font-size:.64rem;color:var(--graylt)}
+.fi.error input,.fi.error select{border-color:var(--red)}
+.fi .errmsg{font-size:.64rem;color:var(--red);display:none}
+.fi.error .errmsg{display:block}
+.toggle{display:flex;align-items:center;gap:8px;padding:2px 0}
+.toggle label{font-size:.8rem;font-weight:500;color:var(--text);text-transform:none;letter-spacing:0;cursor:pointer}
+.toggle input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.fdiv{grid-column:1/-1;border:none;border-top:1px solid var(--bordero);margin:2px 0}
+
+.azimuth-group{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.azimuth-input{flex:1;min-width:140px}
+.compass-rose{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.4);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.5);position:relative;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 4px rgba(11,29,58,.08),inset 0 1px 1px rgba(255,255,255,.3)}
+.compass-cardinal{position:absolute;width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  font-size:.56rem;font-weight:700;color:var(--navy)}
+.compass-cardinal.n{top:4px}
+.compass-cardinal.s{bottom:4px}
+.compass-cardinal.e{right:4px}
+.compass-cardinal.w{left:4px}
+.compass-needle{position:absolute;width:2px;height:16px;background:linear-gradient(180deg,var(--accent),rgba(232,145,45,.3));
+  border-radius:1px;transform-origin:center 17px;transition:transform .3s ease-out}
+
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}
+.scard{background:rgba(255,255,255,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.45);
+  border-radius:var(--radius-sm);padding:12px 14px;display:flex;flex-direction:column;gap:1px;
+  box-shadow:0 1px 4px rgba(11,29,58,.05),inset 0 1px 1px rgba(255,255,255,.3);
+  transition:all .3s ease;position:relative;overflow:hidden}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--glass-shine);opacity:.2;pointer-events:none}
+.scard:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(11,29,58,.12),inset 0 1px 1px rgba(255,255,255,.35)}
+.scard .sl{font-size:.62rem;font-weight:600;color:var(--gray);letter-spacing:.4px;text-transform:uppercase}
+.scard .sv{font-size:1.22rem;font-weight:800;color:var(--navy);letter-spacing:-.3px}
+.scard .su{font-size:.66rem;color:var(--tsec)}
+.scard.hi{background:linear-gradient(135deg,var(--navy),var(--deep));border-color:rgba(255,255,255,.2)}
+.scard.hi .sl{color:rgba(255,255,255,.55)}.scard.hi .sv{color:#fff}.scard.hi .su{color:rgba(255,255,255,.6)}
+.scard.ac{border-left:3px solid var(--accent)}
+
+.builder-wrap{display:flex;flex-direction:column;gap:16px}
+.builder-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.palette{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.palette-label{font-size:.72rem;font-weight:600;color:var(--tsec);text-transform:uppercase;letter-spacing:.3px}
+.pal-item{cursor:grab;user-select:none;padding:8px 14px;border-radius:var(--radius-xs);font-size:.78rem;font-weight:600;
+  display:flex;align-items:center;gap:6px;transition:all .2s;border:1.5px dashed;animation:pulse .8s ease-in-out infinite}
+.pal-item:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(11,29,58,.1)}
+.pal-item:active{cursor:grabbing;opacity:.7}
+.pal-8{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);color:var(--s8)}
+.pal-10{background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.3);color:var(--s10)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.builder-controls{display:flex;gap:6px;flex-wrap:wrap}
+
+.canvas{min-height:120px;display:flex;flex-direction:column;gap:12px;padding:4px 0}
+.row-lane{background:rgba(255,255,255,.38);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.45);
+  border-radius:var(--radius-sm);padding:10px 12px;display:flex;flex-direction:column;gap:8px;
+  transition:all .3s;position:relative;box-shadow:0 1px 6px rgba(11,29,58,.05),inset 0 1px 1px rgba(255,255,255,.25)}
+.row-lane::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--glass-shine);opacity:.15;pointer-events:none;border-radius:var(--radius-sm)}
+.row-lane:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(11,29,58,.08),inset 0 1px 1px rgba(255,255,255,.3)}
+.row-lane.drag-over{border-color:var(--accent);background:rgba(232,145,45,.08);box-shadow:0 0 0 2px rgba(232,145,45,.2)}
+.row-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.row-label{font-size:.74rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px}
+.row-stats{display:flex;gap:12px;font-size:.68rem;color:var(--tsec)}
+.row-stats span{font-weight:600}
+.row-actions{display:flex;gap:4px}
+.row-sections{display:flex;gap:8px;flex-wrap:wrap;min-height:52px;padding:4px 0;align-items:stretch}
+.row-sections.empty{align-items:center;justify-content:center}
+.row-empty-msg{font-size:.74rem;color:var(--graylt);font-style:italic;padding:8px 0}
+
+.sec-block{position:relative;background:rgba(255,255,255,.65);backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,.55);border-radius:var(--radius-xs);padding:8px 10px;
+  cursor:grab;user-select:none;transition:all .2s;min-width:100px;
+  box-shadow:0 1px 6px rgba(11,29,58,.08),inset 0 1px 1px rgba(255,255,255,.35);animation:floatIn .4s ease-out}
+@keyframes floatIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.sec-block::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--glass-shine);opacity:.2;pointer-events:none;border-radius:var(--radius-xs)}
+.sec-block:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(11,29,58,.12),inset 0 1px 1px rgba(255,255,255,.4)}
+.sec-block:active{cursor:grabbing;opacity:.8}
+.sb-actions{position:absolute;top:4px;right:4px;display:flex;gap:2px;opacity:0;transition:opacity .2s}
+.sec-block:hover .sb-actions{opacity:1}
+.sb-btn{background:rgba(11,29,58,.6);color:#fff;border:none;border-radius:4px;padding:4px 6px;font-size:.7rem;
+  cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px}
+.sb-btn:hover{background:rgba(11,29,58,.8);transform:scale(1.05)}
+.sb-btn.del:hover{background:var(--red)}
+.sb-head{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.sb-num{font-size:.7rem;font-weight:700;color:var(--accent);background:rgba(232,145,45,.1);padding:2px 5px;border-radius:3px}
+.sb-type{font-size:.66rem;font-weight:600;color:var(--tsec);text-transform:uppercase}
+.mini-grid{display:grid;gap:2px;margin:6px 0;grid-template-columns:repeat(var(--cols,5),1fr)}
+.mini-grid.g4{--cols:4}
+.mini-grid.g5{--cols:5}
+
+.mini-cell{height:12px;border-radius:1px;
+  background:linear-gradient(145deg,#1a3a5c 0%,#1e4a7a 40%,#1a3a5c 100%);
+  box-shadow:inset 0 0 0 0.5px rgba(100,160,220,.3),inset 0 1px 0 rgba(255,255,255,.1),0 0.5px 1px rgba(0,0,0,.1);
+  position:relative;transition:all .2s}
+.mini-cell::after{content:'';position:absolute;top:50%;left:0;right:0;height:0.5px;
+  background:rgba(150,200,255,.15)}
+.mini-cell:hover{box-shadow:inset 0 0 0 0.5px rgba(100,160,220,.5),inset 0 1px 0 rgba(255,255,255,.15),0 0.5px 2px rgba(0,0,0,.15)}
+
+.sb-panels{font-size:.64rem;color:var(--tsec);text-align:center;margin-top:4px;font-weight:500}
+
+.layout-totals{display:flex;flex-wrap:wrap;gap:12px;padding:12px;background:rgba(255,255,255,.35);
+  backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.4);border-radius:var(--radius-xs);
+  box-shadow:0 1px 4px rgba(11,29,58,.04)}
+.lt-item{display:flex;gap:6px;font-size:.78rem;color:var(--tsec)}
+.lt-item strong{color:var(--navy);font-weight:700}
+
+.sbc{padding:12px 14px;background:rgba(255,255,255,.5);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.4);border-radius:var(--radius-xs);
+  display:inline-block;margin:6px 0;transition:all .2s;animation:fadeInUp .4s ease-out}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sbc:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(11,29,58,.1)}
+.sbc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(11,29,58,.06)}
+.sn{font-size:.7rem;font-weight:700;color:var(--navy)}
+.sbc-body{display:flex;flex-direction:column;gap:2px}
+.dr{display:flex;justify-content:space-between;font-size:.68rem;gap:8px}
+.dl{color:var(--tsec);font-weight:500}
+.dv{color:var(--navy);font-weight:700;text-align:right}
+
+.bom-scroll{overflow-x:auto}
+#bomTable{width:100%;border-collapse:collapse;font-size:.78rem}
+#bomTable th{background:rgba(11,29,58,.05);color:var(--navy);padding:8px 10px;text-align:left;font-weight:700;
+  border-bottom:2px solid rgba(11,29,58,.1);cursor:pointer;user-select:none;transition:background .15s}
+#bomTable th:hover{background:rgba(11,29,58,.08)}
+#bomTable td{padding:8px 10px;border-bottom:1px solid rgba(11,29,58,.04)}
+#bomTable tr.cat-h{background:rgba(59,130,246,.06)}
+#bomTable tr.cat-h td{font-weight:700;color:var(--s8);padding:10px;text-transform:uppercase;font-size:.68rem}
+#bomTable tr.sub{background:rgba(11,29,58,.03);font-weight:600;color:var(--tsec)}
+
+.coll-tog{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;padding:0;
+  font-size:inherit;background:none;border:none;color:inherit;transition:all .2s}
+.coll-tog::before{content:'▸';display:inline-block;width:16px;font-size:.8rem;transition:transform .2s}
+.coll-tog.open::before{transform:rotate(90deg)}
+.coll-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.coll-body.open{max-height:9999px}
+
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 16px;border:none;border-radius:var(--radius-xs);font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.btn-primary{background:linear-gradient(135deg,var(--navy),var(--deep));color:#fff;
+  box-shadow:0 2px 8px rgba(11,29,58,.2)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(11,29,58,.25)}
+.btn-secondary{background:rgba(255,255,255,.5);backdrop-filter:blur(8px);color:var(--navy);border:1px solid rgba(255,255,255,.4)}
+.btn-secondary:hover{background:rgba(255,255,255,.6)}
+.btn-sm{padding:5px 10px;font-size:.68rem}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;
+  border-radius:var(--radius-xs);font-size:.78rem;box-shadow:var(--shadow-lg);animation:slideIn .3s ease;z-index:9999}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+@media print{
+  .no-print{display:none!important}
+  .app-header{border-bottom:2px solid #000;background:#fff}
+  .card{page-break-inside:avoid;border:1px solid #000}
+  .glass,.glass2,.glass3{background:#fff!important;backdrop-filter:none!important;border:1px solid #000!important;box-shadow:none!important}
+  body{background:#fff;color:#000}
+  .scard{background:#f9f9f9;border:1px solid #ddd}
+}
+
+@media(max-width:768px){
+  .h-inner{flex-direction:column;align-items:flex-start}
+  .brand-text h1{font-size:1.2rem}
+  .fg{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .canvas{padding:2px 0}
+  .pal-item{font-size:.72rem;padding:6px 10px}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="h-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAjkAAABSCAYAAAC2R8XdAABqE0lEQVR42u3955McV5rmC/7OOe4RkToTWhKEBkkAJAEKECBAUSyKYlVNV0933zt312zu2v5Pu7a2Zvvh7sz27Zme7p6qZhWLCiQIggBIggAoAJAECEFonTrC/Zx3P7gID5mRmZEJgEw3gyU8M8L96Pd5n1cpEWHugmQUVIO/OSCwMBoggS3/TSlwszSESoFI9DNtm4DWYOO/k2mbAXLG0ZnXylPRh5VSTccgBEZLSBCAi98n8bhIpg1U/X+ql4ubo6V+f3UyvhK9yyjwDHTnUZ5K5sshomr6ls4bMG6Rkot+J8kw6cy7GvQjaZdT7ZnD5Hmi47kDfKCgUDkNSZ8EF69HnZnr8vxZawmCAGvtLK091dJnnHNorfF9H2NMS99zzjE4OCjXb96gFDpE1ZsPHc9m9c/s36n6Xd0ZmOb3pzZuyTmrtSZnPObN76evr0/peAVH61IYGxvj8tWrYksWi6Rz/nM5p31tEBGcc+TyHosWLFRdXR1o7aWfuX37tty8dYcwDFFKYRG0gOXnJKumv35VvEmcc3iel+69pYsW09PdqbTWFd8slUrcun1Xbg/eRTmJz/cHa0wlkReU90R2b2EdohW+9unoyDNvoE95c/BmYvBjgdtjyI8X7nLuyh1GixZcdABpz8dKvcOoetFO7hCtJxyS5ysdbXoRQZSJfyaPF4yyYAN6O2Dt0l7WrlqMl/fK368DBixQEvjpmpPvz13l7tA4FoVzVCwkZUxTwdqKUKscDY0ohxIdgxUB5fC1wTmHUgqtNWIdWkp05RwPLelh3arF9HT4Dd+b9GkE5PognLsxzNC4xVqHMppSGEYIiomBTrsEnVIKLRrB4gCDJecC5nVoHp7fI4v6OlUrzxkfH+fq1aty+fJlxsfHK/udObQaraHpCmulFEoyB47WiAgmXhvz5s1jxYoVdHd3K2PMhM8ulUp898P3/P/+z/+Tm7fv4FQG9IqeoGGu9jPZ3ynX/DmT/b5yTcc0O/7OOXzfR2tNEARorVECS5Ys4dcv/4rde3aR8/yKz5+7cEH+8R//kYuXr6T7rPown2mw2razM1krmfWfy+VwoaVYLPLQ8hX83d//rTyycYMqFMqi6PjXX/HuO+/z0+VLaK1xCNbaWWn7dMd4ojZKtbY0xfWbnOX5gk+pVKKjo4NSqURvdw//6T/9J57cspl8Pl/xnbtDg/LO+++xb//HuNDiYhCdXV+zuT7apRR7nkdQshhjcNZijMIYny1btvDm66/JHMiZgMGxwK0x5KMjV3jvwDf8dHMUi4+OwUrodDS4zmGQeBJ0FQPg0t+5eNFWMwQT3VcwASpC7DYUtPYijU9FAMHTBk+FdKpxtm1YwqOrl1HwvbR/ClWmZjKwq2jh3DXk//3PH3Pm0jBWNEIkvLJCR2uNcy7dEK22v/F9BG50DHKSvyulCIIivu+Dc3gi9BeELau72PLIw3QW/LQLEYtTycg5YBT44S588vV5Tl0bJtQFJN7cSuuKsU1AY7s3eRiGeJ6XAVIRyDEKclJkgQl4cvViNq3sxGSmJcvgVDyvFPDdyVNy8OBBrl+/ns7FdDWjBOBNdJ9oixoI4/8n4MYYQ39/Py+88AL5fL5Gk2xMoWrGigF3h4YZGStOsDPvT80zVQKqAI8qBjX7d3h4OAIwGcGVXcsjY+PcGRz++SiKFcB7NGaZFXeGBgmCoELZkBj0Do2OMDQ8CirSzBNwcL8L4dmTVBE4GRmP7kfGimAdRulKJTRjohARikGJO4PDSGiRKiWvmk136kFaYxHzr1wCrDWjo6PR+TsHb5ozOLfGkL2fnePdT0/z4/US49JFKBotDs/kKIUWRKGNQonLCAUdCwlXwRQ0EiI1S7nq7ynidpIKzeh3Cmstft5DxCIuoMvAujXLePqpraxY3qkayRoXt6ck8ON15J/eOsjJC6MMh10Rw5JhiBqxHJMV" alt="Solar Mason Logo"/>
+      </div>
+      <div class="brand-text">
+        <h1><span class="mason">SOLAR MASON</span></h1>
+        <div class="brand-sub">Ground-Mount · Array Builder</div>
+      </div>
+    </div>
+    <div class="h-badge">GROUND-MOUNT · ENGINEERING</div>
+  </div>
+</header>
+
+<div class="container main">
+
+  <div class="card glass" id="card-project">
+    <div class="card-head">
+      <h2><span class="ico ico-blue">📋</span> Project Information</h2>
+      <button class="coll-tog open" data-target="project-body"></button>
+    </div>
+    <div class="coll-body open" id="project-body">
+      <div class="card-body">
+        <div class="fg">
+          <div class="fi"><label>Project Name</label><input type="text" id="projectName" value="Solar Mason Demo Project"/></div>
+          <div class="fi"><label>Customer Name</label><input type="text" id="customerName" placeholder="Acme Corporation"/></div>
+          <div class="fi"><label>Site Name</label><input type="text" id="siteName" placeholder="Main Facility"/></div>
+          <div class="fi"><label>Site Address</label><input type="text" id="siteAddress" placeholder="123 Solar Way, Sunville, CA"/></div>
+          <div class="fi"><label>Job Number</label><input type="text" id="jobNumber" placeholder="JOB-2025-001"/></div>
+          <div class="fi"><label>Project Date</label><input type="date" id="projectDate"/></div>
+          <div class="fi"><label>Prepared By</label><input type="text" id="preparedBy" placeholder="Engineer Name"/></div>
+          <div class="fi" style="grid-column:1/-1"><label>Project Notes</label><textarea id="projectNotes" placeholder="Site conditions, special requirements…"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass" id="card-builder">
+    <div class="card-head">
+      <h2><span class="ico ico-purple">🏗️</span> Array Layout Builder</h2>
+      <button class="coll-tog open" data-target="builder-body"></button>
+    </div>
+    <div class="coll-body open" id="builder-body">
+      <div class="card-body">
+        <div class="builder-wrap">
+          <div class="builder-toolbar no-print">
+            <div class="palette">
+              <span class="palette-label">Add Section:</span>
+              <div class="pal-item pal-8" data-palette="8" draggable="true">📦 8-Panel</div>
+              <div class="pal-item pal-10" data-palette="10" draggable="true">📦 10-Panel</div>
+            </div>
+            <div class="builder-controls">
+              <button class="btn btn-secondary btn-sm" onclick="addRow()">+ Row</button>
+              <button class="btn btn-secondary btn-sm" onclick="loadDemoLayout()">Demo Layout</button>
+              <button class="btn btn-secondary btn-sm" onclick="autoBalance()">Balance</button>
+              <button class="btn btn-secondary btn-sm" onclick="clearLayout()">Clear</button>
+            </div>
+          </div>
+          <div class="canvas" id="canvas"></div>
+          <div class="layout-totals" id="layoutTotals"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass" id="card-config">
+    <div class="card-head">
+      <h2><span class="ico ico-amber">⚙️</span> Array Configuration</h2>
+      <button class="coll-tog open" data-target="config-body"></button>
+    </div>
+    <div class="coll-body open" id="config-body">
+      <div class="card-body">
+        <div class="fg">
+          <div class="fi"><label>Panel Model</label><select id="panelModel"></select></div>
+          <div class="fi"><label>Panel Wattage (W)</label><input type="number" id="panelWattage" min="100" max="800" value="430"/></div>
+          <div class="fi"><label>Panel Length (in)</label><input type="number" id="panelLength" min="20" max="120" step=".1" value="74.8"/></div>
+          <div class="fi"><label>Panel Width (in)</label><input type="number" id="panelWidth" min="20" max="60" step=".1" value="41.3"/></div>
+
+          <div class="fi" style="grid-column:1/-1"><label>Azimuth (compass direction)</label>
+            <div class="azimuth-group">
+              <div class="azimuth-input">
+                <input type="number" id="azimuth" min="0" max="360" step="1" value="180"/>
+                <span class="hint">0=North, 90=East, 180=South, 270=West</span>
+              </div>
+              <div class="compass-rose">
+                <div class="compass-cardinal n">N</div>
+                <div class="compass-cardinal s">S</div>
+                <div class="compass-cardinal e">E</div>
+                <div class="compass-cardinal w">W</div>
+                <div class="compass-needle" id="compassNeedle" style="--azimuth-deg:180deg"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fi"><label>Tilt Angle (degrees)</label><input type="number" id="tiltAngle" min="5" max="60" value="25"/></div>
+          <div class="fi"><label>Ground Clearance (in)</label><input type="number" id="groundClearance" min="6" max="96" value="24"/></div>
+          <div class="fi"><label>Row Spacing (in)</label><input type="number" id="rowSpacing" min="1" max="120" value="6"/><span class="hint">Between module rows</span></div>
+          <div class="fi"><label>Section Spacing (in)</label><input type="number" id="sectionSpacing" min="6" max="360" value="60"/><span class="hint">Between sections</span></div>
+          <div class="fi"><label>Layout Row Gap (in)</label><input type="number" id="layoutRowGap" min="12" max="600" value="120"/><span class="hint">N-S spacing</span></div>
+
+          <div class="fdiv"></div>
+          <div class="fi"><label>Foundation Type</label><select id="foundationType"><option value="ground-screw">Ground Screw</option><option value="driven-pile" selected>Driven Pile (W-Beam)</option><option value="ballast">Ballast Block</option></select></div>
+          <div class="fi"><label>Post Type</label><select id="postType"><option value="w6x9" selected>W6x9 Steel Post</option><option value="w6x12">W6x12 Steel Post</option><option value="pipe-3in">3in Round Pipe</option></select></div>
+          <div class="fi"><label>Beam / Rail Type</label><select id="beamType"><option value="c-channel" selected>C-Channel Rail</option><option value="unistrut">Unistrut P1000</option><option value="aluminum-rail">Aluminum Rail</option></select></div>
+
+          <div class="fdiv"></div>
+          <div class="fi"><label>Inverter Model</label><select id="inverterModel"></select></div>
+          <div class="fi toggle" style="align-self:end"><input type="checkbox" id="optimizerEnabled" checked/><label for="optimizerEnabled">MLPE / Optimizers</label></div>
+          <div class="fi"><label>Waste Factor (%)</label><input type="number" id="wasteFactor" min="0" max="25" step=".5" value="3"/></div>
+          <div class="fi toggle" style="align-self:end"><input type="checkbox" id="extraHardware"/><label for="extraHardware">Extra Hardware</label></div>
+          <div class="fi toggle" style="align-self:end"><input type="checkbox" id="miscAdders"/><label for="miscAdders">Misc Adders</label></div>
+
+          <div class="fi" style="grid-column:1/-1"><label>Engineering Notes</label><textarea id="engNotes" placeholder="Structural notes, site conditions…"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass" id="card-summary">
+    <div class="card-head">
+      <h2><span class="ico ico-green">✓</span> Project Summary</h2>
+      <button class="coll-tog open" data-target="summary-body"></button>
+    </div>
+    <div class="coll-body open" id="summary-body">
+      <div class="card-body">
+        <div class="sgrid" id="summaryGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass" id="card-sections">
+    <div class="card-head">
+      <h2><span class="ico ico-blue">📊</span> Section Breakdown</h2>
+      <button class="coll-tog" data-target="sections-body"></button>
+    </div>
+    <div class="coll-body" id="sections-body">
+      <div class="card-body">
+        <div id="sectionCards"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass" id="card-bom">
+    <div class="card-head">
+      <h2><span class="ico ico-amber">📦</span> Bill of Materials</h2>
+      <button class="coll-tog" data-target="bom-body"></button>
+    </div>
+    <div class="coll-body" id="bom-body">
+      <div class="card-body">
+        <div class="btn-group no-print" style="margin-bottom:12px">
+          <button class="btn btn-primary" onclick="exportBomCsv()">Export CSV</button>
+          <button class="btn btn-secondary" onclick="copyBom()">Copy Table</button>
+          <button class="btn btn-secondary" onclick="printBom()">Print</button>
+        </div>
+        <div class="bom-scroll">
+          <table id="bomTable">
+            <thead>
+              <tr>
+                <th data-col="category">Category</th>
+                <th data-col="item">Item</th>
+                <th data-col="partNumber">Part #</th>
+                <th data-col="unit">Unit</th>
+                <th data-col="baseQty">Base Qty</th>
+                <th data-col="wastePct">Waste %</th>
+                <th data-col="finalQty">Final Qty</th>
+                <th data-col="notes">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="bomBody"></tbody>
+            <tfoot id="bomFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass">
+    <div class="card-head">
+      <h2><span class="ico ico-purple">ℹ️</span> Assumptions &amp; Notes</h2>
+      <button class="coll-tog" data-target="assumptions-body"></button>
+    </div>
+    <div class="coll-body" id="assumptions-body">
+      <div class="card-body" style="font-size:.76rem;color:var(--tsec);line-height:1.6">
+        <p style="margin-bottom:10px"><strong style="color:var(--navy)">Ground-Mount Layout:</strong> This tool is designed for ground-mounted solar arrays with adjustable azimuth (compass direction). The azimuth setting (0-360 degrees) is for site planning documentation and does not affect BOM calculations.</p>
+        <p style="margin-bottom:10px"><strong style="color:var(--navy)">Footprint Calculation:</strong> Estimated footprint (sq ft) is calculated as: (max row width in ft) x (total array depth in ft, including row gaps and spacing).</p>
+        <p style="margin-bottom:10px"><strong style="color:var(--navy)">Waste Factor:</strong> Applied uniformly to all clamps, brackets, wire management, and splices. Modules and inverters are not subject to waste.</p>
+        <p style="margin-bottom:10px"><strong style="color:var(--navy)">Section Types:</strong> 8-Panel sections use 2 rows x 4 panels/row. 10-Panel sections use 2 rows x 5 panels/row. Structural and electrical components scale with section type.</p>
+        <p style="margin-bottom:10px"><strong style="color:var(--navy)">Data Persistence:</strong> Project state is automatically saved to browser local storage. Restore the last saved project using the tools button below.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass2">
+    <div class="card-head">
+      <h2><span class="ico ico-blue">🛠️</span> Project Tools</h2>
+      <button class="coll-tog" data-target="dev-body"></button>
+    </div>
+    <div class="coll-body" id="dev-body">
+      <div class="card-body">
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="saveProject()">Save</button>
+          <button class="btn btn-secondary" onclick="restoreProject()">Restore</button>
+          <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+          <button class="btn btn-secondary" onclick="printFull()">Print All</button>
+          <button class="btn btn-secondary" onclick="exportSummaryCsv()">Export Summary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PANELS=[
+  {id:'canadian-430',manufacturer:'Canadian Solar',model:'CS6R-430MS',wattage:430,lengthIn:74.8,widthIn:41.3,cellType:'Mono PERC',notes:'HiKu6 series'},
+  {id:'jinko-445',manufacturer:'Jinko Solar',model:'JKM445M-54HL4-V',wattage:445,lengthIn:75.6,widthIn:41.8,cellType:'Mono Half-Cell',notes:'Tiger Neo N-type'},
+  {id:'longi-440',manufacturer:'LONGi',model:'LR5-54HTH-440M',wattage:440,lengthIn:75.2,widthIn:41.5,cellType:'Mono HiMO6',notes:'Hi-MO 6 Explorer'},
+];
+
+const INVERTERS=[
+  {id:'se11400',manufacturer:'SolarEdge',model:'SE11400H-US',acKw:11.4,dcMaxKw:17.1,notes:'HD-Wave residential/commercial'},
+  {id:'sma77',manufacturer:'SMA',model:'Sunny Boy 7.7-US',acKw:7.7,dcMaxKw:11.55,notes:'Residential string inverter'},
+  {id:'se33',manufacturer:'SolarEdge',model:'SE33.3K-USR',acKw:33.3,dcMaxKw:45.0,notes:'Three-phase commercial'},
+];
+
+const FOUNDATIONS=[
+  {id:'ground-screw',name:'Ground Screw'},{id:'driven-pile',name:'Driven Pile (W-Beam)'},{id:'ballast',name:'Ballast Block'},
+];
+const STRUCTURAL_MEMBERS=[
+  {id:'c-channel',name:'C-Channel Steel Rail'},{id:'unistrut',name:'Unistrut P1000'},{id:'aluminum-rail',name:'Aluminum Extrusion Rail'},
+];
+
+const SECTION_RULES={
+  '8':{modules:8,rows:2,panelsPerRow:4,posts:4,beams:2,midClamps:6,endClamps:4,splices:2,bondingClips:4,groundLugs:1,wireMgmtPacks:1,hardwareKits:1},
+  '10':{modules:10,rows:2,panelsPerRow:5,posts:4,beams:2,midClamps:8,endClamps:4,splices:2,bondingClips:5,groundLugs:1,wireMgmtPacks:1,hardwareKits:1},
+};
+
+const BOM_ITEMS={
+  modules:      {name:'Solar Module',              category:'Modules',                unit:'ea', sku:'MOD-PANEL',  wasteEligible:false},
+  inverter:     {name:'String Inverter',            category:'Inverters / MLPE',       unit:'ea', sku:'INV-STRING', wasteEligible:false},
+  optimizer:    {name:'DC Optimizer (MLPE)',         category:'Inverters / MLPE',       unit:'ea', sku:'OPT-MLPE',   wasteEligible:false},
+  post:         {name:'Structural Post',            category:'Posts / Foundations',     unit:'ea', sku:'STR-POST',   wasteEligible:false},
+  beam:         {name:'Primary Beam / Rail',        category:'Beams / Rails',          unit:'ea', sku:'STR-BEAM',   wasteEligible:false},
+  midClamp:     {name:'Mid Clamp',                  category:'Mid Clamps',             unit:'ea', sku:'CLP-MID',    wasteEligible:true},
+  endClamp:     {name:'End Clamp',                  category:'End Clamps',             unit:'ea', sku:'CLP-END',    wasteEligible:true},
+  splice:       {name:'Rail Splice / Joiner',       category:'Splices / Joiners',      unit:'ea', sku:'SPL-JOIN',   wasteEligible:true},
+  bracket:      {name:'Post-to-Beam Bracket',       category:'Brackets / Connectors',  unit:'ea', sku:'BRK-PTB',    wasteEligible:true},
+  bondingClip:  {name:'Module Bonding Clip',        category:'Bonding / Grounding',    unit:'ea', sku:'GND-BOND',   wasteEligible:true},
+  groundLug:    {name:'Equipment Grounding Lug',    category:'Bonding / Grounding',    unit:'ea', sku:'GND-LUG',    wasteEligible:true},
+  wireMgmt:     {name:'Wire Management Clip Pack',  category:'Wire Management',        unit:'pk', sku:'WIR-MGMT',   wasteEligible:true},
+  hardwareKit:  {name:'Section Hardware Kit',       category:'Fasteners / Hardware',   unit:'kit',sku:'HW-KIT',     wasteEligible:true},
+  miscAllowance:{name:'Misc Hardware Allowance',    category:'Miscellaneous / Allowances',unit:'kit',sku:'MISC-ALLOW',wasteEligible:false},
+};
+
+const CATEGORY_ORDER=['Modules','Inverters / MLPE','Posts / Foundations','Beams / Rails','Mid Clamps','End Clamps',
+  'Splices / Joiners','Brackets / Connectors','Bonding / Grounding','Wire Management','Fasteners / Hardware','Miscellaneous / Allowances'];
+
+const APP_DEFAULTS={
+  projectName:'Solar Mason Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',
+  projectDate:new Date().toISOString().split('T')[0],projectNotes:'',
+  panelModel:'canadian-430',panelWattage:430,panelLength:74.8,panelWidth:41.3,azimuth:180,
+  tiltAngle:25,groundClearance:24,rowSpacing:6,sectionSpacing:60,layoutRowGap:120,
+  foundationType:'driven-pile',postType:'w6x9',beamType:'c-channel',
+  inverterModel:'se11400',optimizerEnabled:true,wasteFactor:3,extraHardware:false,miscAdders:false,engNotes:'',
+};
+
+const CALC_CONSTANTS={extraClampPct:.03,extraWireMgmtPct:.05,miscAdderQty:1,bracketPerPost:1};
+const STORAGE_KEY='solarmason_geobuilder_v2';
+
+let layoutState=[{rowId:1,sections:[]}];
+let _nextSectionId=1;
+let _nextRowId=2;
+
+function $(id){return document.getElementById(id)}
+function qs(sel){return document.querySelector(sel)}
+function qsa(sel){return document.querySelectorAll(sel)}
+function newSecId(){return 'sec-'+ ++_nextSectionId}
+function newRowId(){return _nextRowId++}
+function numVal(id,def){const v=parseFloat($(id).value);return isNaN(v)?def:v}
+function fmt(n,p){const d=p||0;return Number(n).toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500)}
+
+function populateDropdowns(){
+  let h='';PANELS.forEach(p=>{h+='<option value="'+p.id+'">'+p.manufacturer+' '+p.model+' ('+p.wattage+'W)</option>'});
+  $('panelModel').innerHTML=h;
+  h='';INVERTERS.forEach(i=>{h+='<option value="'+i.id+'">'+i.manufacturer+' '+i.model+' ('+i.acKw+'kW)</option>'});
+  $('inverterModel').innerHTML=h;
+}
+
+function syncPanelFields(){
+  const p=PANELS.find(x=>x.id===$('panelModel').value)||PANELS[0];
+  $('panelWattage').value=p.wattage;$('panelLength').value=p.lengthIn;$('panelWidth').value=p.widthIn;
+}
+
+function getFormState(){
+  return {
+    projectName:$('projectName').value,customerName:$('customerName').value,siteName:$('siteName').value,
+    siteAddress:$('siteAddress').value,jobNumber:$('jobNumber').value,preparedBy:$('preparedBy').value,
+    projectDate:$('projectDate').value,projectNotes:$('projectNotes').value,
+    panelModel:$('panelModel').value,panelWattage:numVal('panelWattage',430),panelLength:numVal('panelLength',74.8),
+    panelWidth:numVal('panelWidth',41.3),azimuth:numVal('azimuth',180),
+    tiltAngle:numVal('tiltAngle',25),groundClearance:numVal('groundClearance',24),rowSpacing:numVal('rowSpacing',6),
+    sectionSpacing:numVal('sectionSpacing',60),layoutRowGap:numVal('layoutRowGap',120),
+    foundationType:$('foundationType').value,postType:$('postType').value,beamType:$('beamType').value,
+    inverterModel:$('inverterModel').value,optimizerEnabled:$('optimizerEnabled').checked,
+    wasteFactor:numVal('wasteFactor',3),extraHardware:$('extraHardware').checked,miscAdders:$('miscAdders').checked,engNotes:$('engNotes').value,
+  };
+}
+
+function setFormState(s){
+  $('projectName').value=s.projectName||'';$('customerName').value=s.customerName||'';$('siteName').value=s.siteName||'';
+  $('siteAddress').value=s.siteAddress||'';$('jobNumber').value=s.jobNumber||'';$('preparedBy').value=s.preparedBy||'';
+  $('projectDate').value=s.projectDate||new Date().toISOString().split('T')[0];$('projectNotes').value=s.projectNotes||'';
+  $('panelModel').value=s.panelModel||'canadian-430';$('panelWattage').value=s.panelWattage||430;
+  $('panelLength').value=s.panelLength||74.8;$('panelWidth').value=s.panelWidth||41.3;
+  $('azimuth').value=s.azimuth||180;
+  $('tiltAngle').value=s.tiltAngle||25;$('groundClearance').value=s.groundClearance||24;
+  $('rowSpacing').value=s.rowSpacing||6;$('sectionSpacing').value=s.sectionSpacing||60;
+  $('layoutRowGap').value=s.layoutRowGap||120;
+  $('foundationType').value=s.foundationType||'driven-pile';$('postType').value=s.postType||'w6x9';
+  $('beamType').value=s.beamType||'c-channel';$('inverterModel').value=s.inverterModel||INVERTERS[0].id;
+  $('optimizerEnabled').checked=s.optimizerEnabled!==false;$('wasteFactor').value=s.wasteFactor||3;
+  $('extraHardware').checked=!!s.extraHardware;$('miscAdders').checked=!!s.miscAdders;
+  $('engNotes').value=s.engNotes||'';
+  updateCompass();
+}
+
+function updateCompass(){
+  const az=numVal('azimuth',180);
+  $('compassNeedle').style.transform='rotate('+az+'deg)';
+}
+
+function autoSave(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({form:getFormState(),layout:layoutState,nextSec:_nextSectionId,nextRow:_nextRowId}));}catch(e){}
+}
+
+function autoRestore(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const d=JSON.parse(raw);
+      if(d.form) setFormState(d.form);
+      if(d.layout&&d.layout.length){layoutState=d.layout;_nextSectionId=d.nextSec||100;_nextRowId=d.nextRow||100;}
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+function addRow(){layoutState.push({rowId:newRowId(),sections:[]});renderCanvas();recalcAll();}
+function removeRow(rowId){layoutState=layoutState.filter(r=>r.rowId!==rowId);renumberSections();renderCanvas();recalcAll();}
+function addSectionToRow(rowId,type){const row=layoutState.find(r=>r.rowId===rowId);if(row){row.sections.push({id:newSecId(),type:type});}renumberSections();renderCanvas();recalcAll();}
+function removeSectionById(secId){layoutState.forEach(r=>{r.sections=r.sections.filter(s=>s.id!==secId);});layoutState=layoutState.filter(r=>r.sections.length>0||layoutState.length<=1);if(layoutState.length===0) layoutState.push({rowId:newRowId(),sections:[]});renumberSections();renderCanvas();recalcAll();}
+
+function duplicateSection(secId){
+  for(const row of layoutState){
+    const idx=row.sections.findIndex(s=>s.id===secId);
+    if(idx>=0){const orig=row.sections[idx];row.sections.splice(idx+1,0,{id:newSecId(),type:orig.type});break;}
+  }
+  renumberSections();renderCanvas();recalcAll();
+}
+
+function clearLayout(){if(!confirm('Clear the entire array layout?')) return;layoutState=[{rowId:newRowId(),sections:[]}];renumberSections();renderCanvas();recalcAll();toast('Layout cleared');}
+
+function loadDemoLayout(){
+  layoutState=[];const r1=newRowId(),r2=newRowId(),r3=newRowId();
+  layoutState.push({rowId:r1,sections:[{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'}]});
+  layoutState.push({rowId:r2,sections:[{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'}]});
+  layoutState.push({rowId:r3,sections:[{id:newSecId(),type:'8'},{id:newSecId(),type:'8'},{id:newSecId(),type:'10'}]});
+  renumberSections();renderCanvas();recalcAll();toast('Demo layout loaded');
+}
+
+function autoBalance(){
+  const allSecs=[];layoutState.forEach(r=>r.sections.forEach(s=>allSecs.push({...s})));
+  if(allSecs.length===0){toast('No sections to balance');return;}
+  const rowCount=Math.max(1,layoutState.length);const perRow=Math.ceil(allSecs.length/rowCount);layoutState=[];
+  for(let i=0;i<allSecs.length;i+=perRow){layoutState.push({rowId:newRowId(),sections:allSecs.slice(i,i+perRow)});}
+  renumberSections();renderCanvas();recalcAll();toast('Rows balanced');
+}
+
+function renumberSections(){let n=1;layoutState.forEach(r=>r.sections.forEach(s=>{s._num=n++;}));}
+function getAllSections(){const out=[];layoutState.forEach(r=>r.sections.forEach(s=>out.push(s)));return out;}
+
+let _dragData=null;
+
+function initDragAndDrop(){
+  qsa('.pal-item').forEach(el=>{
+    el.addEventListener('dragstart',e=>{_dragData={source:'palette',type:el.dataset.palette};e.dataTransfer.effectAllowed='copy';e.dataTransfer.setData('text/plain','section');el.style.opacity='.5';});
+    el.addEventListener('dragend',e=>{el.style.opacity='1';cleanupDrag();});
+  });
+}
+
+function setupCanvasDrag(){
+  qsa('.sec-block').forEach(el=>{
+    el.setAttribute('draggable','true');
+    el.addEventListener('dragstart',e=>{const secId=el.dataset.secid;const rowEl=el.closest('.row-lane');const rowId=rowEl?parseInt(rowEl.dataset.rowid):null;_dragData={source:'canvas',secId:secId,fromRowId:rowId,type:el.dataset.type};e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','section');el.classList.add('dragging');});
+    el.addEventListener('dragend',e=>{el.classList.remove('dragging');cleanupDrag();});
+  });
+
+  qsa('.row-lane').forEach(lane=>{
+    lane.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect=_dragData&&_dragData.source==='palette'?'copy':'move';lane.classList.add('drag-over');});
+    lane.addEventListener('dragleave',e=>{if(e.target===lane) lane.classList.remove('drag-over');});
+    lane.addEventListener('drop',e=>{e.preventDefault();lane.classList.remove('drag-over');const rowId=parseInt(lane.dataset.rowid);
+      if(!_dragData) return;
+      if(_dragData.source==='palette'){addSectionToRow(rowId,_dragData.type);}
+      else if(_dragData.source==='canvas'&&_dragData.fromRowId!==rowId){
+        const fromRow=layoutState.find(r=>r.rowId===_dragData.fromRowId);const toRow=layoutState.find(r=>r.rowId===rowId);
+        if(fromRow&&toRow){const sec=fromRow.sections.find(s=>s.id===_dragData.secId);if(sec){fromRow.sections=fromRow.sections.filter(s=>s.id!==_dragData.secId);toRow.sections.push(sec);renumberSections();renderCanvas();recalcAll();}}
+      }
+    });
+  });
+}
+
+function cleanupDrag(){_dragData=null;}
+
+function calculateProjectTotals(state){
+  const allSecs=getAllSections();
+  const count8=allSecs.filter(s=>s.type==='8').length;
+  const count10=allSecs.filter(s=>s.type==='10').length;
+  const totalPanels=allSecs.reduce((a,s)=>a+parseInt(s.type),0);
+  const totalDcWatts=totalPanels*state.panelWattage;
+  const totalDcKw=(totalDcWatts/1000).toFixed(2);
+  const inverter=INVERTERS.find(i=>i.id===state.inverterModel)||INVERTERS[0];
+  const inverterCount=Math.max(1,Math.ceil(totalDcWatts/1000/inverter.acKw));
+  const layoutRows=layoutState.filter(r=>r.sections.length>0).length;
+
+  const totals={modules:totalPanels,inverters:inverterCount,optimizers:state.optimizerEnabled?totalPanels:0,posts:0,beams:0,midClamps:0,endClamps:0,splices:0,brackets:0,bondingClips:0,groundLugs:0,wireMgmtPacks:0,hardwareKits:0};
+  const breakdowns=[];
+
+  allSecs.forEach((sec,idx)=>{
+    const rules=SECTION_RULES[sec.type]||SECTION_RULES['8'];
+    const bd={sectionNumber:sec._num,type:sec.type,modules:rules.modules,rows:rules.rows,panelsPerRow:rules.panelsPerRow,
+      posts:rules.posts,beams:rules.beams,midClamps:rules.midClamps,endClamps:rules.endClamps,splices:rules.splices,
+      bondingClips:rules.bondingClips,groundLugs:rules.groundLugs,wireMgmtPacks:rules.wireMgmtPacks,hardwareKits:rules.hardwareKits,optimizers:state.optimizerEnabled?rules.modules:0};
+    Object.keys(bd).forEach(k=>{if(k!=='sectionNumber'&&k!=='type'&&k in totals) totals[k]+=bd[k];});
+    breakdowns.push(bd);
+  });
+
+  if(state.extraHardware){totals.posts=Math.ceil(totals.posts*1.05);totals.beams=Math.ceil(totals.beams*1.05);}
+  if(state.miscAdders){totals.miscAllowance=(CALC_CONSTANTS.miscAdderQty||1)*allSecs.length;}
+
+  const panelLengthFt=state.panelLength/12;const panelWidthFt=state.panelWidth/12;
+  const rowGapFt=state.layoutRowGap/12;const totalDepthFt=layoutRows>0?layoutRows*2*panelLengthFt+(layoutRows-1)*rowGapFt:0;
+  const maxSecCount=layoutState.reduce((m,r)=>Math.max(m,r.sections.length),0);
+  const maxRowWidthFt=maxSecCount>0?maxSecCount*(panelWidthFt*2)+(maxSecCount-1)*(state.sectionSpacing/12):0;
+  const footprintSqFt=maxRowWidthFt*totalDepthFt;
+
+  return {
+    sectionCount:allSecs.length,count8:count8,count10:count10,layoutRows:layoutRows,
+    totalPanels:totalPanels,totalDcWatts:totalDcWatts,totalDcKw:parseFloat(totalDcKw),
+    inverter:inverter,inverterCount:inverterCount,
+    maxRowWidthFt:maxRowWidthFt,totalDepthFt:totalDepthFt,footprintSqFt:footprintSqFt,
+    totals:totals,breakdowns:breakdowns,
+  };
+}
+
+function generateBom(state,calc){
+  const lines=[];
+  const wf=Math.max(0,state.wasteFactor/100);
+
+  lines.push({item:BOM_ITEMS.modules.name,category:BOM_ITEMS.modules.category,partNumber:'MOD-GEN',unit:BOM_ITEMS.modules.unit,baseQty:calc.totals.modules,wastePct:0,finalQty:calc.totals.modules,notes:state.panelModel});
+  lines.push({item:BOM_ITEMS.inverter.name,category:BOM_ITEMS.inverter.category,partNumber:'INV-GEN',unit:BOM_ITEMS.inverter.unit,baseQty:calc.totals.inverters,wastePct:0,finalQty:calc.totals.inverters,notes:calc.inverter.model});
+
+  if(state.optimizerEnabled&&calc.totals.optimizers>0){
+    lines.push({item:BOM_ITEMS.optimizer.name,category:BOM_ITEMS.optimizer.category,partNumber:'OPT-GEN',unit:BOM_ITEMS.optimizer.unit,baseQty:calc.totals.optimizers,wastePct:0,finalQty:calc.totals.optimizers,notes:'Per module'});
+  }
+
+  lines.push({item:BOM_ITEMS.post.name,category:BOM_ITEMS.post.category,partNumber:'POST-GEN',unit:BOM_ITEMS.post.unit,baseQty:calc.totals.posts,wastePct:0,finalQty:calc.totals.posts,notes:state.postType});
+  lines.push({item:BOM_ITEMS.beam.name,category:BOM_ITEMS.beam.category,partNumber:'BEAM-GEN',unit:BOM_ITEMS.beam.unit,baseQty:calc.totals.beams,wastePct:0,finalQty:calc.totals.beams,notes:state.beamType});
+
+  const clips=Math.ceil(calc.totals.midClamps*(1+wf));
+  const eClips=Math.ceil(calc.totals.endClamps*(1+wf));
+  const spl=Math.ceil(calc.totals.splices*(1+wf));
+  const brk=Math.ceil(calc.totals.posts*CALC_CONSTANTS.bracketPerPost*(1+wf));
+  const bClips=Math.ceil(calc.totals.bondingClips*(1+wf));
+  const gLugs=Math.ceil(calc.totals.groundLugs*(1+wf));
+  const wireMgmt=Math.ceil(calc.totals.wireMgmtPacks*(1+wf));
+  const hwKit=Math.ceil(calc.totals.hardwareKits*(1+wf));
+
+  lines.push({item:BOM_ITEMS.midClamp.name,category:BOM_ITEMS.midClamp.category,partNumber:'CLP-MID',unit:BOM_ITEMS.midClamp.unit,baseQty:calc.totals.midClamps,wastePct:Math.round(wf*100),finalQty:clips,notes:'Rail to module'});
+  lines.push({item:BOM_ITEMS.endClamp.name,category:BOM_ITEMS.endClamp.category,partNumber:'CLP-END',unit:BOM_ITEMS.endClamp.unit,baseQty:calc.totals.endClamps,wastePct:Math.round(wf*100),finalQty:eClips,notes:'Array edges'});
+  lines.push({item:BOM_ITEMS.splice.name,category:BOM_ITEMS.splice.category,partNumber:'SPL-JOIN',unit:BOM_ITEMS.splice.unit,baseQty:calc.totals.splices,wastePct:Math.round(wf*100),finalQty:spl,notes:'Rail joiners'});
+  lines.push({item:BOM_ITEMS.bracket.name,category:BOM_ITEMS.bracket.category,partNumber:'BRK-PTB',unit:BOM_ITEMS.bracket.unit,baseQty:Math.ceil(calc.totals.posts*CALC_CONSTANTS.bracketPerPost),wastePct:Math.round(wf*100),finalQty:brk,notes:'Per post'});
+  lines.push({item:BOM_ITEMS.bondingClip.name,category:BOM_ITEMS.bondingClip.category,partNumber:'GND-BOND',unit:BOM_ITEMS.bondingClip.unit,baseQty:calc.totals.bondingClips,wastePct:Math.round(wf*100),finalQty:bClips,notes:'Bonding'});
+  lines.push({item:BOM_ITEMS.groundLug.name,category:BOM_ITEMS.groundLug.category,partNumber:'GND-LUG',unit:BOM_ITEMS.groundLug.unit,baseQty:calc.totals.groundLugs,wastePct:Math.round(wf*100),finalQty:gLugs,notes:'Grounding'});
+  lines.push({item:BOM_ITEMS.wireMgmt.name,category:BOM_ITEMS.wireMgmt.category,partNumber:'WIR-MGMT',unit:BOM_ITEMS.wireMgmt.unit,baseQty:calc.totals.wireMgmtPacks,wastePct:Math.round(wf*100),finalQty:wireMgmt,notes:'Per section'});
+  lines.push({item:BOM_ITEMS.hardwareKit.name,category:BOM_ITEMS.hardwareKit.category,partNumber:'HW-KIT',unit:BOM_ITEMS.hardwareKit.unit,baseQty:calc.totals.hardwareKits,wastePct:Math.round(wf*100),finalQty:hwKit,notes:'Complete set'});
+
+  if(state.miscAdders&&calc.totals.miscAllowance>0){
+    lines.push({item:BOM_ITEMS.miscAllowance.name,category:BOM_ITEMS.miscAllowance.category,partNumber:'MISC-ALLOW',unit:BOM_ITEMS.miscAllowance.unit,baseQty:calc.totals.miscAllowance,wastePct:0,finalQty:calc.totals.miscAllowance,notes:'General allowance'});
+  }
+
+  return lines;
+}
+
+function aggregateBomLines(lines){
+  const groups={};
+  lines.forEach(l=>{if(!groups[l.category]) groups[l.category]=[];groups[l.category].push(l);});
+  return groups;
+}
+
+function renderCanvas(){
+  const canvas=$('canvas');
+  if(layoutState.length===0){layoutState.push({rowId:newRowId(),sections:[]});}
+  let html='';
+  layoutState.forEach((row,ri)=>{
+    const secCount=row.sections.length;
+    const rowPanels=row.sections.reduce((a,s)=>a+parseInt(s.type),0);
+    html+='<div class="row-lane" data-rowid="'+row.rowId+'">';
+    html+='<div class="row-head"><span class="row-label">▸ Row '+(ri+1)+'</span><div class="row-stats"><span>'+secCount+' section'+(secCount!==1?'s':'')+'</span><span>'+rowPanels+' panels</span></div>';
+    html+='<div class="row-actions no-print">';
+    if(layoutState.length>1) html+='<button class="sb-btn del" title="Remove row" onclick="removeRow('+row.rowId+')">✕</button>';
+    html+='</div></div>';
+    html+='<div class="row-sections'+(secCount===0?' empty':'')+'">';
+    if(secCount===0){html+='<span class="row-empty-msg">Drag a section here to start building this row</span>';}
+    else{
+      row.sections.forEach(sec=>{
+        const t=sec.type;
+        const ppr=SECTION_RULES[t]?SECTION_RULES[t].panelsPerRow:5;
+        const gridClass=ppr<=4?'g4':'g5';
+        const cells=Array(parseInt(t)).fill(0).map(()=>'<div class="mini-cell"></div>').join('');
+        html+='<div class="sec-block s'+t+'" data-secid="'+sec.id+'" data-type="'+t+'" draggable="true">';
+        html+='<div class="sb-actions"><button class="sb-btn" title="Duplicate" onclick="event.stopPropagation();duplicateSection(\''+sec.id+'\')">⎘</button>';
+        html+='<button class="sb-btn del" title="Remove" onclick="event.stopPropagation();removeSectionById(\''+sec.id+'\')">✕</button></div>';
+        html+='<div class="sb-head"><span class="sb-num">#'+(sec._num||'')+'</span><span class="sb-type">'+t+'-P</span></div>';
+        html+='<div class="mini-grid '+gridClass+'">'+cells+'</div>';
+        html+='<div class="sb-panels">'+t+' panels · 2×'+ppr+'</div>';
+        html+='</div>';
+      });
+    }
+    html+='</div></div>';
+  });
+  canvas.innerHTML=html;
+  setupCanvasDrag();
+  renderLayoutTotals();
+  autoSave();
+}
+
+function renderLayoutTotals(){
+  const allSecs=getAllSections();const totalSecs=allSecs.length;const c8=allSecs.filter(s=>s.type==='8').length;const c10=allSecs.filter(s=>s.type==='10').length;const totalPanels=allSecs.reduce((a,s)=>a+parseInt(s.type),0);const wattage=numVal('panelWattage',430);const dcKw=(totalPanels*wattage/1000).toFixed(2);const rows=layoutState.filter(r=>r.sections.length>0).length;
+  $('layoutTotals').innerHTML='<div class="lt-item">Rows: <strong>'+rows+'</strong></div><div class="lt-item">Sections: <strong>'+totalSecs+'</strong></div><div class="lt-item">8-Panel: <strong>'+c8+'</strong></div><div class="lt-item">10-Panel: <strong>'+c10+'</strong></div><div class="lt-item">Total Panels: <strong>'+totalPanels+'</strong></div><div class="lt-item">DC Size: <strong>'+dcKw+' kW</strong></div>';
+}
+
+function renderSummary(state,calc){
+  const panel=PANELS.find(p=>p.id===state.panelModel)||PANELS[0];
+  const bomLines=generateBom(state,calc);
+  const items=[
+    {l:'Layout Rows',v:calc.layoutRows,u:'',c:''},
+    {l:'Total Sections',v:calc.sectionCount,u:'',c:''},
+    {l:'8-Panel Sections',v:calc.count8,u:'',c:''},
+    {l:'10-Panel Sections',v:calc.count10,u:'',c:''},
+    {l:'Total Panels',v:fmt(calc.totalPanels),u:'modules',c:'hi'},
+    {l:'Total DC',v:fmt(calc.totalDcKw,2),u:'kW DC',c:'hi'},
+    {l:'Total DC Watts',v:fmt(calc.totalDcWatts),u:'W',c:'ac'},
+    {l:'Panel',v:panel.model,u:panel.manufacturer,c:''},
+    {l:'Inverter',v:calc.inverter.model,u:calc.inverterCount+' unit(s)',c:''},
+    {l:'Optimizer',v:state.optimizerEnabled?'Enabled':'Off',u:state.optimizerEnabled?calc.totals.optimizers+' units':'—',c:''},
+    {l:'Azimuth',v:state.azimuth+'°',u:'compass bearing',c:''},
+    {l:'Array Width',v:fmt(calc.maxRowWidthFt,1),u:'ft (longest row)',c:''},
+    {l:'Array Depth',v:fmt(calc.totalDepthFt,1),u:'ft (N-S)',c:''},
+    {l:'Footprint',v:fmt(calc.footprintSqFt,0),u:'sq ft',c:'ac'},
+    {l:'Est. Posts',v:fmt(calc.totals.posts),u:'ea',c:''},
+    {l:'Est. Beams',v:fmt(calc.totals.beams),u:'ea',c:''},
+    {l:'Est. Clamps',v:fmt(calc.totals.midClamps+calc.totals.endClamps),u:'mid+end',c:''},
+    {l:'BOM Lines',v:bomLines.length,u:'unique',c:''},
+  ];
+  $('summaryGrid').innerHTML=items.map(i=>'<div class="scard '+i.c+'"><span class="sl">'+i.l+'</span><span class="sv">'+i.v+'</span><span class="su">'+i.u+'</span></div>').join('');
+}
+
+function renderSectionCards(calc){
+  const bds=calc.breakdowns;const maxCards=50;const show=bds.length<=maxCards?bds:bds.slice(0,6);let html='';
+  show.forEach(b=>{
+    html+='<div class="sbc glass3">';
+    html+='<div class="sbc-head"><span class="sn">Section '+b.sectionNumber+'</span><span class="tag '+(b.type==='8'?'tag-blue':'tag-purple')+'">'+b.type+'-Panel</span></div>';
+    html+='<div class="sbc-body">';
+    html+=dr('Modules',b.modules)+dr('Rows',b.rows)+dr('Panels/Row',b.panelsPerRow)+dr('Posts',b.posts)+dr('Beams',b.beams);
+    html+=dr('Mid Clamps',b.midClamps)+dr('End Clamps',b.endClamps)+dr('Splices',b.splices)+dr('Brackets',b.brackets);
+    html+=dr('Bonding Clips',b.bondingClips)+dr('Ground Lugs',b.groundLugs)+dr('Wire Mgmt',b.wireMgmtPacks)+dr('Hardware Kits',b.hardwareKits);
+    if(b.optimizers>0) html+=dr('Optimizers',b.optimizers);
+    html+='</div></div>';
+  });
+  if(bds.length>maxCards){html+='<div class="sbc glass3" style="display:flex;align-items:center;justify-content:center;min-height:100px"><div style="text-align:center;padding:16px"><div style="font-weight:700;color:var(--navy)">+ '+(bds.length-6)+' more sections</div><div style="font-size:.76rem;color:var(--tsec)">All sections listed in BOM below</div></div></div>';}
+  $('sectionCards').innerHTML=html;
+}
+
+function dr(l,v){return '<div class="dr"><span class="dl">'+l+'</span><span class="dv">'+v+'</span></div>';}
+
+function renderBomTable(state,calc){
+  const bomLines=generateBom(state,calc);const groups=aggregateBomLines(bomLines);let html='',grandTotal=0,uniqueLines=0;
+  CATEGORY_ORDER.forEach(cat=>{
+    const lines=groups[cat];if(!lines||!lines.length) return;
+    html+='<tr class="cat-h"><td colspan="8">'+cat+'</td></tr>';let catT=0;
+    lines.forEach(l=>{
+      html+='<tr><td>'+l.category+'</td><td>'+l.item+'</td>';
+      html+='<td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td>';
+      html+='<td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td>';
+      html+='<td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'—')+'</td>';
+      html+='<td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td>';
+      html+='<td style="font-size:.7rem;color:var(--tsec)">'+l.notes+'</td></tr>';
+      catT+=l.finalQty;uniqueLines++;
+    });
+    html+='<tr class="sub"><td colspan="6" style="text-align:right">Subtotal — '+cat+'</td><td style="text-align:right">'+fmt(catT)+'</td><td></td></tr>';
+    grandTotal+=catT;
+  });
+  $('bomBody').innerHTML=html;
+  $('bomFoot').innerHTML='<tr><td colspan="4" style="text-align:right">Grand Total</td><td></td><td></td><td style="text-align:right;font-size:.92rem">'+fmt(grandTotal)+' items</td><td>'+uniqueLines+' lines</td></tr>';
+  window._bomLines=bomLines;window._calc=calc;window._state=state;
+}
+
+function recalcAll(){
+  if(!validate()) return;
+  const state=getFormState();const calc=calculateProjectTotals(state);
+  renderSummary(state,calc);renderSectionCards(calc);renderBomTable(state,calc);renderLayoutTotals();autoSave();
+}
+
+function validate(){
+  let ok=true;
+  [{id:'panelWattage',min:100,max:800},{id:'panelLength',min:20,max:120},{id:'panelWidth',min:20,max:60},
+   {id:'azimuth',min:0,max:360},{id:'tiltAngle',min:5,max:60},{id:'groundClearance',min:6,max:96},{id:'rowSpacing',min:1,max:120},
+   {id:'sectionSpacing',min:6,max:360},{id:'layoutRowGap',min:12,max:600},{id:'wasteFactor',min:0,max:25}
+  ].forEach(f=>{
+    const el=$(f.id),fg=el.closest('.fi'),v=parseFloat(el.value);
+    if(isNaN(v)||v<f.min||v>f.max){fg.classList.add('error');let e=fg.querySelector('.errmsg');
+      if(!e){e=document.createElement('span');e.className='errmsg';fg.appendChild(e);}
+      e.textContent=f.min+'–'+f.max;ok=false;}
+    else{fg.classList.remove('error');}
+  });
+  return ok;
+}
+
+function csvEsc(v){const s=String(v==null?'':v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}
+function dlCsv(name,csv){const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
+
+function exportBomCsv(){
+  if(!window._bomLines){toast('No BOM');return;}
+  let csv='Category,Item,Part #,Unit,Base Qty,Waste %,Final Qty,Notes\n';
+  window._bomLines.forEach(l=>{csv+=[l.category,l.item,l.partNumber,l.unit,l.baseQty,l.wastePct>0?l.wastePct+'%':'',l.finalQty,l.notes].map(csvEsc).join(',')+'\n';});
+  dlCsv(($('jobNumber').value||'SM')+'_BOM_'+new Date().toISOString().split('T')[0]+'.csv',csv);toast('BOM CSV exported');
+}
+
+function exportSummaryCsv(){
+  if(!window._calc||!window._state){toast('No data');return;}
+  const s=window._state,c=window._calc;
+  const rows=[['Project',s.projectName],['Customer',s.customerName],['Site',s.siteName],['Address',s.siteAddress],
+    ['Job #',s.jobNumber],['Date',s.projectDate],['Layout Rows',c.layoutRows],['Sections',c.sectionCount],
+    ['8-Panel',c.count8],['10-Panel',c.count10],['Total Panels',c.totalPanels],['DC kW',c.totalDcKw.toFixed(2)],
+    ['Panel',((PANELS.find(p=>p.id===s.panelModel)||{}).model||'')],['Inverter',c.inverter.model],
+    ['Inverters',c.inverterCount],['Optimizer',s.optimizerEnabled?'Yes':'No'],['Azimuth',s.azimuth+'°'],
+    ['Width ft',c.maxRowWidthFt.toFixed(1)],['Depth ft',c.totalDepthFt.toFixed(1)],['Footprint sqft',c.footprintSqFt.toFixed(0)]];
+  let csv='Field,Value\n';rows.forEach(r=>{csv+=r.map(csvEsc).join(',')+'\n';});
+  dlCsv(($('jobNumber').value||'SM')+'_Summary_'+new Date().toISOString().split('T')[0]+'.csv',csv);toast('Summary exported');
+}
+
+function copyBom(){
+  if(!window._bomLines){toast('No BOM');return;}
+  let t='Category\tItem\tPart #\tUnit\tBase Qty\tWaste %\tFinal Qty\tNotes\n';
+  window._bomLines.forEach(l=>{t+=[l.category,l.item,l.partNumber,l.unit,l.baseQty,l.wastePct>0?l.wastePct+'%':'',l.finalQty,l.notes].join('\t')+'\n';});
+  navigator.clipboard.writeText(t).then(()=>toast('BOM copied')).catch(()=>toast('Copy failed'));
+}
+
+function printFull(){qsa('.coll-body').forEach(el=>el.classList.add('open'));window.print();}
+function printBom(){
+  const s=document.createElement('style');s.id='bp';
+  s.textContent='@media print{.card:not(#card-bom):not(#card-project){display:none!important}.app-header{display:none!important}}';
+  document.head.appendChild(s);window.print();setTimeout(()=>{const e=document.getElementById('bp');if(e)e.remove();},1e3);
+}
+
+function saveProject(){autoSave();toast('Saved to local storage');}
+function restoreProject(){if(autoRestore()){syncPanelFields();renderCanvas();recalcAll();toast('Restored');}else{toast('No saved project');}}
+function resetAll(){
+  if(!confirm('Reset everything to defaults?')) return;
+  setFormState(APP_DEFAULTS);syncPanelFields();
+  layoutState=[];_nextSectionId=1;_nextRowId=1;
+  layoutState.push({rowId:newRowId(),sections:[]});
+  renderCanvas();recalcAll();toast('Reset complete');
+}
+
+function initCollapsibles(){
+  qsa('.coll-tog').forEach(t=>{
+    t.addEventListener('click',function(){
+      const body=$(this.dataset.target);
+      if(body){body.classList.toggle('open');this.classList.toggle('open');}
+    });
+  });
+}
+
+function initTableSort(){
+  qsa('#bomTable thead th').forEach(th=>{
+    th.addEventListener('click',function(){
+      const col=this.dataset.col;if(!col||!window._bomLines) return;
+      const lines=[...window._bomLines];
+      const asc=!this._asc;this._asc=asc;
+      lines.sort((a,b)=>{
+        let va=a[col]||'',vb=b[col]||'';
+        if(typeof va==='number'&&typeof vb==='number') return asc?va-vb:vb-va;
+        return asc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+      });
+      let html='';
+      lines.forEach(l=>{
+        html+='<tr><td>'+l.category+'</td><td>'+l.item+'</td>';
+        html+='<td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td>';
+        html+='<td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td>';
+        html+='<td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'—')+'</td>';
+        html+='<td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td>';
+        html+='<td style="font-size:.7rem;color:var(--tsec)">'+l.notes+'</td></tr>';
+      });
+      $('bomBody').innerHTML=html;
+    });
+  });
+}
+
+function init(){
+  populateDropdowns();
+  $('projectDate').value=APP_DEFAULTS.projectDate;
+
+  const restored=autoRestore();
+  if(!restored){
+    setFormState(APP_DEFAULTS);
+    loadDemoLayout();
+  } else {
+    syncPanelFields();
+    renumberSections();
+    renderCanvas();
+  }
+
+  syncPanelFields();
+
+  $('panelModel').addEventListener('change',()=>{syncPanelFields();recalcAll();});
+  $('azimuth').addEventListener('change',()=>{updateCompass();recalcAll();});
+  $('azimuth').addEventListener('input',updateCompass);
+
+  qsa('#card-config input,#card-config select,#card-config textarea').forEach(el=>{
+    el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',recalcAll);
+  });
+  qsa('#card-project input,#card-project textarea').forEach(el=>{el.addEventListener('input',autoSave);});
+
+  initCollapsibles();
+  initTableSort();
+  initDragAndDrop();
+  recalcAll();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
