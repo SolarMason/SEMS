@@ -4019,25 +4019,67 @@ const PANELS=[
 {id:'trina-720',manufacturer:'Trina Solar',model:'TSM-NEG21C.20-720',wattage:720,lengthIn:94.0,widthIn:44.8,cellType:'Mono TOPCon',notes:'Vertex N 720 bifacial dual-glass'},
 ];
 const INVERTERS=[
-/* ══ Microinverters ══ */
-{id:'enphase-iq7p',manufacturer:'Enphase',model:'IQ7PLUS-72-2-US',acKw:0.35,dcMaxKw:0.51,notes:'Microinverter, residential'},
-{id:'enphase-iq8p',manufacturer:'Enphase',model:'IQ8PLUS-72-2-US',acKw:0.3,dcMaxKw:0.44,notes:'Microinverter, residential'},
-/* ══ Residential string (5–12 kW) ══ */
+/* ════════════════════════════════════════════════════════════
+   ENPHASE MICROINVERTERS — Complete IQ7 + IQ8 Lineup
+   ════════════════════════════════════════════════════════════ */
+/* ── IQ7 Series (legacy, widely deployed) ── */
+{id:'enphase-iq7',manufacturer:'Enphase',model:'IQ7-60-2-US',acKw:0.25,dcMaxKw:0.36,notes:'Microinverter, 60-cell panels up to 400W'},
+{id:'enphase-iq7p',manufacturer:'Enphase',model:'IQ7PLUS-72-2-US',acKw:0.295,dcMaxKw:0.44,notes:'Microinverter, 60/72-cell panels up to 460W'},
+{id:'enphase-iq7x',manufacturer:'Enphase',model:'IQ7X-96-2-US',acKw:0.32,dcMaxKw:0.48,notes:'Microinverter, 96-cell / high-voltage panels'},
+{id:'enphase-iq7a',manufacturer:'Enphase',model:'IQ7A-72-2-US',acKw:0.366,dcMaxKw:0.55,notes:'Microinverter, high-power 72-cell panels'},
+/* ── IQ8 Series (current generation) ── */
+{id:'enphase-iq8',manufacturer:'Enphase',model:'IQ8-60-2-US',acKw:0.245,dcMaxKw:0.37,notes:'Microinverter, 60-cell panels, Burst Mode'},
+{id:'enphase-iq8p',manufacturer:'Enphase',model:'IQ8PLUS-72-2-US',acKw:0.3,dcMaxKw:0.44,notes:'Microinverter, 60/72-cell up to 460W, Burst Mode'},
+{id:'enphase-iq8m',manufacturer:'Enphase',model:'IQ8M-72-2-US',acKw:0.33,dcMaxKw:0.48,notes:'Microinverter, 72-cell panels up to 500W'},
+{id:'enphase-iq8a',manufacturer:'Enphase',model:'IQ8A-72-2-US',acKw:0.366,dcMaxKw:0.55,notes:'Microinverter, high-power 72-cell up to 530W'},
+{id:'enphase-iq8h',manufacturer:'Enphase',model:'IQ8H-240-72-2-US',acKw:0.384,dcMaxKw:0.58,notes:'Microinverter, high-output 240V residential'},
+{id:'enphase-iq8hc',manufacturer:'Enphase',model:'IQ8HC-240-72-2-US',acKw:0.384,dcMaxKw:0.58,notes:'Microinverter, high-capacity variant'},
+{id:'enphase-iq8p-3p',manufacturer:'Enphase',model:'IQ8P-3P-72-2-US',acKw:0.48,dcMaxKw:0.72,notes:'Microinverter, commercial 3-phase, 72+ cell panels'},
+/* ════════════════════════════════════════════════════════════
+   SOLAREDGE — Complete Residential + Commercial + Synergy
+   ════════════════════════════════════════════════════════════ */
+/* ── Single-Phase Residential (HD-Wave / Home Hub) ── */
+{id:'se3000h',manufacturer:'SolarEdge',model:'SE3000H-US',acKw:3.0,dcMaxKw:5.0,notes:'HD-Wave single-phase residential'},
+{id:'se3800h',manufacturer:'SolarEdge',model:'SE3800H-US',acKw:3.8,dcMaxKw:6.0,notes:'HD-Wave single-phase residential'},
+{id:'se5000h',manufacturer:'SolarEdge',model:'SE5000H-US',acKw:5.0,dcMaxKw:7.5,notes:'HD-Wave single-phase residential'},
+{id:'se6000h',manufacturer:'SolarEdge',model:'SE6000H-US',acKw:6.0,dcMaxKw:9.0,notes:'HD-Wave single-phase residential'},
+{id:'se7600h',manufacturer:'SolarEdge',model:'SE7600H-US',acKw:7.6,dcMaxKw:11.4,notes:'HD-Wave single-phase residential'},
+{id:'se10000h',manufacturer:'SolarEdge',model:'SE10000H-US',acKw:10.0,dcMaxKw:15.0,notes:'HD-Wave single-phase residential'},
+{id:'se11400h',manufacturer:'SolarEdge',model:'SE11400H-US',acKw:11.4,dcMaxKw:17.1,notes:'HD-Wave single-phase residential'},
+/* ── Three-Phase Residential/Small Commercial ── */
+{id:'se9k',manufacturer:'SolarEdge',model:'SE9K-USR',acKw:9.0,dcMaxKw:13.5,notes:'Three-phase, 208V residential'},
+{id:'se10k',manufacturer:'SolarEdge',model:'SE10K-USR',acKw:10.0,dcMaxKw:13.5,notes:'Three-phase, 208V residential'},
+/* ── Three-Phase Commercial ── */
+{id:'se14k',manufacturer:'SolarEdge',model:'SE14.4K-USR',acKw:14.4,dcMaxKw:21.6,notes:'Three-phase commercial'},
+{id:'se17k',manufacturer:'SolarEdge',model:'SE17.3K-USR',acKw:17.3,dcMaxKw:26.0,notes:'Three-phase commercial'},
+{id:'se20k',manufacturer:'SolarEdge',model:'SE20K-USR',acKw:20.0,dcMaxKw:27.0,notes:'Three-phase commercial'},
+{id:'se25k',manufacturer:'SolarEdge',model:'SE25K-USR',acKw:25.0,dcMaxKw:33.8,notes:'Three-phase commercial'},
+{id:'se27k',manufacturer:'SolarEdge',model:'SE27.6K-USR',acKw:27.6,dcMaxKw:41.4,notes:'Three-phase commercial'},
+{id:'se33k',manufacturer:'SolarEdge',model:'SE33.3K-USR',acKw:33.3,dcMaxKw:45.0,notes:'Three-phase commercial'},
+/* ── Synergy Manager + Commercial (480V, large-scale) ── */
+{id:'se40k',manufacturer:'SolarEdge',model:'SE40K-USS',acKw:40.0,dcMaxKw:54.0,notes:'Synergy commercial, 480V'},
+{id:'se50k',manufacturer:'SolarEdge',model:'SE50K-USS',acKw:50.0,dcMaxKw:67.5,notes:'Synergy commercial, 480V'},
+{id:'se55k',manufacturer:'SolarEdge',model:'SE55K-USS',acKw:55.0,dcMaxKw:74.3,notes:'Synergy commercial, 480V'},
+{id:'se66k',manufacturer:'SolarEdge',model:'SE66.6K-USS',acKw:66.6,dcMaxKw:90.0,notes:'Synergy commercial, 480V'},
+{id:'se80k',manufacturer:'SolarEdge',model:'SE80K-USS',acKw:80.0,dcMaxKw:108.0,notes:'Synergy large commercial, 480V'},
+{id:'se100k',manufacturer:'SolarEdge',model:'SE100K-USS',acKw:100.0,dcMaxKw:135.0,notes:'Synergy large commercial, 480V'},
+{id:'se120k',manufacturer:'SolarEdge',model:'SE120K-USS',acKw:120.0,dcMaxKw:162.0,notes:'Synergy large commercial, 480V'},
+/* ════════════════════════════════════════════════════════════
+   OTHER BRANDS — Residential, Commercial, Utility
+   ════════════════════════════════════════════════════════════ */
+/* ── Residential string ── */
 {id:'sma77',manufacturer:'SMA',model:'Sunny Boy 7.7-US',acKw:7.7,dcMaxKw:11.55,notes:'Residential string'},
 {id:'abb86',manufacturer:'ABB',model:'UNO-8.6-TL-OUTD-S-US',acKw:8.6,dcMaxKw:12.9,notes:'Residential string, dual MPPT'},
 {id:'solis10',manufacturer:'Ginlong Solis',model:'S6-GR1P10K-US',acKw:10.0,dcMaxKw:15.0,notes:'Residential string, 4 MPPT'},
-{id:'se10k',manufacturer:'SolarEdge',model:'SE10K-USR',acKw:10.0,dcMaxKw:13.5,notes:'Three-phase residential'},
-{id:'se11400',manufacturer:'SolarEdge',model:'SE11400H-US',acKw:11.4,dcMaxKw:17.1,notes:'HD-Wave residential/commercial'},
-/* ══ Commercial three-phase string (20–60 kW) ══ */
+/* ── Commercial three-phase string ── */
 {id:'sma20',manufacturer:'SMA',model:'Sunny Tripower X 20-US',acKw:20.0,dcMaxKw:30.0,notes:'Three-phase commercial string'},
 {id:'fronius25',manufacturer:'Fronius',model:'Symo GEN24 25.0',acKw:25.0,dcMaxKw:37.8,notes:'Three-phase commercial string'},
 {id:'fronius27',manufacturer:'Fronius',model:'Symo GEN24 27.0',acKw:27.0,dcMaxKw:40.5,notes:'Three-phase commercial string'},
-{id:'se33',manufacturer:'SolarEdge',model:'SE33.3K-USR',acKw:33.3,dcMaxKw:45.0,notes:'Three-phase commercial'},
 {id:'sungrow33',manufacturer:'Sungrow',model:'SG33CX-P2',acKw:33.0,dcMaxKw:49.5,notes:'Three-phase commercial string'},
 {id:'goodwe50',manufacturer:'GoodWe',model:'GW50K-ET',acKw:50.0,dcMaxKw:75.0,notes:'Three-phase commercial hybrid'},
 {id:'huawei50',manufacturer:'Huawei',model:'SUN2000-50KTL-M3',acKw:50.0,dcMaxKw:75.0,notes:'Three-phase commercial string'},
 {id:'chint50',manufacturer:'Chint Power',model:'SCA50KTL-DO/US',acKw:50.0,dcMaxKw:90.0,notes:'Three-phase commercial string'},
-/* ══ Utility-scale (100–350 kW) ══ */
+/* ── Utility-scale ── */
 {id:'huawei100',manufacturer:'Huawei',model:'SUN2000-100KTL-M2',acKw:100.0,dcMaxKw:150.0,notes:'Three-phase utility string'},
 {id:'pe120',manufacturer:'Power Electronics',model:'Aurora PVS-120-TL',acKw:120.0,dcMaxKw:180.0,notes:'Three-phase utility string'},
 {id:'sma150',manufacturer:'SMA',model:'Sunny Highpower PEAK3 150',acKw:150.0,dcMaxKw:225.0,notes:'Utility-scale central inverter'},
@@ -4089,7 +4131,7 @@ strutMtgKit:{name:'Strut Mounting Kit',category:'Fasteners / Hardware',unit:'kit
 miscAllowance:{name:'Misc Hardware Allowance',category:'Miscellaneous / Allowances',unit:'kit',sku:'MISC-ALLOW',wasteEligible:false},
 };
 const CATEGORY_ORDER=['Modules','Inverters / MLPE','Posts / Foundations','Structural','Rails','Clamps','Splices / Joiners','Bonding / Grounding','Wire Management','Fasteners / Hardware','Miscellaneous / Allowances'];
-const APP_DEFAULTS={projectName:'SEMS Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',projectDate:new Date().toISOString().split('T')[0],projectNotes:'',panelModel:'canadian-430',panelWattage:430,panelLength:74.8,panelWidth:41.3,orientation:'portrait',/* locked — portrait only */tiltAngle:25,groundClearance:24,rowSpacing:6,sectionSpacing:60,layoutRowGap:120,foundationType:'driven-pile',postType:'w6x9',beamType:'w-beam',inverterModel:'se11400',optimizerEnabled:true,wasteFactor:3,extraHardware:false,miscAdders:false,engNotes:''};
+const APP_DEFAULTS={projectName:'SEMS Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',projectDate:new Date().toISOString().split('T')[0],projectNotes:'',panelModel:'canadian-430',panelWattage:430,panelLength:74.8,panelWidth:41.3,orientation:'portrait',/* locked — portrait only */tiltAngle:25,groundClearance:24,rowSpacing:6,sectionSpacing:60,layoutRowGap:120,foundationType:'driven-pile',postType:'w6x9',beamType:'w-beam',inverterModel:'se11400h',optimizerEnabled:true,wasteFactor:3,extraHardware:false,miscAdders:false,engNotes:''};
 const CALC_CONSTANTS={extraClampPct:.03,extraWireMgmtPct:.05,miscAdderQty:1};
 let layoutState=[];let _nextSectionId=1;let _nextRowId=1;
 function newSecId(){return 's'+(_nextSectionId++);}function newRowId(){return _nextRowId++;}
@@ -4128,7 +4170,7 @@ function calculateProjectTotals(state){const allSecs=getAllSections();const bds=
 function applyWasteFactor(base,pct,el){if(!el||pct<=0)return base;return Math.ceil(base*(1+pct/100));}
 function generateBom(state,calc){const wp=state.wasteFactor;const lines=[];function add(key,qty,note){const it=BOM_ITEMS[key];if(!it||qty<=0)return;lines.push({key,category:it.category,item:it.name,partNumber:it.sku,unit:it.unit,baseQty:qty,wastePct:it.wasteEligible?wp:0,finalQty:applyWasteFactor(qty,wp,it.wasteEligible),notes:note||''});}const panel=PANELS.find(p=>p.id===state.panelModel)||PANELS[0];add('modules',calc.totalPanels,panel.manufacturer+' '+panel.model+' ('+panel.wattage+'W)');add('inverter',calc.inverterCount,calc.inverter.manufacturer+' '+calc.inverter.model);if(state.optimizerEnabled)add('optimizer',calc.totals.optimizers,'1 per module');add('post',calc.totals.posts,state.postType);add('wBeam',calc.totals.wBeams,'ASTM A992, '+((calc.count8>0&&calc.count10>0)?'12.5\u2019 & 15\u2019':(calc.count10>0?'15\u2019':'12.5\u2019')));add('bearingRail',calc.totals.bearingRails,'48\u2033, 6061 Aluminum');add('mainRail',calc.totals.mainRails,(calc.count8>0?calc.count8+'\u00d7198\u2033 ':'')+(calc.count10>0?calc.count10+'\u00d7242\u2033':''));add('midRail',calc.totals.midRails,(calc.count8>0?calc.count8+'\u00d7194\u2033 ':'')+(calc.count10>0?calc.count10+'\u00d7238\u2033':''));add('sideRail',calc.totals.sideRails,'144\u2033, 6061 Aluminum');add('diagBrace',calc.totals.diagBraces,'Tubular steel');add('diagBraceMount',calc.totals.diagBraceMounts,'');add('journal',calc.totals.journals,'');add('assemblyBracket',calc.totals.assemblyBrackets,'Zinc-coated');add('midClamp',calc.totals.midClamps,state.extraHardware?'+3% extra':'');add('endClamp',calc.totals.endClamps,state.extraHardware?'+3% extra':'');add('splice',calc.totals.splices,'');add('bondingClip',calc.totals.bondingClips,'1 per module');add('groundLug',calc.totals.groundLugs,'1 per section');add('wireMgmt',calc.totals.wireMgmtPacks,state.extraHardware?'+5% extra':'1/section');add('rackMtgHardware',calc.totals.rackMtgHardware,'1/section');add('rackAssyHardware',calc.totals.rackAssyHardware,'1/section');add('sideRailHardware',calc.totals.sideRailHardware,'1/section');add('spacerKit',calc.totals.spacerKits,'1/section');add('strutMtgKit',calc.totals.strutMtgKit,'1/section');if(state.miscAdders)add('miscAllowance',CALC_CONSTANTS.miscAdderQty,'Project-level allowance');return lines;}
 function aggregateBomLines(lines){const g={};CATEGORY_ORDER.forEach(c=>{g[c]=[];});lines.forEach(l=>{if(!g[l.category])g[l.category]=[];g[l.category].push(l);});return g;}
-function populateDropdowns(){/* Panel dropdown with tier groups */const pTiers=[{label:'Residential / Small Commercial (400–470W)',test:p=>p.wattage<500},{label:'Commercial / Utility (580–600W)',test:p=>p.wattage>=500&&p.wattage<610},{label:'High-Wattage Utility (610W+)',test:p=>p.wattage>=610}];let ph='';pTiers.forEach(t=>{const grp=PANELS.filter(t.test);if(grp.length){ph+='<optgroup label="'+t.label+'">';grp.forEach(p=>{ph+='<option value="'+p.id+'">'+p.manufacturer+' '+p.model+' ('+p.wattage+'W)</option>';});ph+='</optgroup>';}});$('panelModel').innerHTML=ph;/* Inverter dropdown with tier groups */const iTiers=[{label:'Microinverters',test:i=>i.acKw<1},{label:'Residential String (5–12 kW)',test:i=>i.acKw>=1&&i.acKw<=15},{label:'Commercial Three-Phase (20–60 kW)',test:i=>i.acKw>15&&i.acKw<=60},{label:'Utility-Scale (100+ kW)',test:i=>i.acKw>60}];let ih='';iTiers.forEach(t=>{const grp=INVERTERS.filter(t.test);if(grp.length){ih+='<optgroup label="'+t.label+'">';grp.forEach(i=>{ih+='<option value="'+i.id+'">'+i.manufacturer+' '+i.model+' ('+i.acKw+' kW)</option>';});ih+='</optgroup>';}});$('inverterModel').innerHTML=ih;}
+function populateDropdowns(){/* Panel dropdown with tier groups */const pTiers=[{label:'Residential / Small Commercial (400–470W)',test:p=>p.wattage<500},{label:'Commercial / Utility (580–600W)',test:p=>p.wattage>=500&&p.wattage<610},{label:'High-Wattage Utility (610W+)',test:p=>p.wattage>=610}];let ph='';pTiers.forEach(t=>{const grp=PANELS.filter(t.test);if(grp.length){ph+='<optgroup label="'+t.label+'">';grp.forEach(p=>{ph+='<option value="'+p.id+'">'+p.manufacturer+' '+p.model+' ('+p.wattage+'W)</option>';});ph+='</optgroup>';}});$('panelModel').innerHTML=ph;/* Inverter dropdown — group by brand then size */const iBrands=[{label:'Enphase Microinverters',test:i=>i.manufacturer==='Enphase'},{label:'SolarEdge — Residential (HD-Wave)',test:i=>i.manufacturer==='SolarEdge'&&i.acKw<=12},{label:'SolarEdge — Commercial (3-Phase)',test:i=>i.manufacturer==='SolarEdge'&&i.acKw>12&&i.acKw<=40},{label:'SolarEdge — Synergy (Large Commercial)',test:i=>i.manufacturer==='SolarEdge'&&i.acKw>40},{label:'Other — Residential (5–12 kW)',test:i=>i.manufacturer!=='Enphase'&&i.manufacturer!=='SolarEdge'&&i.acKw<=15},{label:'Other — Commercial (20–60 kW)',test:i=>i.manufacturer!=='Enphase'&&i.manufacturer!=='SolarEdge'&&i.acKw>15&&i.acKw<=60},{label:'Other — Utility-Scale (100+ kW)',test:i=>i.manufacturer!=='Enphase'&&i.manufacturer!=='SolarEdge'&&i.acKw>60}];let ih='';iBrands.forEach(t=>{const grp=INVERTERS.filter(t.test);if(grp.length){ih+='<optgroup label="'+t.label+'">';grp.forEach(i=>{const lbl=i.acKw<1?(i.acKw*1000)+' VA':i.acKw+' kW';ih+='<option value="'+i.id+'">'+i.manufacturer+' '+i.model+' ('+lbl+')</option>';});ih+='</optgroup>';}});$('inverterModel').innerHTML=ih;}
 function syncPanelFields(){const p=PANELS.find(p=>p.id===$('panelModel').value);if(p){$('panelWattage').value=p.wattage;$('panelLength').value=p.lengthIn;$('panelWidth').value=p.widthIn;}renderCanvas();}
 function renderCanvas(){const cv=$('canvas');if(layoutState.length===0)layoutState.push({rowId:newRowId(),sections:[]});const _pw=numVal('panelWidth',41.3);const totalSecs=getAllSections().length;const compact=totalSecs>20;let h='';layoutState.forEach((row,ri)=>{const sc=row.sections.length;let rp=0;row.sections.forEach(s=>{rp+=getSectionModuleCount(s.type,_pw).modules;});h+='<div class="row-lane" data-rowid="'+row.rowId+'"><div class="row-head"><span class="row-label">&#9656; Row '+(ri+1)+'</span><div class="row-stats"><span>'+sc+' section'+(sc!==1?'s':'')+'</span><span>'+rp+' panels</span></div><div class="row-actions no-print">';if(layoutState.length>1)h+='<button class="sb-btn del" title="Remove row" onclick="removeRow('+row.rowId+')">&#10005;</button>';h+='</div></div><div class="row-sections'+(sc===0?' empty':'')+'">'; if(sc===0){h+='<span class="row-empty-msg">Drag a section here to start building this row</span>';}else{row.sections.forEach(sec=>{const t=sec.type;const mc=getSectionModuleCount(t,_pw);const ppr=mc.panelsPerRow;const totalMods=mc.modules;const gc=ppr<=4?'g4':'g5';let gridHtml;if(compact){gridHtml='<div class="mini-grid-compact"><span class="mc-count">'+totalMods+'</span></div>';}else{const cells=Array(totalMods).fill(0).map(()=>'<div class="mini-cell"></div>').join('');gridHtml='<div class="mini-grid '+gc+'">'+cells+'</div>';}h+='<div class="sec-block s'+t+'" data-secid="'+sec.id+'" data-type="'+t+'" draggable="true"><div class="sb-actions"><button class="sb-btn" title="Duplicate" onclick="event.stopPropagation();duplicateSection(\''+sec.id+'\')">&#10697;</button><button class="sb-btn del" title="Remove" onclick="event.stopPropagation();removeSectionById(\''+sec.id+'\')">&#10005;</button></div><div class="sb-head"><span class="sb-num">#'+(sec._num||'')+'</span><span class="sb-type">'+t+'.0 Series</span></div>'+gridHtml+'<div class="sb-panels">'+totalMods+' panels &middot; 2&times;'+ppr+'</div></div>';});}h+='</div></div>';});cv.innerHTML=h;setupCanvasDrag();applyCanvasZoom();renderLayoutTotals();autoSave();}
 function applyCanvasZoom(){const cv=$('canvas');const vp=$('canvasViewport');const badge=$('zoomBadge');if(!cv||!vp)return;/* Hide canvas during measurement to prevent flash */cv.style.visibility='hidden';cv.style.transform='scale(1)';const naturalW=cv.scrollWidth;const naturalH=cv.scrollHeight;const vpW=vp.clientWidth;let scale=1;if(naturalW>vpW&&vpW>0){scale=vpW/naturalW;}scale=Math.max(0.18,Math.min(1,scale));cv.style.transform='scale('+scale+')';cv.style.visibility='';vp.style.height=Math.ceil(naturalH*scale)+20+'px';const pct=Math.round(scale*100);badge.textContent=pct+'%';badge.style.opacity=scale<0.99?'1':'0';}
