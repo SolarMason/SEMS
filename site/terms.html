@@ -1403,12 +1403,17 @@ img { max-width: 100%; display: block; }
    ══════════════════════════════════════════════════════════════ */
 
 .scroll-fade {
-  opacity: 0;
-  transform: translateY(30px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.scroll-fade.visible {
+.js-ready .scroll-fade {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.js-ready .scroll-fade.visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -2508,7 +2513,8 @@ const fullText = 'Engineered for extreme weather. Designed for the long haul. Pr
 let charIndex = 0;
 
 function typeText() {
-  if (charIndex < fullText.length) {
+  if (charIndex === 0 && heroSubtitle) heroSubtitle.textContent = '';
+  if (heroSubtitle && charIndex < fullText.length) {
     heroSubtitle.textContent += fullText.charAt(charIndex);
     charIndex++;
     setTimeout(typeText, 40);
