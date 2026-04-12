@@ -1392,7 +1392,7 @@ img { max-width: 100%; display: block; }
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 32px;
 }
 .footer-logo img {
@@ -2134,32 +2134,37 @@ body.nav-locked {
 }
 .content-section ul li { margin-bottom: 8px; }
 .feature-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px; margin: 32px 0;
 }
 .feature-card {
-  background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.6); border-radius: 20px; padding: 32px 24px;
-  text-align: center; display: flex; flex-direction: column; align-items: center;
+  background: var(--pure-white); border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--gray-200);
   transition: all 0.4s cubic-bezier(.4,0,.2,1);
   box-shadow: 0 2px 8px rgba(27,58,92,0.04);
+  display: flex; flex-direction: column;
 }
-.feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(27,58,92,0.10); border-color: var(--blue-200); }
+.feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(27,58,92,0.10); border-color: var(--blue-300); }
+.feature-card .card-header {
+  background: linear-gradient(135deg, var(--blue-900), var(--blue-700));
+  padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+}
 .feature-card .icon {
-  width: 56px; height: 56px; border-radius: 16px; border: 1px solid var(--gray-200);
-  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
+  width: 40px; height: 40px; min-width: 40px; border-radius: 10px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
   display: flex; align-items: center; justify-content: center;
-  color: var(--blue-600); margin-bottom: 20px;
+  color: var(--pure-white);
   transition: all 0.4s cubic-bezier(.4,0,.2,1);
 }
 .feature-card:hover .icon {
-  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
-  border-color: var(--blue-500); color: var(--pure-white);
-  box-shadow: 0 6px 20px rgba(38,96,164,0.3);
+  background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.35);
   transform: scale(1.08);
 }
-.feature-card h4 { font-size: 1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 10px; }
+.feature-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--pure-white); margin: 0; letter-spacing: 0.02em; }
+.feature-card .card-body { padding: 20px; }
 .feature-card p { font-size: 0.88rem; color: var(--gray-500); line-height: 1.65; margin: 0; }
+.feature-card a { color: var(--blue-700); font-weight: 700; text-decoration: none; }
+.feature-card a:hover { color: var(--blue-600); }
 .spec-table {
   width: 100%; border-collapse: collapse; margin: 24px 0;
   border-radius: var(--radius); overflow: hidden;
@@ -2210,6 +2215,9 @@ body.nav-locked {
 .sitemap-list a:hover { color: var(--blue-500); }
 @media (max-width: 768px) {
   .feature-grid { grid-template-columns: 1fr; }
+  .feature-card .card-header { padding: 14px 16px; gap: 12px; }
+  .feature-card .icon { width: 36px; height: 36px; min-width: 36px; }
+  .feature-card .card-body { padding: 16px; }
   .contact-grid { grid-template-columns: 1fr; }
   .sitemap-list { columns: 1; }
   .cta-banner { padding: 32px 20px; }
@@ -2512,24 +2520,40 @@ body.nav-locked {
 
   <div class="feature-grid">
     <div class="feature-card">
-      <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg></div>
-      <h4>150+ MPH Wind Rating</h4>
+      <div class="card-header">
+        <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg></div>
+        <h4>150+ MPH Wind Rating</h4>
+      </div>
+      <div class="card-body">
       <p>Engineered and tested to withstand extreme wind loads exceeding 150 mph, meeting or exceeding ASCE 7 requirements.</p>
+      </div>
     </div>
     <div class="feature-card">
-      <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-      <h4>50+ Year Design Life</h4>
+      <div class="card-header">
+        <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h4>50+ Year Design Life</h4>
+      </div>
+      <div class="card-body">
       <p>Hot-dip galvanized steel and marine-grade aluminum deliver a design life that far exceeds the 25-year industry standard.</p>
+      </div>
     </div>
     <div class="feature-card">
-      <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <h4>Fully Kitted System</h4>
+      <div class="card-header">
+        <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <h4>Fully Kitted System</h4>
+      </div>
+      <div class="card-body">
       <p>Every bolt, bracket, and rail arrives pre-packaged. No third-party sourcing, no on-site fabrication, no surprises.</p>
+      </div>
     </div>
     <div class="feature-card">
-      <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-      <h4>40% Lower O&M Costs</h4>
+      <div class="card-header">
+        <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <h4>40% Lower O&M Costs</h4>
+      </div>
+      <div class="card-body">
       <p>Closed-form design eliminates bolt loosening, corrosion ingress, and structural fatigue that plague open-channel systems.</p>
+      </div>
     </div>
   </div>
 
@@ -2587,9 +2611,12 @@ body.nav-locked {
         </div>
       </div>
 
-      <div>
+            <div>
         <h5 class="footer-col-head">Products</h5>
         <ul class="footer-links">
+          <li><a href="avans-rac-series.html">Avans Rac Series</a></li>
+          <li><a href="utilitas-trac-series.html">Utilitas Trac Series</a></li>
+          <li><a href="tst-series.html">TST Series</a></li>
           <li><a href="fixed-ground.html">Ground Mount</a></li>
           <li><a href="rooftop.html">Rooftop System</a></li>
           <li><a href="dual-axis-tracker.html">Tracker Systems</a></li>
@@ -2605,14 +2632,24 @@ body.nav-locked {
           <li><a href="agricultural.html">Agricultural</a></li>
           <li><a href="storm-hardened.html">Storm Hardened</a></li>
           <li><a href="configurator.html">Array Configurator</a></li>
+          <li><a href="resources.html">Resources</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="footer-col-head">Services</h5>
+        <ul class="footer-links">
+          <li><a href="support-services.html">Support Services</a></li>
+          <li><a href="project-finance-program.html">Project Finance</a></li>
+          <li><a href="affiliate-partner-program.html">Affiliate Program</a></li>
+          <li><a href="app-portal.html">Client Portal</a></li>
         </ul>
       </div>
 
       <div>
         <h5 class="footer-col-head">Company</h5>
         <ul class="footer-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="#about">About SEMS</a></li>
+          <li><a href="about-us.html">About SEMS</a></li>
           <li><a href="engineering.html">Engineering</a></li>
           <li><a href="contact.html">Contact</a></li>
           <li><a href="careers.html">Careers</a></li>
