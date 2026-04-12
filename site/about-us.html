@@ -2120,6 +2120,77 @@ body.nav-locked {
 }
 .content-section ul li { margin-bottom: 8px; }
 
+/* ══════════ OUR SOLUTION ══════════ */
+.solution-section {
+  padding: 80px 0; position: relative; overflow: hidden;
+  background: linear-gradient(170deg, #f0f7ff 0%, #fafcff 40%, #f0f7ff 100%);
+}
+.solution-section::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 20% 30%, rgba(59,143,219,0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 70%, rgba(59,130,246,0.05) 0%, transparent 50%);
+}
+.solution-section .wrap { position: relative; z-index: 1; }
+.solution-label {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--blue-700); margin-bottom: 12px;
+}
+.solution-title {
+  font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: var(--blue-900);
+  margin-bottom: 16px; line-height: 1.15; letter-spacing: -0.02em;
+}
+.solution-intro {
+  font-size: clamp(15px, 1.6vw, 18px); color: var(--gray-500); max-width: 720px;
+  line-height: 1.7; margin-bottom: 48px;
+}
+.solution-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px; margin-bottom: 40px;
+}
+.sol-card {
+  background: rgba(255,255,255,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.6); border-radius: 20px; overflow: hidden;
+  transition: all 0.4s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 4px 16px rgba(27,58,92,0.05);
+}
+.sol-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(27,58,92,0.10); border-color: rgba(255,255,255,0.8); }
+.sol-card-icon {
+  background: linear-gradient(135deg, var(--blue-900), var(--blue-700));
+  padding: 28px 28px 20px; display: flex; align-items: center; gap: 14px;
+}
+.sol-icon-circle {
+  width: 52px; height: 52px; min-width: 52px; border-radius: 14px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.sol-card-icon h3 { font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0; line-height: 1.3; }
+.sol-card-body {
+  padding: 22px 28px 28px;
+}
+.sol-card-body p {
+  font-size: 0.88rem; color: var(--gray-500); line-height: 1.75; margin: 0;
+}
+.sol-stat {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--blue-700); padding: 4px 12px; border-radius: 20px;
+  background: rgba(59,130,246,0.08);
+}
+.solution-cta-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 12px;
+}
+.solution-cta-row .compliance-badges {
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.compliance-badge {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 20px;
+  background: rgba(34,120,69,0.08); color: #227845; border: 1px solid rgba(34,120,69,0.15);
+}
+@media (max-width: 720px) {
+  .solution-grid { grid-template-columns: 1fr; }
+}
+
 /* ══════════ LEADERSHIP TEAM ══════════ */
 .team-section { padding: 80px 0; }
 .team-section .section-label { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-700); margin-bottom: 12px; }
@@ -2544,17 +2615,74 @@ body.nav-locked {
   <h2>The Problem We Solve</h2>
   <p>The solar industry faces a critical vulnerability — conventional racking systems are not designed to withstand the extreme weather conditions that are becoming more frequent and destructive. As highlighted by NREL, FEMA, FEMP, and the Rocky Mountain Institute, solar racking is a critical area requiring storm-hardened design and construction to maximize the survivability of solar arrays during severe weather events.</p>
 
-  <h2>Our Solution</h2>
-  <p>SEMS products meet or exceed the standards outlined in recent reports published by FEMA, FEMP, the Rocky Mountain Institute, and NREL. Our patent-pending closed-form tubular design delivers:</p>
-  <ul>
-    <li><strong>Storm-hardened performance</strong> — arrays designed to survive and continue generating power after major weather events</li>
-    <li><strong>Lower lifecycle costs</strong> — reduced planned and unplanned operations and maintenance expenses</li>
-    <li><strong>Bankable LCOE</strong> — a more predictable and favorable Levelized Cost of Energy</li>
-    <li><strong>Fully kitted systems</strong> — no third-party sourcing or on-site fabrication required</li>
-  </ul>
-
   <h2>Who We Serve</h2>
   <p>SEMS serves solar project developers, EPC contractors, asset owners, and investors who demand more from their infrastructure — systems that protect capital, extend asset life, and deliver on financial projections even in the face of climate-driven risk.</p>
+</div>
+
+<!-- ══════════ OUR SOLUTION ══════════ -->
+<div class="solution-section">
+  <div class="wrap">
+    <div class="solution-label">Our Solution</div>
+    <div class="solution-title">Engineered to Endure. Built to Perform.</div>
+    <p class="solution-intro">SEMS products meet or exceed the standards outlined by FEMA, FEMP, the Rocky Mountain Institute, and NREL. Every system ships fully kitted, with patent-pending closed-form tubular designs that eliminate the weak points conventional racking leaves exposed.</p>
+
+    <div class="solution-grid">
+
+      <div class="sol-card">
+        <div class="sol-card-icon">
+          <div class="sol-icon-circle"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <h3>Storm-Hardened Performance</h3>
+        </div>
+        <div class="sol-card-body">
+          <p>Our closed-form tubular steel and aluminum construction creates a unified structural envelope that resists wind uplift, shear, and torsion at force levels that tear open-channel systems apart. SEMS arrays are designed to survive a major weather event and continue generating power the next day.</p>
+          <span class="sol-stat">Rated for extreme wind zones</span>
+        </div>
+      </div>
+
+      <div class="sol-card">
+        <div class="sol-card-icon">
+          <div class="sol-icon-circle"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <h3>Lower Lifecycle Costs</h3>
+        </div>
+        <div class="sol-card-body">
+          <p>Closed-form profiles eliminate the bolt-loosening, corrosion traps, and fatigue cracking that plague open-channel racking. The result is dramatically lower planned and unplanned O&M spend over the life of the asset — protecting returns for owners and investors year after year.</p>
+          <span class="sol-stat">Reduced O&M over asset life</span>
+        </div>
+      </div>
+
+      <div class="sol-card">
+        <div class="sol-card-icon">
+          <div class="sol-icon-circle"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <h3>Bankable LCOE</h3>
+        </div>
+        <div class="sol-card-body">
+          <p>When racking survives what conventional systems don't, the financial model changes. SEMS delivers a more predictable and favorable Levelized Cost of Energy by eliminating the risk of catastrophic structural loss and reducing the insurance, maintenance, and downtime variables that erode returns.</p>
+          <span class="sol-stat">Predictable energy economics</span>
+        </div>
+      </div>
+
+      <div class="sol-card">
+        <div class="sol-card-icon">
+          <div class="sol-icon-circle"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+          <h3>Fully Kitted Systems</h3>
+        </div>
+        <div class="sol-card-body">
+          <p>Every SEMS system ships as a complete, pre-engineered kit — structural members, hardware packs, clamps, and fasteners included. There is no third-party sourcing, no on-site fabrication, and no guesswork. One shipment, one vendor, one installation sequence. Faster installs, fewer errors, lower labor cost.</p>
+          <span class="sol-stat">Zero on-site fabrication</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="solution-cta-row">
+      <div class="compliance-badges">
+        <span class="compliance-badge">FEMA Compliant</span>
+        <span class="compliance-badge">FEMP Standards</span>
+        <span class="compliance-badge">NREL Recommended</span>
+        <span class="compliance-badge">RMI Aligned</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ LEADERSHIP TEAM ══════════ -->
@@ -2565,32 +2693,6 @@ body.nav-locked {
     <p class="section-intro">SEMS was built by people who know what it means to build things that have to last — in the field, in uniform, and under pressure. Our leadership team brings decades of combined experience in construction, engineering, military service, finance, and energy infrastructure.</p>
 
     <div class="team-grid">
-
-      <!-- Noel Segui -->
-      <div class="team-card">
-        <div class="team-card-header">
-          <div class="team-avatar">NS</div>
-          <div>
-            <div class="team-name">Noel Segui</div>
-            <div class="team-title">Co-Founder &amp; Chief Technology Officer</div>
-          </div>
-        </div>
-        <div class="team-card-body">
-          <p>Noel brings an extensive construction and utility-scale energy background to SEMS. With deep experience across large-scale solar installations, heavy civil infrastructure, and electrical systems, he has spent his career on job sites where structural failure isn't an option — and where every design decision is tested by weather, terrain, and time.</p>
-          <p>As CTO, Noel leads product development and the engineering vision behind every SEMS racking and tracking system — translating real-world field knowledge into patent-pending designs that are storm-hardened from the ground up. His hands-on construction expertise is the reason SEMS products are built the way they are: robust, practical, and field-proven.</p>
-          <p>A U.S. veteran, Noel served alongside co-founder Robert Loven before channeling that same sense of duty into building critical energy infrastructure. From utility-scale ground mounts to complex tracker deployments, he has seen firsthand what survives and what doesn't — and he built SEMS to make sure it survives.</p>
-          <div class="team-tags">
-            <span class="team-tag">Construction</span>
-            <span class="team-tag">Utility-Scale Solar</span>
-            <span class="team-tag">Product Engineering</span>
-            <span class="team-tag veteran">U.S. Veteran</span>
-          </div>
-          <a href="https://www.linkedin.com/in/noelsegui/" target="_blank" rel="noopener" class="team-linkedin">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
-            LinkedIn Profile
-          </a>
-        </div>
-      </div>
 
       <!-- Robert Loven -->
       <div class="team-card">
@@ -2638,6 +2740,32 @@ body.nav-locked {
             <span class="team-tag">Penn State University</span>
           </div>
           <a href="https://www.linkedin.com/in/james-loven-786732189/" target="_blank" rel="noopener" class="team-linkedin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Noel Segui -->
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="team-avatar">NS</div>
+          <div>
+            <div class="team-name">Noel Segui</div>
+            <div class="team-title">Co-Founder &amp; Chief Technology Officer</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>Noel brings an extensive construction and utility-scale energy background to SEMS. With deep experience across large-scale solar installations, heavy civil infrastructure, and electrical systems, he has spent his career on job sites where structural failure isn't an option — and where every design decision is tested by weather, terrain, and time.</p>
+          <p>As CTO, Noel leads product development and the engineering vision behind every SEMS racking and tracking system — translating real-world field knowledge into patent-pending designs that are storm-hardened from the ground up. His hands-on construction expertise is the reason SEMS products are built the way they are: robust, practical, and field-proven.</p>
+          <p>A U.S. veteran, Noel served alongside co-founder Robert Loven before channeling that same sense of duty into building critical energy infrastructure. From utility-scale ground mounts to complex tracker deployments, he has seen firsthand what survives and what doesn't — and he built SEMS to make sure it survives.</p>
+          <div class="team-tags">
+            <span class="team-tag">Construction</span>
+            <span class="team-tag">Utility-Scale Solar</span>
+            <span class="team-tag">Product Engineering</span>
+            <span class="team-tag veteran">U.S. Veteran</span>
+          </div>
+          <a href="https://www.linkedin.com/in/noelsegui/" target="_blank" rel="noopener" class="team-linkedin">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
             LinkedIn Profile
           </a>
