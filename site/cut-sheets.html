@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  @author    Noel Segui, CEO of Solar Mason
+  @origin    This entire system was designed by Noel Segui (Solar Mason).
+  @note      All core logic, UX, and engineering © Noel Segui.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="author" content="Noel Segui"/>
+<meta name="creator" content="Noel Segui, CEO of Solar Mason"/>
+<title>Engineering Cut Sheets | SEMS Solar Equip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-900: #1B3A5C;
+  --blue-700: #2660A4;
+  --blue-600: #2D78C4;
+  --blue-500: #3B8FDB;
+  --blue-400: #5BBCE4;
+  --blue-300: #7EC8E8;
+  --blue-200: #A0CCDF;
+  --blue-100: #CCDDEA;
+  --blue-50:  #DFE7EE;
+  --gray-900: #1A1E24;
+  --gray-700: #353B44;
+  --gray-600: #424A56;
+  --gray-500: #5A6578;
+  --gray-400: #8892A4;
+  --gray-300: #B0B9C9;
+  --gray-200: #C8D0DC;
+  --gray-100: #DDE2EA;
+  --gray-50:  #E5E9EF;
+  --white: #EBEEF2;
+  --pure-white: #F5F6F8;
+  --nav-h: 80px;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 4px rgba(27,58,92,0.1);
+  --shadow-md: 0 4px 20px rgba(27,58,92,0.12);
+  --shadow-lg: 0 12px 40px rgba(27,58,92,0.14);
+  --shadow-xl: 0 24px 60px rgba(27,58,92,0.16);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--gray-700);
+  overflow-x: hidden;
+  line-height: 1.7;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ══════════ BACK NAV ══════════ */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(27,58,92,0.95);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 clamp(20px, 4vw, 60px);
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-bar-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--pure-white);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.top-bar-logo svg {
+  flex-shrink: 0;
+}
+
+.top-bar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue-200);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.top-bar-back:hover {
+  color: var(--pure-white);
+  background: rgba(255,255,255,0.1);
+}
+
+/* ══════════ HERO BANNER ══════════ */
+.page-hero {
+  background: linear-gradient(135deg, var(--blue-900) 0%, #1a3050 50%, var(--blue-900) 100%);
+  padding: clamp(60px, 8vw, 100px) clamp(20px, 4vw, 60px) clamp(40px, 6vw, 70px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(59,143,219,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(91,188,228,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.page-hero .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59,143,219,0.15);
+  border: 1px solid rgba(59,143,219,0.3);
+  border-radius: 100px;
+  padding: 6px 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.page-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  color: var(--pure-white);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.page-hero p {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: var(--blue-200);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.7;
+  position: relative;
+}
+
+/* ══════════ FILTER BAR ══════════ */
+.filter-bar {
+  background: var(--pure-white);
+  border-bottom: 1px solid var(--gray-100);
+  padding: 16px clamp(20px, 4vw, 60px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 100;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 7px 18px;
+  border-radius: 100px;
+  border: 1.5px solid var(--gray-200);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  font-family: var(--font-body);
+}
+
+.chip:hover {
+  border-color: var(--blue-500);
+  color: var(--blue-700);
+  background: rgba(59,143,219,0.06);
+}
+
+.chip.active {
+  background: var(--blue-700);
+  color: var(--pure-white);
+  border-color: var(--blue-700);
+}
+
+.results-count {
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  font-weight: 600;
+}
+
+/* ══════════ GRID ══════════ */
+.grid-section {
+  padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 60px);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ══════════ CARD ══════════ */
+.cut-card {
+  background: var(--pure-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--gray-100);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.cut-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--blue-200);
+}
+
+.cut-card-thumb {
+  position: relative;
+  aspect-ratio: 8.5 / 11;
+  overflow: hidden;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.cut-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.4s ease;
+}
+
+.cut-card:hover .cut-card-thumb img {
+  transform: scale(1.03);
+}
+
+.cut-card-thumb .badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--blue-700);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.cut-card-body {
+  padding: 20px 24px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cut-card-category {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--blue-500);
+  margin-bottom: 6px;
+}
+
+.cut-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.cut-card-desc {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.cut-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.cut-card-meta span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gray-400);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cut-card-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-view, .btn-download {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-family: var(--font-body);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-view {
+  background: var(--blue-50);
+  color: var(--blue-700);
+}
+
+.btn-view:hover {
+  background: var(--blue-100);
+}
+
+.btn-download {
+  background: var(--blue-700);
+  color: #fff;
+}
+
+.btn-download:hover {
+  background: var(--blue-600);
+}
+
+/* ══════════ FOOTER ══════════ */
+.page-footer {
+  background: var(--gray-900);
+  color: var(--gray-400);
+  text-align: center;
+  padding: 32px 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-top: 40px;
+}
+
+.page-footer a {
+  color: var(--blue-400);
+  font-weight: 600;
+}
+
+.page-footer a:hover {
+  color: var(--blue-300);
+}
+
+/* ══════════ NO RESULTS ══════════ */
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-400);
+}
+
+.no-results svg {
+  margin: 0 auto 16px;
+  opacity: 0.4;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ══════════ ANIMATIONS ══════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cut-card {
+  animation: fadeUp 0.5s ease both;
+}
+
+.cut-card:nth-child(1)  { animation-delay: 0.02s; }
+.cut-card:nth-child(2)  { animation-delay: 0.06s; }
+.cut-card:nth-child(3)  { animation-delay: 0.10s; }
+.cut-card:nth-child(4)  { animation-delay: 0.14s; }
+.cut-card:nth-child(5)  { animation-delay: 0.18s; }
+.cut-card:nth-child(6)  { animation-delay: 0.22s; }
+.cut-card:nth-child(7)  { animation-delay: 0.26s; }
+.cut-card:nth-child(8)  { animation-delay: 0.30s; }
+.cut-card:nth-child(9)  { animation-delay: 0.34s; }
+.cut-card:nth-child(10) { animation-delay: 0.38s; }
+.cut-card:nth-child(11) { animation-delay: 0.42s; }
+.cut-card:nth-child(12) { animation-delay: 0.46s; }
+.cut-card:nth-child(13) { animation-delay: 0.50s; }
+.cut-card:nth-child(14) { animation-delay: 0.54s; }
+.cut-card:nth-child(15) { animation-delay: 0.58s; }
+
+/* ══════════ RESPONSIVE ══════════ */
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .cut-card-meta {
+    flex-wrap: wrap;
+  }
+  .cut-card-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .btn-view, .btn-download {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  .filter-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .chip {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<nav class="top-bar">
+  <a href="index.html" class="top-bar-logo">
+    <svg width="36" height="28" viewBox="0 0 36 28" fill="none">
+      <path d="M4 2h7l3 5H7L4 2z" fill="#3B8FDB"/>
+      <path d="M12 2h7l3 5h-7l-3-5z" fill="#2660A4"/>
+      <path d="M20 2h7l3 5h-7l-3-5z" fill="#1B3A5C"/>
+      <path d="M2 10h7l3 5H5l-3-5z" fill="#3B8FDB"/>
+      <path d="M10 10h7l3 5h-7l-3-5z" fill="#2660A4"/>
+      <path d="M18 10h7l3 5h-7l-3-5z" fill="#1B3A5C"/>
+      <path d="M0 18h7l3 5H3L0 18z" fill="#3B8FDB"/>
+      <path d="M8 18h7l3 5h-7l-3-5z" fill="#2660A4"/>
+      <path d="M16 18h7l3 5h-7l-3-5z" fill="#1B3A5C"/>
+    </svg>
+    SEMS Solar Equip
+  </a>
+  <a href="index.html" class="top-bar-back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M10.354 3.354a.5.5 0 0 0-.708-.708l-5 5a.5.5 0 0 0 0 .708l5 5a.5.5 0 0 0 .708-.708L5.707 8l4.647-4.646z"/></svg>
+    Back to Home
+  </a>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="page-hero">
+  <div class="eyebrow">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M2 1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm6 0a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H8zM2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2zm6 0a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H8z"/></svg>
+    Engineering Documentation
+  </div>
+  <h1>Avans Rac Series Cut Sheets</h1>
+  <p>Detailed engineering specifications, part numbers, materials, and dimensional data for every component in the Avans Rac storm-hardened racking system.</p>
+</section>
+
+<!-- ═══════════ FILTER BAR ═══════════ -->
+<div class="filter-bar">
+  <div class="filter-chips">
+    <button class="chip active" data-filter="all">All Components</button>
+    <button class="chip" data-filter="structural">Structural</button>
+    <button class="chip" data-filter="rails">Rails</button>
+    <button class="chip" data-filter="hardware">Hardware &amp; Kits</button>
+  </div>
+  <span class="results-count"><span id="count">15</span> cut sheets</span>
+</div>
+
+<!-- ═══════════ CARD GRID ═══════════ -->
+<section class="grid-section">
+  <div class="card-grid" id="cardGrid">
+
+    <!-- 1 — Avans W-Beam -->
+    <div class="cut-card" data-cat="structural">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-beam.png" alt="Avans Series W-Beam cut sheet" loading="lazy">
+        <span class="badge">Structural</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Structural Component</span>
+        <h3 class="cut-card-title">Avans Series W-Beam</h3>
+        <p class="cut-card-desc">W6x9 wide-flange steel beam in 12.5' and 15' lengths. ASTM A992 steel, mill finish. Primary load-bearing member of the racking system.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>239 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Beam.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Beam.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 — Assembly Bracket -->
+    <div class="cut-card" data-cat="structural">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-assembly-bracket.png" alt="Assembly Bracket cut sheet" loading="lazy">
+        <span class="badge">Structural</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Structural Component</span>
+        <h3 class="cut-card-title">Avans Series Assembly Bracket</h3>
+        <p class="cut-card-desc">Precision-formed steel bracket connecting main structural members. Zinc-coated for corrosion resistance in all weather conditions.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>199 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Assembly Bracket.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Assembly Bracket.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 — Bearing Rail -->
+    <div class="cut-card" data-cat="rails">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-bearing-rail.png" alt="Bearing Rail cut sheet" loading="lazy">
+        <span class="badge">Rails</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Rail System</span>
+        <h3 class="cut-card-title">Avans Series Bearing Rail</h3>
+        <p class="cut-card-desc">Tubular aluminum bearing rail providing the primary module mounting surface. Engineered for uniform load distribution across the array.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>209 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Bearing Rail.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Bearing Rail.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 — Diagonal Brace Mount -->
+    <div class="cut-card" data-cat="structural">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-diagonal-brace-mount.png" alt="Diagonal Brace Mount cut sheet" loading="lazy">
+        <span class="badge">Structural</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Structural Component</span>
+        <h3 class="cut-card-title">Avans Series Diagonal Brace Mount</h3>
+        <p class="cut-card-desc">Steel mounting plate that secures diagonal braces to the W-beam structure. Critical connection point for lateral wind resistance.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>233 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Diagonal Brace Mount.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Diagonal Brace Mount.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 — Diagonal Brace -->
+    <div class="cut-card" data-cat="structural">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-diagonal-brace.png" alt="Diagonal Brace cut sheet" loading="lazy">
+        <span class="badge">Structural</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Structural Component</span>
+        <h3 class="cut-card-title">Avans Series Diagonal Brace</h3>
+        <p class="cut-card-desc">Tubular steel diagonal brace providing critical lateral stability. Engineered for maximum wind uplift resistance in storm-hardened configurations.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>197 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Diagonal Brace.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Diagonal Brace.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 — Journal -->
+    <div class="cut-card" data-cat="structural">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-journal.png" alt="Journal cut sheet" loading="lazy">
+        <span class="badge">Structural</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Structural Component</span>
+        <h3 class="cut-card-title">Avans Series Journal</h3>
+        <p class="cut-card-desc">Precision-machined journal assembly connecting the bearing rail to the main structural frame. Enables tilt adjustment and secure locking.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>369 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Journal.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Journal.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 — Main Rails -->
+    <div class="cut-card" data-cat="rails">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-main-rails.png" alt="Main Rails cut sheet" loading="lazy">
+        <span class="badge">Rails</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Rail System</span>
+        <h3 class="cut-card-title">Avans Series Main Rails</h3>
+        <p class="cut-card-desc">Primary longitudinal rail members spanning the full length of the array. Closed-form tubular design for superior torsional rigidity.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>242 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Main Rails.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Main Rails.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 — Mid Rail -->
+    <div class="cut-card" data-cat="rails">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-mid-rail.png" alt="Mid Rail cut sheet" loading="lazy">
+        <span class="badge">Rails</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Rail System</span>
+        <h3 class="cut-card-title">Avans Series Mid Rail</h3>
+        <p class="cut-card-desc">Intermediate rail positioned between main rails for additional module support. Maintains consistent panel spacing across the array.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>81 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Mid Rail.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Mid Rail.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 — Side Rail -->
+    <div class="cut-card" data-cat="rails">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/avans-series-side-rail.png" alt="Side Rail cut sheet" loading="lazy">
+        <span class="badge">Rails</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Rail System</span>
+        <h3 class="cut-card-title">Avans Series Side Rail</h3>
+        <p class="cut-card-desc">Outer perimeter rail securing the edge modules of the array. Provides structural closure and clean edge termination.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>79 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Avans Series Side Rail.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Avans Series Side Rail.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 — Mid Pole Rack Mounting Hardware -->
+    <div class="cut-card" data-cat="hardware">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/mid-pole-rack-mounting-hardware.png" alt="Mid Pole Rack Mounting Hardware cut sheet" loading="lazy">
+        <span class="badge">Hardware</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Hardware Kit</span>
+        <h3 class="cut-card-title">Mid Pole Rack Mounting Hardware</h3>
+        <p class="cut-card-desc">Complete fastener kit for mid-pole rack connections. Grade 5 zinc-coated bolts, lock washers, and steel lock nuts.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>274 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Mid Pole Rack Mounting Hardware.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Mid Pole Rack Mounting Hardware.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11 — Rack Assembly Hardware -->
+    <div class="cut-card" data-cat="hardware">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/rack-assembly-hardware-cut-sheet.png" alt="Rack Assembly Hardware cut sheet" loading="lazy">
+        <span class="badge">Hardware</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Hardware Kit</span>
+        <h3 class="cut-card-title">Rack Assembly Hardware</h3>
+        <p class="cut-card-desc">Full fastener set for rack assembly — 3/8-16 Grade 5 bolts (2.75" &amp; 3"), split lock washers, and steel lock nuts. All zinc-coated.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>363 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Rack Assembly Hardware Cut Sheet.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Rack Assembly Hardware Cut Sheet.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 — Side Rail Assembly Hardware -->
+    <div class="cut-card" data-cat="hardware">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/side-rail-assembly-hardware-cut-sheet.png" alt="Side Rail Assembly Hardware cut sheet" loading="lazy">
+        <span class="badge">Hardware</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Hardware Kit</span>
+        <h3 class="cut-card-title">Side Rail Assembly Hardware</h3>
+        <p class="cut-card-desc">Dedicated fastener package for side rail connections. Precision-matched bolt lengths and lock hardware for perimeter structural integrity.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>316 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Side Rail Assembly Hardware  Cut Sheet.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Side Rail Assembly Hardware  Cut Sheet.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13 — Spacer Kits -->
+    <div class="cut-card" data-cat="hardware">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/spacer-kits.png" alt="Spacer Kits cut sheet" loading="lazy">
+        <span class="badge">Hardware</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Hardware Kit</span>
+        <h3 class="cut-card-title">Spacer Kits</h3>
+        <p class="cut-card-desc">Precision spacer sets for maintaining exact component clearances and alignment tolerances throughout the assembled racking system.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>287 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Spacer Kits.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Spacer Kits.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14 — Start/End Pole Rack Mounting Hardware -->
+    <div class="cut-card" data-cat="hardware">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/startend-pole-rack-mounting-hardware.png" alt="Start/End Pole Rack Mounting Hardware cut sheet" loading="lazy">
+        <span class="badge">Hardware</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Hardware Kit</span>
+        <h3 class="cut-card-title">Start/End Pole Rack Mounting Hardware</h3>
+        <p class="cut-card-desc">Fastener kit for start and end pole rack mount connections. Ensures secure termination at array boundaries.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>277 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Start_End Pole Rack Mounting Hardware.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Start_End Pole Rack Mounting Hardware.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15 — Strut Mounting Kit -->
+    <div class="cut-card" data-cat="hardware">
+      <div class="cut-card-thumb">
+        <img src="thumbnails/strut-mounting-kit.png" alt="Strut Mounting Kit cut sheet" loading="lazy">
+        <span class="badge">Hardware</span>
+      </div>
+      <div class="cut-card-body">
+        <span class="cut-card-category">Hardware Kit</span>
+        <h3 class="cut-card-title">Strut Mounting Kit</h3>
+        <p class="cut-card-desc">Complete strut channel mounting hardware for versatile attachment configurations. Includes spring nuts, bolts, and channel connectors.</p>
+        <div class="cut-card-meta">
+          <span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4L7 1H3z"/></svg> PDF</span>
+          <span>448 KB</span>
+          <div class="cut-card-actions">
+            <a href="docs/Strut Mounting Kit.pdf" target="_blank" class="btn-view">View</a>
+            <a href="docs/Strut Mounting Kit.pdf" download class="btn-download">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="page-footer">
+  &copy; 2024 Sustainable Energy Management Systems, LLC. All rights reserved. &nbsp;|&nbsp;
+  <a href="index.html">Back to Home</a>
+</footer>
+
+<!-- ═══════════ FILTER JS ═══════════ -->
+<script>
+(function(){
+  const chips = document.querySelectorAll('.chip');
+  const cards = document.querySelectorAll('.cut-card');
+  const counter = document.getElementById('count');
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      const filter = chip.dataset.filter;
+      let visible = 0;
+
+      cards.forEach((card, i) => {
+        const match = filter === 'all' || card.dataset.cat === filter;
+        card.style.display = match ? '' : 'none';
+        if(match) {
+          visible++;
+          card.style.animation = 'none';
+          card.offsetHeight; /* reflow */
+          card.style.animation = `fadeUp 0.4s ease both ${i * 0.03}s`;
+        }
+      });
+
+      counter.textContent = visible;
+    });
+  });
+})();
+</script>
+</body>
+</html>
