@@ -593,9 +593,11 @@ img { max-width: 100%; display: block; }
 
 /* ══════════ STATS ══════════ */
 .stats {
-  background: var(--pure-white);
-  border-top: 1px solid var(--gray-200);
-  border-bottom: 1px solid var(--gray-200);
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 .stats-inner {
   max-width: 1320px;
@@ -976,7 +978,9 @@ img { max-width: 100%; display: block; }
   width: 100%;
   border-collapse: collapse;
   margin-top: 48px;
-  background: var(--pure-white);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -1042,7 +1046,7 @@ img { max-width: 100%; display: block; }
 }
 .faq-header {
   padding: 24px;
-  background: var(--pure-white);
+  background: rgba(255,255,255,0.5);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -1220,8 +1224,10 @@ img { max-width: 100%; display: block; }
   position: relative;
   max-width: 900px;
   margin: 48px auto;
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.5);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -2177,10 +2183,10 @@ body.nav-locked {
 
 /* Card */
 .cut-card {
-  background: var(--pure-white);
+  background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--gray-100);
+  border: 1px solid rgba(255,255,255,0.5);
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
