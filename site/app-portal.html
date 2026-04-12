@@ -12,8 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="author" content="Noel Segui"/>
 <meta name="creator" content="Noel Segui, CEO of Solar Mason"/>
-<meta name="generator" content="Designed by Noel Segui — CEO, Solar Mason"/>
-<title>SEMS Solar Equip | Storm-Hardened Solar Racking | Scranton, PA</title>
+<title>SEMS Configurator | SEMS Solar Equip</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -1987,6 +1986,131 @@ body.nav-locked {
   .eng-bg canvas { opacity: 0.4; }
 }
 </style>
+<style>
+/* ══════════ INNER PAGE STYLES ══════════ */
+.inner-hero {
+  background: linear-gradient(135deg, var(--blue-900) 0%, #1a3050 50%, var(--blue-900) 100%);
+  padding: clamp(60px, 8vw, 100px) clamp(20px, 4vw, 60px) clamp(40px, 6vw, 70px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.inner-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(59,143,219,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(91,188,228,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+.inner-hero .eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(59,143,219,0.15); border: 1px solid rgba(59,143,219,0.3);
+  border-radius: 100px; padding: 6px 20px;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--blue-300); margin-bottom: 20px; position: relative;
+}
+.inner-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
+  color: var(--pure-white); line-height: 1.15;
+  letter-spacing: -0.03em; margin-bottom: 16px; position: relative;
+}
+.inner-hero p {
+  font-size: clamp(1rem, 1.5vw, 1.2rem); color: var(--blue-200);
+  max-width: 640px; margin: 0 auto; line-height: 1.7; position: relative;
+}
+.content-section {
+  max-width: 1100px; margin: 0 auto;
+  padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 60px);
+}
+.content-section h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800;
+  color: var(--gray-900); margin-bottom: 16px; letter-spacing: -0.02em;
+}
+.content-section h3 {
+  font-size: 1.2rem; font-weight: 700; color: var(--blue-700);
+  margin: 28px 0 10px;
+}
+.content-section p {
+  font-size: 1rem; color: var(--gray-600); line-height: 1.8; margin-bottom: 16px;
+}
+.content-section ul {
+  margin: 12px 0 20px 24px; color: var(--gray-600); line-height: 1.8;
+}
+.content-section ul li { margin-bottom: 8px; }
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; margin: 32px 0;
+}
+.feature-card {
+  background: var(--pure-white); border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg); padding: 28px;
+  transition: all 0.3s ease;
+}
+.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--blue-200); }
+.feature-card .icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue-50), var(--blue-100));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-700); margin-bottom: 16px;
+}
+.feature-card h4 { font-size: 1.05rem; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+.feature-card p { font-size: 0.9rem; color: var(--gray-500); line-height: 1.6; margin: 0; }
+.spec-table {
+  width: 100%; border-collapse: collapse; margin: 24px 0;
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--gray-100);
+}
+.spec-table th {
+  background: var(--blue-900); color: var(--pure-white);
+  padding: 14px 20px; text-align: left; font-size: 0.85rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.spec-table td {
+  padding: 14px 20px; border-bottom: 1px solid var(--gray-100);
+  font-size: 0.92rem; color: var(--gray-700);
+}
+.spec-table tr:nth-child(even) td { background: rgba(235,238,242,0.5); }
+.spec-table tr:hover td { background: rgba(59,143,219,0.05); }
+.cta-banner {
+  background: linear-gradient(135deg, var(--blue-900), var(--blue-700));
+  border-radius: var(--radius-lg); padding: 48px; text-align: center;
+  margin: 48px 0;
+}
+.cta-banner h2 { color: var(--pure-white); margin-bottom: 12px; }
+.cta-banner p { color: var(--blue-200); margin-bottom: 24px; }
+.cta-banner .btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--pure-white); color: var(--blue-900);
+  padding: 14px 32px; border-radius: 10px; font-weight: 700;
+  font-size: 0.95rem; transition: all 0.2s ease; text-decoration: none;
+}
+.cta-banner .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin: 32px 0; }
+.contact-card {
+  background: var(--pure-white); border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg); padding: 32px; text-align: center;
+}
+.contact-card .icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--blue-50), var(--blue-100));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-700); margin: 0 auto 16px;
+}
+.contact-card h4 { font-size: 1.05rem; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+.contact-card p { font-size: 0.92rem; color: var(--gray-500); line-height: 1.6; margin: 0; }
+.contact-card a { color: var(--blue-700); font-weight: 600; }
+.sitemap-list { columns: 2; column-gap: 40px; margin: 24px 0; }
+.sitemap-list li { margin-bottom: 10px; break-inside: avoid; }
+.sitemap-list a { color: var(--blue-700); font-weight: 600; transition: color 0.2s; }
+.sitemap-list a:hover { color: var(--blue-500); }
+@media (max-width: 768px) {
+  .feature-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .sitemap-list { columns: 1; }
+  .cta-banner { padding: 32px 20px; }
+}
+</style>
 </head>
 <body>
 
@@ -2267,443 +2391,38 @@ body.nav-locked {
   </div>
 </div>
 
-<!-- ══════════ HERO ══════════ -->
-<section class="hero">
-  <div class="hero-blueprint"><canvas id="heroBlueprintCanvas"></canvas></div>
 
-  <div class="hero-content">
-    <div class="hero-text">
-      <div class="hero-badge">
-        <span class="hero-badge-dot"></span>
-        STORM-HARDENED INNOVATION
-      </div>
-      <h1>Next Generation <span class="emphasis">Solar Racking</span> Made in the USA</h1>
-      <p class="hero-sub" id="heroSubtitle"></p>
-      <div class="hero-ctas">
-        <a href="contact.html" class="btn-primary">
-          Schedule Consultation
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a href="#products" class="btn-outline">View Products</a>
-      </div>
+
+<section class="inner-hero">
+  <div class="eyebrow">Tools</div>
+  <h1>SEMS Configurator</h1>
+  <p>Design and configure your SEMS racking system with our interactive project planning tool.</p>
+</section>
+<div class="content-section">
+  <h2>Project Configuration Tool</h2>
+  <p>The SEMS Configurator allows you to design array layouts, select components, and generate bills of material for your solar racking project. Available to SEMS partners and authorized users.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>Array Layout Design</h4>
+      <p>Interactive canvas for laying out module positions, row spacing, and system boundaries tailored to your site.</p>
     </div>
-    <div class="hero-img">
-      <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1600&q=80&auto=format&fit=crop" alt="Solar panel array">
+    <div class="feature-card">
+      <h4>Component Selection</h4>
+      <p>Select from the full SEMS product catalog with automatic compatibility checking and system validation.</p>
+    </div>
+    <div class="feature-card">
+      <h4>Bill of Materials</h4>
+      <p>Automatically generate detailed BOMs with part numbers, quantities, and specifications for ordering.</p>
     </div>
   </div>
-</section>
 
-<!-- ══════════ STATS ══════════ -->
-<section class="stats" data-eng-bg="blueprint">
-  <div class="stats-inner">
-    <div class="stat scroll-fade">
-      <div class="stat-num" data-target="50">0</div>
-      <div class="stat-label">Years Design Life</div>
-    </div>
-    <div class="stat scroll-fade">
-      <div class="stat-num" data-target="150">0</div>
-      <div class="stat-label">+ MPH Wind Rating</div>
-    </div>
-    <div class="stat scroll-fade">
-      <div class="stat-num" data-target="40">0</div>
-      <div class="stat-label">% Reduced Maintenance</div>
-    </div>
-    <div class="stat scroll-fade">
-      <div class="stat-num" data-target="99">0</div>
-      <div class="stat-label">% Module Compatibility</div>
-    </div>
+  <div class="cta-banner">
+    <h2>Ready to Configure?</h2>
+    <p>Contact us for access to the SEMS Configurator tool.</p>
+    <a href="contact.html" class="btn">Request Access</a>
   </div>
-</section>
-
-<!-- ══════════ FEATURES SECTION ══════════ -->
-<section class="section" data-eng-bg="circuit">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Why Choose SEMS</div>
-    <h2 class="section-title scroll-fade">The Future of Solar <span class="emphasis">Mounting</span> Solutions</h2>
-
-    <div class="features-grid">
-      <div>
-        <p class="section-body scroll-fade">SEMS delivers closed-form tubular racking systems engineered for maximum durability and efficiency. Our products are designed to withstand extreme weather while requiring minimal maintenance.</p>
-
-        <div class="callout scroll-fade">
-          <p>"SEMS racking systems demonstrate exceptional engineering excellence and have been validated to meet the most stringent NREL standards for structural integrity."</p>
-          <cite>— National Renewable Energy Laboratory</cite>
-        </div>
-
-        <div class="features-list">
-          <div class="feature-card scroll-fade">
-            <div class="feature-icon">🔧</div>
-            <div>
-              <h4>Pre-Kitted Design</h4>
-              <p>All components arrive ready for assembly with zero field fabrication required.</p>
-            </div>
-          </div>
-          <div class="feature-card scroll-fade">
-            <div class="feature-icon">⚙️</div>
-            <div>
-              <h4>Universal Compatibility</h4>
-              <p>Works with virtually all mainstream solar module types and sizes.</p>
-            </div>
-          </div>
-          <div class="feature-card scroll-fade">
-            <div class="feature-icon">💨</div>
-            <div>
-              <h4>Wind Resistance</h4>
-              <p>Engineered to withstand 150+ mph winds with sealed bearing systems.</p>
-            </div>
-          </div>
-          <div class="feature-card scroll-fade">
-            <div class="feature-icon">🛡️</div>
-            <div>
-              <h4>Storm Hardened</h4>
-              <p>Closed-form tubular construction resists corrosion and environmental damage.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="side-img scroll-fade">
-        <img src="https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800&q=80&auto=format&fit=crop" alt="Solar installation detail">
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ PRODUCTS SECTION ══════════ -->
-<section class="section section-alt" id="products" data-eng-bg="solar-grid">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Our Catalog</div>
-    <h2 class="section-title scroll-fade">Premium <span class="emphasis">Product</span> Line</h2>
-    <p class="section-body scroll-fade">Engineered racking solutions for every solar application, from small residential to utility-scale installations.</p>
-
-    <div class="products-grid">
-      <div class="product-card scroll-fade">
-        <div class="product-card-img">
-          <span class="card-tag">GROUND MOUNT</span>
-          <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=600&q=80&auto=format&fit=crop" alt="Ground mount system">
-        </div>
-        <div class="product-card-body">
-          <h3>Fixed Ground Mount</h3>
-          <p>Heavy-duty ground mounting system for utility and commercial applications. Optimized for maximum structural integrity.</p>
-          <a href="fixed-ground.html" class="product-card-link">Learn More →</a>
-        </div>
-      </div>
-
-      <div class="product-card scroll-fade">
-        <div class="product-card-img">
-          <span class="card-tag">ROOF MOUNT</span>
-          <img src="https://images.unsplash.com/photo-1595437193398-f24279553f4f?w=600&q=80&auto=format&fit=crop" alt="Roof mount system">
-        </div>
-        <div class="product-card-body">
-          <h3>Rooftop System</h3>
-          <p>Aerodynamic rooftop mounting engineered for commercial buildings. Minimal wind loading with maximum durability.</p>
-          <a href="rooftop.html" class="product-card-link">Learn More →</a>
-        </div>
-      </div>
-
-      <div class="product-card scroll-fade">
-        <div class="product-card-img">
-          <span class="card-tag">TRACKER</span>
-          <img src="https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?w=600&q=80&auto=format&fit=crop" alt="Tracker system">
-        </div>
-        <div class="product-card-body">
-          <h3>Dual-Axis Tracker</h3>
-          <p>Advanced two-axis tracking system for maximum energy capture. Precision engineered for optimal performance.</p>
-          <a href="dual-axis-tracker.html" class="product-card-link">Learn More →</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ COMPARISON SECTION ══════════ -->
-<section class="section" data-eng-bg="topo">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Performance Comparison</div>
-    <h2 class="section-title scroll-fade">SEMS vs Conventional <span class="emphasis">Racking</span></h2>
-
-    <table class="comparison-table scroll-fade">
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th class="comparison-sems">SEMS Systems</th>
-          <th class="comparison-conventional">Conventional</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="comparison-label">Wind Resistance</td>
-          <td class="comparison-sems">150+ MPH rated</td>
-          <td class="comparison-conventional">90-110 MPH</td>
-        </tr>
-        <tr>
-          <td class="comparison-label">Design Life</td>
-          <td class="comparison-sems">50 years</td>
-          <td class="comparison-conventional">25-30 years</td>
-        </tr>
-        <tr>
-          <td class="comparison-label">O&M Costs</td>
-          <td class="comparison-sems">40% lower</td>
-          <td class="comparison-conventional">Standard</td>
-        </tr>
-        <tr>
-          <td class="comparison-label">Module Compatibility</td>
-          <td class="comparison-sems">Universal</td>
-          <td class="comparison-conventional">Limited</td>
-        </tr>
-        <tr>
-          <td class="comparison-label">Installation</td>
-          <td class="comparison-sems">Kitted / No fabrication</td>
-          <td class="comparison-conventional">Field assembly required</td>
-        </tr>
-        <tr>
-          <td class="comparison-label">Warranty</td>
-          <td class="comparison-sems">Industry leading</td>
-          <td class="comparison-conventional">Standard</td>
-        </tr>
-        <tr>
-          <td class="comparison-label">Corrosion Resistance</td>
-          <td class="comparison-sems">Sealed bearing systems</td>
-          <td class="comparison-conventional">Standard coatings</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ══════════ PROCESS TIMELINE ══════════ -->
-<section class="section section-alt" data-eng-bg="nodes">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Our Process</div>
-    <h2 class="section-title scroll-fade">How We <span class="emphasis">Work</span></h2>
-
-    <div class="timeline scroll-fade">
-      <div class="timeline-item scroll-fade">
-        <div class="timeline-node">1</div>
-        <div class="timeline-content">
-          <h4>Consultation & Site Assessment</h4>
-          <p>We begin with a thorough evaluation of your site conditions, weather patterns, structural requirements, and specific needs to design the optimal solution.</p>
-        </div>
-      </div>
-      <div class="timeline-item scroll-fade">
-        <div class="timeline-node">2</div>
-        <div class="timeline-content">
-          <h4>Custom Engineering & Design</h4>
-          <p>Our NREL-certified engineers design a system tailored to your specifications, ensuring compliance with all local codes and standards.</p>
-        </div>
-      </div>
-      <div class="timeline-item scroll-fade">
-        <div class="timeline-node">3</div>
-        <div class="timeline-content">
-          <h4>Manufacturing & QC</h4>
-          <p>Each component is manufactured with precision using quality materials and undergoes rigorous testing before shipment.</p>
-        </div>
-      </div>
-      <div class="timeline-item scroll-fade">
-        <div class="timeline-node">4</div>
-        <div class="timeline-content">
-          <h4>Kitted Delivery & Installation Support</h4>
-          <p>Your system arrives pre-kitted and organized for fast, efficient installation. Our technical team provides full support throughout.</p>
-        </div>
-      </div>
-      <div class="timeline-item scroll-fade">
-        <div class="timeline-node">5</div>
-        <div class="timeline-content">
-          <h4>Ongoing Service & Maintenance</h4>
-          <p>We provide comprehensive maintenance support and guidance to ensure your system performs optimally for decades.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ CERTIFICATIONS ══════════ -->
-<section class="section" data-eng-bg="hexgrid">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Trust & Quality</div>
-    <h2 class="section-title scroll-fade">Industry <span class="emphasis">Certifications</span></h2>
-
-    <div class="certs-grid">
-      <div class="cert-badge scroll-fade">
-        <div class="cert-icon">🇺🇸</div>
-        <h4>American Manufactured</h4>
-      </div>
-      <div class="cert-badge scroll-fade">
-        <div class="cert-icon">✓</div>
-        <h4>NREL Standards</h4>
-      </div>
-      <div class="cert-badge scroll-fade">
-        <div class="cert-icon">⚙️</div>
-        <h4>Patent Pending Technology</h4>
-      </div>
-      <div class="cert-badge scroll-fade">
-        <div class="cert-icon">🛡️</div>
-        <h4>50 Year Design Life</h4>
-      </div>
-      <div class="cert-badge scroll-fade">
-        <div class="cert-icon">📋</div>
-        <h4>ISO Quality</h4>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ TESTIMONIALS ══════════ -->
-<section class="section section-alt" data-eng-bg="wave">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Customer Feedback</div>
-    <h2 class="section-title scroll-fade">Trusted by Industry <span class="emphasis">Leaders</span></h2>
-
-    <div class="testimonials-container scroll-fade">
-      <div class="testimonials-content" id="testimonialsContent">
-        <div class="testimonial">
-          <p class="testimonial-text">SEMS racking systems have exceeded our expectations. The pre-kitted delivery and minimal field assembly saved us weeks on installation. Highly recommend for any serious solar project.</p>
-          <div class="testimonial-author">Michael Chen</div>
-          <div class="testimonial-role">Solar Project Developer</div>
-        </div>
-        <div class="testimonial">
-          <p class="testimonial-text">We've installed dozens of SEMS systems across multiple climate zones. The storm-hardened design gives our clients peace of mind, and the durability is unmatched in the industry.</p>
-          <div class="testimonial-author">Jennifer Rodriguez</div>
-          <div class="testimonial-role">EPC Contractor</div>
-        </div>
-        <div class="testimonial">
-          <p class="testimonial-text">As an asset owner investing in solar for the long term, SEMS's 50-year design life and low maintenance costs provide exceptional value. A solid, dependable partner.</p>
-          <div class="testimonial-author">David Thompson</div>
-          <div class="testimonial-role">Asset Owner / Investor</div>
-        </div>
-      </div>
-      <div class="testimonials-nav">
-        <div class="testimonial-dot active" data-index="0"></div>
-        <div class="testimonial-dot" data-index="1"></div>
-        <div class="testimonial-dot" data-index="2"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ FAQ SECTION ══════════ -->
-<section class="section" data-eng-bg="crosshatch">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Questions?</div>
-    <h2 class="section-title scroll-fade">Frequently Asked <span class="emphasis">Questions</span></h2>
-
-    <div class="faq-list">
-      <div class="faq-item scroll-fade">
-        <div class="faq-header">
-          <span>What makes SEMS racking storm-hardened?</span>
-          <span class="faq-toggle">+</span>
-        </div>
-        <div class="faq-content">
-          <p>SEMS uses a proprietary closed-form tubular design with sealed bearing systems that resist water ingress and environmental corrosion. Our engineering is validated to withstand 150+ mph winds and extreme weather events that conventional systems cannot handle.</p>
-        </div>
-      </div>
-
-      <div class="faq-item scroll-fade">
-        <div class="faq-header">
-          <span>What is a closed-form (tubular) racking system?</span>
-          <span class="faq-toggle">+</span>
-        </div>
-        <div class="faq-content">
-          <p>A closed-form system uses tubular (hollow cylindrical) structural members instead of flat bars or angles. This design provides superior strength-to-weight ratios, better wind aerodynamics, and sealed connections that prevent corrosion and water penetration.</p>
-        </div>
-      </div>
-
-      <div class="faq-item scroll-fade">
-        <div class="faq-header">
-          <span>Do SEMS products meet NREL standards?</span>
-          <span class="faq-toggle">+</span>
-        </div>
-        <div class="faq-content">
-          <p>Yes. All SEMS products are engineered and tested to meet or exceed the rigorous structural requirements set by the National Renewable Energy Laboratory. We provide comprehensive engineering reports and third-party validation.</p>
-        </div>
-      </div>
-
-      <div class="faq-item scroll-fade">
-        <div class="faq-header">
-          <span>What markets do you serve?</span>
-          <span class="faq-toggle">+</span>
-        </div>
-        <div class="faq-content">
-          <p>SEMS serves utility-scale, commercial, agricultural, and residential markets. Our solutions are deployed across North America and internationally. We specialize in challenging environments where durability and performance are critical.</p>
-        </div>
-      </div>
-
-      <div class="faq-item scroll-fade">
-        <div class="faq-header">
-          <span>How does SEMS reduce O&M costs?</span>
-          <span class="faq-toggle">+</span>
-        </div>
-        <div class="faq-content">
-          <p>Our sealed bearing systems and corrosion-resistant design eliminate many common maintenance issues. The 50-year design life means fewer replacements, and the pre-kitted delivery reduces installation errors and on-site labor costs.</p>
-        </div>
-      </div>
-
-      <div class="faq-item scroll-fade">
-        <div class="faq-header">
-          <span>Where are SEMS products manufactured?</span>
-          <span class="faq-toggle">+</span>
-        </div>
-        <div class="faq-content">
-          <p>SEMS products are manufactured in the United States, specifically in our Scranton, Pennsylvania facility. We're proud to support American manufacturing and supply chain reliability.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ CTA BAND ══════════ -->
-<section class="cta-band">
-  <div class="wrap">
-    <h2>Ready to Transform Your Solar Project?</h2>
-    <p>Get expert consultation from SEMS engineers today</p>
-    <a href="contact.html" class="btn-white">
-      Schedule Free Consultation
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
-</section>
-
-<!-- ══════════ CATALOG SECTION ══════════ -->
-<section class="section" data-eng-bg="dimensions">
-  <div class="wrap">
-    <div class="section-label scroll-fade">Download</div>
-    <h2 class="section-title scroll-fade">Product <span class="emphasis">Catalog</span></h2>
-
-    <div class="catalog-card scroll-fade">
-      <div class="catalog-thumb">
-        <img src="https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=400&q=80&auto=format&fit=crop" alt="Catalog cover">
-      </div>
-      <div>
-        <h3 style="font-weight: 900; font-size: 24px; margin-bottom: 16px; color: var(--gray-900);">Complete SEMS Product Catalog</h3>
-        <p style="font-size: 16px; font-weight: 500; color: var(--gray-600); line-height: 1.8; margin-bottom: 24px;">Access our comprehensive product documentation including specifications, installation guides, engineering drawings, and material datasheets. Perfect for engineers, contractors, and project planners.</p>
-        <a href="cut-sheets.html" class="btn-primary" style="margin-top: 20px;">
-          Download PDF
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ ABOUT SECTION ══════════ -->
-<section class="section section-alt" id="about" data-eng-bg="radial-pulse">
-  <div class="wrap">
-    <div class="about-grid">
-      <div class="scroll-fade">
-        <div class="section-label">About SEMS</div>
-        <h2 class="section-title">Building Solar <span class="emphasis">Excellence</span> Since Day One</h2>
-        <p class="section-body">Founded in Scranton, Pennsylvania, SEMS Solar Equipment is a leader in innovative racking solutions. Our engineering team is dedicated to solving the toughest challenges in solar installation with superior design, manufacturing, and customer support.</p>
-        <p class="section-body" style="margin-top: 16px;">We believe in American manufacturing, rigorous quality standards, and partnerships that last for decades. Every SEMS system is built to perform for half a century.</p>
-        <div class="callout" style="margin-top: 32px;">
-          <p>"SEMS has demonstrated a commitment to innovation and excellence that sets a new standard for the solar racking industry. Their engineering is world-class."</p>
-          <cite>— Hotchkiss Construction</cite>
-        </div>
-      </div>
-      <div class="side-img scroll-fade">
-        <img src="https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=800&q=80&auto=format&fit=crop" alt="SEMS facility">
-      </div>
-    </div>
-  </div>
-</section>
+</div>
 
 <!-- ══════════ FOOTER ══════════ -->
 <footer class="footer">
@@ -3908,5 +3627,6 @@ if ('IntersectionObserver' in window) {
   animate();
 })();
 </script>
+
 </body>
 </html>
