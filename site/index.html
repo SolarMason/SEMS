@@ -609,8 +609,26 @@ img { max-width: 100%; display: block; }
   padding: 40px 24px;
   text-align: center;
   border-right: 1px solid var(--gray-200);
+  transition: all 0.3s;
 }
 .stat:last-child { border-right: none; }
+.stat:hover { background: rgba(59,143,219,0.03); }
+.stat-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-600);
+  margin: 0 auto 14px;
+  transition: all 0.3s;
+}
+.stat:hover .stat-icon {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  border-color: var(--blue-500);
+  color: var(--pure-white);
+  box-shadow: 0 4px 16px rgba(38,96,164,0.25);
+}
 .stat-num {
   font-weight: 900;
   font-size: 40px;
@@ -721,24 +739,34 @@ img { max-width: 100%; display: block; }
 .feature-card {
   display: flex;
   gap: 18px;
-  padding: 24px;
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius);
-  transition: all 0.25s;
-  box-shadow: var(--shadow-sm);
+  padding: 28px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 2px 8px rgba(27,58,92,0.04), 0 1px 2px rgba(27,58,92,0.03);
 }
 .feature-card:hover {
-  border-color: var(--blue-300);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: var(--blue-200);
+  box-shadow: 0 12px 32px rgba(27,58,92,0.1), 0 4px 12px rgba(27,58,92,0.06);
+  transform: translateY(-4px);
 }
 .feature-icon {
   width: 48px; height: 48px; min-width: 48px;
-  background: var(--blue-100);
-  border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
   color: var(--blue-600);
+  transition: all 0.3s;
+}
+.feature-card:hover .feature-icon {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  border-color: var(--blue-500);
+  color: var(--pure-white);
+  box-shadow: 0 4px 16px rgba(38,96,164,0.25);
 }
 .feature-card h4 {
   font-weight: 800;
@@ -771,20 +799,21 @@ img { max-width: 100%; display: block; }
   margin-top: 48px;
 }
 .product-card {
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-sm);
-  perspective: 1000px;
+  box-shadow: 0 2px 8px rgba(27,58,92,0.04), 0 1px 2px rgba(27,58,92,0.03);
 }
 .product-card:hover {
-  border-color: var(--blue-300);
-  transform: translateY(-6px) rotateX(2deg);
-  box-shadow: var(--shadow-xl);
+  border-color: var(--blue-200);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(27,58,92,0.12), 0 8px 16px rgba(27,58,92,0.06);
 }
 .product-card-img {
   height: 220px;
@@ -865,14 +894,16 @@ img { max-width: 100%; display: block; }
   margin-top: 48px;
 }
 .service-card {
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
   padding: 36px;
-  transition: all 0.3s;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(27,58,92,0.04), 0 1px 2px rgba(27,58,92,0.03);
 }
 .service-card::before {
   content: '';
@@ -884,17 +915,34 @@ img { max-width: 100%; display: block; }
   transition: opacity 0.3s;
 }
 .service-card:hover {
-  border-color: var(--blue-300);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  border-color: var(--blue-200);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(27,58,92,0.12), 0 8px 16px rgba(27,58,92,0.06);
 }
 .service-card:hover::before { opacity: 1; }
+.service-icon {
+  width: 52px; height: 52px; min-width: 52px;
+  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-600);
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+.service-card:hover .service-icon {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  border-color: var(--blue-500);
+  color: var(--pure-white);
+  box-shadow: 0 4px 16px rgba(38,96,164,0.25);
+}
 .service-num {
   font-weight: 900;
   font-size: 48px;
   color: var(--blue-100);
   line-height: 1;
   margin-bottom: 16px;
+  display: none;
 }
 .service-card h3 {
   font-weight: 900;
@@ -980,16 +1028,18 @@ img { max-width: 100%; display: block; }
   max-width: 800px;
 }
 .faq-item {
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(27,58,92,0.04);
   transition: all 0.3s ease;
 }
 .faq-item:hover {
-  border-color: var(--blue-300);
-  box-shadow: var(--shadow-md);
+  border-color: var(--blue-200);
+  box-shadow: 0 8px 24px rgba(27,58,92,0.08);
 }
 .faq-header {
   padding: 24px;
@@ -1011,17 +1061,24 @@ img { max-width: 100%; display: block; }
   color: var(--blue-700);
 }
 .faq-toggle {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--blue-100);
-  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
   color: var(--blue-600);
   font-weight: 800;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
   font-size: 16px;
+}
+.faq-item:hover .faq-toggle {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  border-color: var(--blue-500);
+  color: var(--pure-white);
 }
 .faq-item.open .faq-toggle {
   transform: rotate(180deg);
@@ -1069,19 +1126,27 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(180deg, var(--blue-400), transparent);
 }
 .timeline-node {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--blue-500), var(--blue-400));
-  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--blue-600);
   font-weight: 800;
   font-size: 18px;
-  box-shadow: 0 4px 16px rgba(38,96,164,0.25);
+  box-shadow: 0 2px 8px rgba(27,58,92,0.06);
   position: relative;
   z-index: 1;
+  transition: all 0.3s;
+}
+.timeline-item:hover .timeline-node {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  border-color: var(--blue-500);
+  color: var(--pure-white);
+  box-shadow: 0 4px 16px rgba(38,96,164,0.25);
 }
 .timeline-content h4 {
   font-weight: 800;
@@ -1106,24 +1171,27 @@ img { max-width: 100%; display: block; }
   margin-top: 48px;
 }
 .cert-badge {
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
   padding: 32px 24px;
   text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 2px 8px rgba(27,58,92,0.04), 0 1px 2px rgba(27,58,92,0.03);
 }
 .cert-badge:hover {
-  border-color: var(--blue-300);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--blue-200);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(27,58,92,0.1), 0 4px 12px rgba(27,58,92,0.06);
 }
 .cert-icon {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
-  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1131,6 +1199,13 @@ img { max-width: 100%; display: block; }
   color: var(--blue-600);
   font-weight: 800;
   font-size: 24px;
+  transition: all 0.3s;
+}
+.cert-badge:hover .cert-icon {
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  border-color: var(--blue-500);
+  color: var(--pure-white);
+  box-shadow: 0 4px 16px rgba(38,96,164,0.25);
 }
 .cert-badge h4 {
   font-weight: 800;
@@ -1234,12 +1309,14 @@ img { max-width: 100%; display: block; }
   grid-template-columns: auto 1fr;
   gap: 48px;
   align-items: center;
-  background: var(--pure-white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
   padding: 48px;
   margin-top: 48px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 16px rgba(27,58,92,0.06), 0 2px 6px rgba(27,58,92,0.03);
 }
 .catalog-thumb {
   width: 180px;
@@ -2304,18 +2381,22 @@ body.nav-locked {
 <section class="stats" data-eng-bg="blueprint">
   <div class="stats-inner">
     <div class="stat scroll-fade">
+      <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
       <div class="stat-num" data-target="50">0</div>
       <div class="stat-label">Years Design Life</div>
     </div>
     <div class="stat scroll-fade">
+      <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg></div>
       <div class="stat-num" data-target="150">0</div>
       <div class="stat-label">+ MPH Wind Rating</div>
     </div>
     <div class="stat scroll-fade">
+      <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
       <div class="stat-num" data-target="40">0</div>
       <div class="stat-label">% Reduced Maintenance</div>
     </div>
     <div class="stat scroll-fade">
+      <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div>
       <div class="stat-num" data-target="99">0</div>
       <div class="stat-label">% Module Compatibility</div>
     </div>
@@ -2339,28 +2420,28 @@ body.nav-locked {
 
         <div class="features-list">
           <div class="feature-card scroll-fade">
-            <div class="feature-icon">🔧</div>
+            <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
             <div>
               <h4>Pre-Kitted Design</h4>
               <p>All components arrive ready for assembly with zero field fabrication required.</p>
             </div>
           </div>
           <div class="feature-card scroll-fade">
-            <div class="feature-icon">⚙️</div>
+            <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
             <div>
               <h4>Universal Compatibility</h4>
               <p>Works with virtually all mainstream solar module types and sizes.</p>
             </div>
           </div>
           <div class="feature-card scroll-fade">
-            <div class="feature-icon">💨</div>
+            <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg></div>
             <div>
               <h4>Wind Resistance</h4>
               <p>Engineered to withstand 150+ mph winds with sealed bearing systems.</p>
             </div>
           </div>
           <div class="feature-card scroll-fade">
-            <div class="feature-icon">🛡️</div>
+            <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
             <div>
               <h4>Storm Hardened</h4>
               <p>Closed-form tubular construction resists corrosion and environmental damage.</p>
@@ -2531,23 +2612,23 @@ body.nav-locked {
 
     <div class="certs-grid">
       <div class="cert-badge scroll-fade">
-        <div class="cert-icon">🇺🇸</div>
+        <div class="cert-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
         <h4>American Manufactured</h4>
       </div>
       <div class="cert-badge scroll-fade">
-        <div class="cert-icon">✓</div>
+        <div class="cert-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <h4>NREL Standards</h4>
       </div>
       <div class="cert-badge scroll-fade">
-        <div class="cert-icon">⚙️</div>
+        <div class="cert-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
         <h4>Patent Pending Technology</h4>
       </div>
       <div class="cert-badge scroll-fade">
-        <div class="cert-icon">🛡️</div>
+        <div class="cert-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h4>50 Year Design Life</h4>
       </div>
       <div class="cert-badge scroll-fade">
-        <div class="cert-icon">📋</div>
+        <div class="cert-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
         <h4>ISO Quality</h4>
       </div>
     </div>
