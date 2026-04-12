@@ -2119,6 +2119,68 @@ body.nav-locked {
   margin: 12px 0 20px 24px; color: var(--gray-600); line-height: 1.8;
 }
 .content-section ul li { margin-bottom: 8px; }
+
+/* ══════════ LEADERSHIP TEAM ══════════ */
+.team-section { padding: 80px 0; }
+.team-section .section-label { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-700); margin-bottom: 12px; }
+.team-section .section-title { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: var(--blue-900); margin-bottom: 16px; line-height: 1.15; }
+.team-section .section-intro { font-size: clamp(15px, 1.6vw, 18px); color: var(--gray-500); max-width: 680px; line-height: 1.7; margin-bottom: 48px; }
+.team-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px; margin-bottom: 48px;
+}
+.team-card {
+  background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.5); border-radius: 20px; overflow: hidden;
+  transition: all 0.4s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 4px 16px rgba(27,58,92,0.06);
+}
+.team-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(27,58,92,0.12); border-color: rgba(255,255,255,0.7); }
+.team-card-header {
+  background: linear-gradient(135deg, var(--blue-900), var(--blue-700));
+  padding: 24px 28px; display: flex; align-items: center; gap: 16px;
+}
+.team-avatar {
+  width: 56px; height: 56px; min-width: 56px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: #fff; letter-spacing: 0.02em;
+}
+.team-card-header .team-name { font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0; line-height: 1.25; }
+.team-card-header .team-title { font-size: 0.78rem; font-weight: 500; color: rgba(255,255,255,0.7); margin: 2px 0 0; }
+.team-card-body { padding: 24px 28px 28px; }
+.team-card-body p { font-size: 0.88rem; color: var(--gray-500); line-height: 1.7; margin: 0 0 12px; }
+.team-card-body p:last-child { margin-bottom: 0; }
+.team-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.team-tag {
+  font-size: 0.68rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  background: rgba(59,130,246,0.08); color: var(--blue-700); letter-spacing: 0.02em;
+}
+.team-tag.veteran { background: rgba(34,120,69,0.1); color: #227845; }
+.team-tag.memorial { background: rgba(180,140,60,0.12); color: #8B7032; }
+.team-linkedin {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600;
+  color: var(--blue-700); text-decoration: none; margin-top: 14px; transition: color 0.2s;
+}
+.team-linkedin:hover { color: var(--blue-600); }
+
+/* Memorial card */
+.team-card.memorial-card {
+  border: 1px solid rgba(180,140,60,0.25); background: rgba(255,252,240,0.6);
+}
+.team-card.memorial-card .team-card-header {
+  background: linear-gradient(135deg, #3d3520, #5c4f2e);
+}
+.team-card.memorial-card .team-avatar { background: rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.35); }
+.memorial-ribbon {
+  text-align: center; padding: 14px 20px; background: linear-gradient(135deg, rgba(180,140,60,0.08), rgba(180,140,60,0.04));
+  border-top: 1px solid rgba(180,140,60,0.12); font-size: 0.76rem; color: #8B7032; font-style: italic; font-weight: 500;
+}
+@media (max-width: 720px) {
+  .team-grid { grid-template-columns: 1fr; }
+  .team-section { padding: 56px 0; }
+}
+
 .feature-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 24px; margin: 32px 0;
@@ -2493,7 +2555,170 @@ body.nav-locked {
 
   <h2>Who We Serve</h2>
   <p>SEMS serves solar project developers, EPC contractors, asset owners, and investors who demand more from their infrastructure — systems that protect capital, extend asset life, and deliver on financial projections even in the face of climate-driven risk.</p>
+</div>
 
+<!-- ══════════ LEADERSHIP TEAM ══════════ -->
+<div class="team-section">
+  <div class="wrap">
+    <div class="section-label">Leadership</div>
+    <div class="section-title">The Team Behind SEMS</div>
+    <p class="section-intro">SEMS was built by people who know what it means to build things that have to last — in the field, in uniform, and under pressure. Our leadership team brings decades of combined experience in construction, engineering, military service, finance, and energy infrastructure.</p>
+
+    <div class="team-grid">
+
+      <!-- Noel Segui -->
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="team-avatar">NS</div>
+          <div>
+            <div class="team-name">Noel Segui</div>
+            <div class="team-title">Co-Founder &amp; Chief Technology Officer</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>Noel brings an extensive construction and utility-scale energy background to SEMS. With deep experience across large-scale solar installations, heavy civil infrastructure, and electrical systems, he has spent his career on job sites where structural failure isn't an option.</p>
+          <p>As CTO, Noel leads product development and the engineering vision behind every SEMS racking and tracking system — translating real-world field knowledge into patent-pending designs that are storm-hardened from the ground up. His hands-on construction expertise is the reason SEMS products are built the way they are: robust, practical, and field-proven.</p>
+          <div class="team-tags">
+            <span class="team-tag">Construction</span>
+            <span class="team-tag">Utility-Scale Solar</span>
+            <span class="team-tag">Product Engineering</span>
+            <span class="team-tag veteran">U.S. Veteran</span>
+          </div>
+          <a href="https://www.linkedin.com/in/noelsegui/" target="_blank" rel="noopener" class="team-linkedin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Robert Loven -->
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="team-avatar">RL</div>
+          <div>
+            <div class="team-name">Robert Loven</div>
+            <div class="team-title">President</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>Robert serves as President of SEMS, bringing disciplined leadership forged through military service. A U.S. Army veteran, Robert served alongside co-founder Noel Segui — the two deployed together and built a bond of trust and shared purpose that would ultimately become the foundation of SEMS.</p>
+          <p>A graduate of the University of Scranton, Robert brings operational rigor and strategic vision to the company. His military background instilled an uncompromising standard for reliability, precision, and mission-first execution — qualities that define how SEMS operates, from manufacturing to customer delivery.</p>
+          <div class="team-tags">
+            <span class="team-tag veteran">U.S. Army Veteran</span>
+            <span class="team-tag">Operations</span>
+            <span class="team-tag">Strategic Leadership</span>
+            <span class="team-tag">University of Scranton</span>
+          </div>
+          <a href="https://www.linkedin.com/in/robert-loven-a23828a6/" target="_blank" rel="noopener" class="team-linkedin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- James Loven -->
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="team-avatar">JL</div>
+          <div>
+            <div class="team-name">James Loven</div>
+            <div class="team-title">Vice President &amp; Lead Engineer</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>James Loven serves as Vice President and Lead Engineer at SEMS — and also happens to be Robert's father. A Penn State University graduate with a lifetime of hands-on engineering and design experience, James is the principal architect behind SEMS's racking and tracking product lines.</p>
+          <p>As Lead Product Designer, James translated the team's vision for storm-hardened solar infrastructure into the patent-pending closed-form tubular designs that define the Avans Rac, Utilitas Trac, and TST Series. His engineering rigor ensures every component is optimized for strength, manufacturability, and real-world performance.</p>
+          <div class="team-tags">
+            <span class="team-tag">Product Design</span>
+            <span class="team-tag">Mechanical Engineering</span>
+            <span class="team-tag">Manufacturing</span>
+            <span class="team-tag">Penn State University</span>
+          </div>
+          <a href="https://www.linkedin.com/in/james-loven-786732189/" target="_blank" rel="noopener" class="team-linkedin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- John T. Hoback -->
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="team-avatar">JH</div>
+          <div>
+            <div class="team-name">John T. Hoback</div>
+            <div class="team-title">Board Advisor</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>John T. Hoback brings a distinguished academic and business background to SEMS. An Adjunct Professor of Business at Northampton Community College and a University of Pennsylvania graduate, John provides strategic counsel at the board level — drawing on decades of experience in business development, corporate governance, and energy markets.</p>
+          <p>His expertise in business strategy and market positioning has been instrumental in shaping SEMS's growth trajectory, helping the company navigate the complexities of scaling a manufacturing operation in the renewable energy sector.</p>
+          <div class="team-tags">
+            <span class="team-tag">Business Strategy</span>
+            <span class="team-tag">Corporate Governance</span>
+            <span class="team-tag">University of Pennsylvania</span>
+            <span class="team-tag">Academia</span>
+          </div>
+          <a href="https://www.linkedin.com/in/john-t-hoback-57b128a/" target="_blank" rel="noopener" class="team-linkedin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Tom White -->
+      <div class="team-card">
+        <div class="team-card-header">
+          <div class="team-avatar">TW</div>
+          <div>
+            <div class="team-name">Tom White</div>
+            <div class="team-title">VP of Sales &amp; Finance</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>Tom White leads SEMS's sales operations and financial strategy as VP of Sales &amp; Finance. Based in Venice, Florida, Tom brings a seasoned perspective on capital markets, revenue growth, and go-to-market execution for the renewable energy sector.</p>
+          <p>His dual focus on sales pipeline development and financial discipline ensures that SEMS scales responsibly — maintaining healthy margins while expanding market reach across utility-scale, commercial, and agricultural solar segments.</p>
+          <div class="team-tags">
+            <span class="team-tag">Sales Leadership</span>
+            <span class="team-tag">Finance</span>
+            <span class="team-tag">Go-to-Market Strategy</span>
+            <span class="team-tag">Revenue Growth</span>
+          </div>
+          <a href="https://www.linkedin.com/in/tom-white-606453281/" target="_blank" rel="noopener" class="team-linkedin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Toli Epsom — In Memoriam -->
+      <div class="team-card memorial-card">
+        <div class="team-card-header">
+          <div class="team-avatar">TE</div>
+          <div>
+            <div class="team-name">Thomas &ldquo;Toli&rdquo; Epsom</div>
+            <div class="team-title">Founding Team &bull; In Memoriam</div>
+          </div>
+        </div>
+        <div class="team-card-body">
+          <p>Toli Epsom poured everything he had into SEMS from day one. A U.S. Army veteran with combat photography training, Toli combined military discipline with an extraordinary ability to research, analyze, and present complex market data.</p>
+          <p>When SEMS needed to secure its first round of funding from Ben Franklin Technology Partners, it was Toli who delivered — assembling the market research, competitive analysis, and financial projections that convinced investors to back the company. That funding round got SEMS off the ground, and every product shipped and every array built carries the momentum of the work he put in.</p>
+          <p>Born in Bryansk, Russia, Toli became a U.S. citizen at age five and grew up in Clarks Summit, Pennsylvania. A Penn State graduate and lifelong adventurer who skied mountains around the world, Toli passed away on July 3, 2021, at the age of 27. His legacy lives on in the company he helped build.</p>
+          <div class="team-tags">
+            <span class="team-tag veteran">U.S. Army Veteran</span>
+            <span class="team-tag memorial">Founding Team</span>
+            <span class="team-tag">Market Research</span>
+            <span class="team-tag">Penn State University</span>
+          </div>
+        </div>
+        <div class="memorial-ribbon">In honor of Toli — who believed in SEMS before anyone else did. 1993 &ndash; 2021</div>
+      </div>
+
+    </div><!-- /team-grid -->
+  </div><!-- /wrap -->
+</div><!-- /team-section -->
+
+<div class="content-section">
   <div class="cta-banner">
     <h2>Build Resilient Solar Infrastructure</h2>
     <p>Partner with SEMS and build solar arrays that survive to keep generating.</p>
