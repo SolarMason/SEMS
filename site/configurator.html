@@ -12,9 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="author" content="Noel Segui"/>
 <meta name="creator" content="Noel Segui, CEO of Solar Mason"/>
-<title>Affiliate Partner Program | SEMS Solar Equip</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>Array Configurator | SEMS Solar Equip</title>
 <style>
 /* ══════════════════════════════════════════════════════════════
    SEMS SOLAR EQUIP — ENHANCED v5
@@ -2082,137 +2080,225 @@ body.nav-locked {
 }
 </style>
 <style>
-/* ══════════ INNER PAGE STYLES ══════════ */
-.inner-hero {
+/* ══════════ CONFIGURATOR PAGE STYLES ══════════ */
+:root {
+  --navy:#0B1D3A;--deep:#132D5E;--accent:#E8912D;--gold:#F5A623;
+  --cfg-glass:rgba(255,255,255,.52);--cfg-glass2:rgba(255,255,255,.38);--cfg-glass3:rgba(255,255,255,.72);
+  --cfg-glassborder:rgba(255,255,255,.5);--cfg-blur:saturate(180%) blur(18px);--cfg-blur-sm:saturate(140%) blur(10px);
+  --cfg-radius:14px;--cfg-radius-sm:10px;--cfg-radius-xs:7px;
+  --cfg-shadow:0 2px 8px rgba(11,29,58,.06),0 8px 32px rgba(11,29,58,.08);
+  --cfg-shadow-lg:0 8px 40px rgba(11,29,58,.14);
+  --cfg-text:#1A202C;--cfg-tsec:#4A5568;
+  --s8:#3B82F6;--s10:#8B5CF6;
+  --mono:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;
+}
+.page-hero-config {
   background: linear-gradient(135deg, var(--blue-900) 0%, #1a3050 50%, var(--blue-900) 100%);
   padding: clamp(60px, 8vw, 100px) clamp(20px, 4vw, 60px) clamp(40px, 6vw, 70px);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  text-align: center; color: var(--pure-white);
 }
-.inner-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 30% 50%, rgba(59,143,219,0.15) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 80%, rgba(91,188,228,0.1) 0%, transparent 50%);
+.page-hero-config h1 { font-size: clamp(28px, 5vw, 48px); font-weight: 800; margin-bottom: 12px; }
+.page-hero-config p { font-size: clamp(14px, 1.8vw, 18px); color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto; }
+.config-container { max-width: 1200px; margin: 0 auto; padding: 32px 20px 60px; }
+.cfg-card {
+  background: var(--cfg-glass); backdrop-filter: var(--cfg-blur); -webkit-backdrop-filter: var(--cfg-blur);
+  border: 1px solid var(--cfg-glassborder); border-radius: 16px;
+  box-shadow: var(--cfg-shadow); margin-bottom: 24px; overflow: hidden;
+}
+.cfg-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; border-bottom: 1px solid rgba(11,29,58,.06);
+}
+.cfg-card-head h2 { font-size: 1rem; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 10px; margin: 0; }
+.cfg-card-head .ico { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.ico-blue { background: rgba(59,130,246,0.1); color: #2563EB; }
+.ico-amber { background: rgba(232,145,45,0.1); color: #B5700F; }
+.ico-green { background: rgba(39,174,96,0.08); color: #1D8348; }
+.ico-purple { background: rgba(139,92,246,0.1); color: #6D28D9; }
+.cfg-card-head .tag { display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; }
+.tag-blue { background: rgba(59,130,246,0.1); color: #2563EB; }
+.tag-purple { background: rgba(139,92,246,0.1); color: #6D28D9; }
+.tag-amber { background: rgba(232,145,45,0.1); color: #B5700F; }
+.tag-green { background: rgba(39,174,96,0.08); color: #1D8348; }
+.cfg-card-body { padding: 20px 24px; }
+
+/* ── Form Grid ── */
+.fg { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px 18px; }
+.fi { display: flex; flex-direction: column; gap: 3px; }
+.fi label { font-size: 0.68rem; font-weight: 600; color: var(--cfg-tsec); letter-spacing: 0.2px; text-transform: uppercase; }
+.fi input, .fi select, .fi textarea {
+  font-family: var(--font, inherit); font-size: 0.84rem; padding: 8px 11px;
+  border: 1px solid rgba(11,29,58,.1); border-radius: var(--cfg-radius-xs);
+  background: rgba(255,255,255,0.7); color: var(--cfg-text); transition: 0.15s; outline: none;
+}
+.fi input:focus, .fi select:focus, .fi textarea:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+.fi textarea { resize: vertical; min-height: 48px; }
+.fi.error input, .fi.error select { border-color: #E74C3C; background: rgba(231,76,60,0.04); }
+.errmsg { font-size: 0.65rem; color: #E74C3C; font-weight: 600; }
+.hint { font-size: 0.65rem; color: var(--cfg-tsec); font-style: italic; }
+.toggle { display: flex; align-items: center; gap: 8px; padding-top: 18px; }
+.toggle label { text-transform: none; font-size: 0.8rem; }
+.fdiv { grid-column: 1 / -1; border: none; border-top: 1px solid rgba(11,29,58,.06); margin: 6px 0; }
+
+/* ── Builder ── */
+.builder-wrap { }
+.builder-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.palette { display: flex; align-items: center; gap: 10px; }
+.palette-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--cfg-tsec); letter-spacing: 0.3px; }
+.pal-item {
+  display: flex; align-items: center; gap: 6px; padding: 7px 14px;
+  border: 2px dashed rgba(11,29,58,.15); border-radius: var(--cfg-radius-sm);
+  cursor: grab; font-size: 0.78rem; font-weight: 600; transition: 0.15s; user-select: none;
+}
+.pal-item:hover { border-color: var(--blue-500); background: rgba(59,130,246,0.04); }
+.pal-8 { color: var(--s8); } .pal-10 { color: var(--s10); }
+.builder-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.canvas { min-height: 80px; }
+.row-lane { background: var(--cfg-glass2); border: 1px solid var(--cfg-glassborder); border-radius: var(--cfg-radius); margin-bottom: 10px; padding: 10px; transition: 0.2s; }
+.row-lane.drag-over { border-color: var(--blue-500); background: rgba(59,130,246,0.06); }
+.row-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 4px; }
+.row-label { font-size: 0.78rem; font-weight: 700; color: var(--navy); }
+.row-stats { display: flex; gap: 12px; font-size: 0.7rem; color: var(--cfg-tsec); font-weight: 500; }
+.row-actions { display: flex; gap: 4px; }
+.row-sections { display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; }
+.row-sections.empty { align-items: center; justify-content: center; border: 2px dashed rgba(11,29,58,.08); border-radius: var(--cfg-radius-sm); }
+.row-empty-msg { font-size: 0.72rem; color: var(--cfg-tsec); font-style: italic; padding: 12px; }
+.sec-block {
+  position: relative; background: var(--cfg-glass3); border: 1px solid var(--cfg-glassborder);
+  border-radius: var(--cfg-radius-sm); padding: 10px 12px 8px; min-width: 100px;
+  cursor: grab; transition: 0.2s; user-select: none;
+}
+.sec-block:hover { box-shadow: var(--cfg-shadow); transform: translateY(-1px); }
+.sec-block.dragging { opacity: 0.4; }
+.s8 { border-left: 3px solid var(--s8); } .s10 { border-left: 3px solid var(--s10); }
+.sb-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.sb-num { font-size: 0.72rem; font-weight: 700; color: var(--navy); }
+.sb-type { font-size: 0.6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.s8 .sb-type { background: rgba(59,130,246,0.1); color: var(--s8); }
+.s10 .sb-type { background: rgba(139,92,246,0.1); color: var(--s10); }
+.sb-actions { position: absolute; top: 4px; right: 4px; display: flex; gap: 2px; opacity: 0; transition: 0.15s; }
+.sec-block:hover .sb-actions { opacity: 1; }
+.sb-btn {
+  width: 22px; height: 22px; border: none; border-radius: 5px; cursor: pointer;
+  font-size: 11px; display: flex; align-items: center; justify-content: center;
+  background: rgba(11,29,58,.06); color: var(--cfg-tsec); transition: 0.15s;
+}
+.sb-btn:hover { background: rgba(11,29,58,.12); }
+.sb-btn.del:hover { background: rgba(231,76,60,.15); color: #E74C3C; }
+.mini-grid { display: grid; gap: 2px; }
+.g4 { grid-template-columns: repeat(4, 1fr); } .g5 { grid-template-columns: repeat(5, 1fr); }
+.mini-cell { width: 100%; aspect-ratio: 2/1; background: rgba(59,130,246,0.18); border-radius: 2px; }
+.s10 .mini-cell { background: rgba(139,92,246,0.18); }
+.sb-panels { font-size: 0.62rem; color: var(--cfg-tsec); margin-top: 5px; text-align: center; }
+.drop-indicator { width: 3px; min-height: 60px; background: var(--blue-500); border-radius: 2px; flex-shrink: 0; }
+.layout-totals { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px 0 0; border-top: 1px solid rgba(11,29,58,.06); margin-top: 12px; }
+.lt-item { font-size: 0.74rem; color: var(--cfg-tsec); }
+.lt-item strong { color: var(--navy); font-weight: 700; }
+
+/* Quick-add buttons below canvas */
+.quick-add { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ── Summary Grid ── */
+.sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.scard {
+  background: var(--cfg-glass3); border: 1px solid var(--cfg-glassborder);
+  border-radius: var(--cfg-radius-sm); padding: 12px; text-align: center;
+}
+.scard.hi { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.06); }
+.scard.ac { border-color: rgba(232,145,45,0.3); background: rgba(232,145,45,0.04); }
+.sl { display: block; font-size: 0.62rem; font-weight: 600; color: var(--cfg-tsec); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.sv { display: block; font-size: 1.1rem; font-weight: 800; color: var(--navy); }
+.su { display: block; font-size: 0.62rem; color: var(--cfg-tsec); margin-top: 2px; }
+
+/* ── Section Cards ── */
+.sec-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.sbc { background: var(--cfg-glass3); border: 1px solid var(--cfg-glassborder); border-radius: var(--cfg-radius-sm); overflow: hidden; }
+.sbc-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid rgba(11,29,58,.05); }
+.sn { font-weight: 700; font-size: 0.82rem; color: var(--navy); }
+.sbc-body { padding: 10px 14px; }
+.dr { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(11,29,58,.04); }
+.dr:last-child { border-bottom: none; }
+.dl { font-size: 0.72rem; color: var(--cfg-tsec); }
+.dv { font-size: 0.72rem; font-weight: 700; color: var(--navy); }
+
+/* ── BOM Table ── */
+.tw { overflow-x: auto; }
+#bomTable { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+#bomTable thead th {
+  background: var(--navy); color: white; padding: 10px 12px; text-align: left;
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+#bomTable thead th:hover { background: var(--deep); }
+#bomTable td { padding: 8px 12px; border-bottom: 1px solid rgba(11,29,58,.06); color: var(--cfg-text); }
+#bomTable tr:hover td { background: rgba(59,130,246,0.03); }
+.cat-h td { background: rgba(11,29,58,.03)!important; font-weight: 700; color: var(--navy); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.3px; }
+.sub td { background: rgba(11,29,58,.02)!important; font-weight: 600; font-size: 0.72rem; border-top: 1px solid rgba(11,29,58,.08); }
+#bomTable tfoot td { font-weight: 700; background: rgba(11,29,58,.04); border-top: 2px solid rgba(11,29,58,.1); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+  border: none; border-radius: var(--cfg-radius-xs); cursor: pointer;
+  font-size: 0.78rem; font-weight: 600; transition: 0.2s; text-decoration: none;
+}
+.btn-sm { padding: 5px 10px; font-size: 0.72rem; }
+.btn-pri { background: var(--navy); color: white; }
+.btn-pri:hover { background: var(--deep); transform: translateY(-1px); }
+.btn-out { background: transparent; border: 1px solid rgba(11,29,58,.15); color: var(--cfg-text); }
+.btn-out:hover { border-color: var(--blue-500); color: var(--blue-500); }
+.btn-grn { background: rgba(39,174,96,0.1); color: #1D8348; }
+.btn-grn:hover { background: rgba(39,174,96,0.18); }
+.btn-red { background: rgba(231,76,60,0.1); color: #E74C3C; }
+.btn-red:hover { background: rgba(231,76,60,0.18); }
+.btn-ghost { background: transparent; color: var(--cfg-tsec); }
+.btn-ghost:hover { background: rgba(11,29,58,.04); }
+.bgroup { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ── Collapsibles ── */
+.coll-tog {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 14px 24px;
+  background: none; border: none; cursor: pointer; font-size: 0.88rem; font-weight: 700;
+  color: var(--navy); text-align: left;
+}
+.coll-tog .chev { transition: transform 0.3s; font-size: 0.7rem; }
+.coll-tog.open .chev { transform: rotate(90deg); }
+.coll-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 24px; }
+.coll-body.open { max-height: 4000px; padding: 0 24px 20px; }
+.coll-body p, .coll-body li { font-size: 0.8rem; color: var(--cfg-tsec); line-height: 1.7; }
+.coll-body ul { padding-left: 18px; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--navy); color: white; padding: 10px 24px; border-radius: 10px;
+  font-size: 0.82rem; font-weight: 600; opacity: 0; transition: 0.3s; z-index: 9999;
   pointer-events: none;
 }
-.inner-hero .eyebrow {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(59,143,219,0.15); border: 1px solid rgba(59,143,219,0.3);
-  border-radius: 100px; padding: 6px 20px;
-  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--blue-300); margin-bottom: 20px; position: relative;
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Print ── */
+@media print {
+  .nav, .footer, .page-hero-config, .no-print, .sb-actions, .builder-toolbar, .quick-add, .toast { display: none !important; }
+  .cfg-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; backdrop-filter: none; background: white; }
+  .coll-body { max-height: none !important; padding: 0 24px 16px !important; }
+  body { background: white; }
 }
-.inner-hero h1 {
-  font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
-  color: var(--pure-white); line-height: 1.15;
-  letter-spacing: -0.03em; margin-bottom: 16px; position: relative;
-}
-.inner-hero p {
-  font-size: clamp(1rem, 1.5vw, 1.2rem); color: var(--blue-200);
-  max-width: 640px; margin: 0 auto; line-height: 1.7; position: relative;
-}
-.content-section {
-  max-width: 1100px; margin: 0 auto;
-  padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 60px);
-}
-.content-section h2 {
-  font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800;
-  color: var(--gray-900); margin-bottom: 16px; letter-spacing: -0.02em;
-}
-.content-section h3 {
-  font-size: 1.2rem; font-weight: 700; color: var(--blue-700);
-  margin: 28px 0 10px;
-}
-.content-section p {
-  font-size: 1rem; color: var(--gray-600); line-height: 1.8; margin-bottom: 16px;
-}
-.content-section ul {
-  margin: 12px 0 20px 24px; color: var(--gray-600); line-height: 1.8;
-}
-.content-section ul li { margin-bottom: 8px; }
-.feature-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px; margin: 32px 0;
-}
-.feature-card {
-  background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.6); border-radius: 20px; padding: 32px 24px;
-  text-align: center; display: flex; flex-direction: column; align-items: center;
-  transition: all 0.4s cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 2px 8px rgba(27,58,92,0.04);
-}
-.feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(27,58,92,0.10); border-color: var(--blue-200); }
-.feature-card .icon {
-  width: 56px; height: 56px; border-radius: 16px; border: 1px solid var(--gray-200);
-  background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
-  display: flex; align-items: center; justify-content: center;
-  color: var(--blue-600); margin-bottom: 20px;
-  transition: all 0.4s cubic-bezier(.4,0,.2,1);
-}
-.feature-card:hover .icon {
-  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
-  border-color: var(--blue-500); color: var(--pure-white);
-  box-shadow: 0 6px 20px rgba(38,96,164,0.3);
-  transform: scale(1.08);
-}
-.feature-card h4 { font-size: 1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 10px; }
-.feature-card p { font-size: 0.88rem; color: var(--gray-500); line-height: 1.65; margin: 0; }
-.spec-table {
-  width: 100%; border-collapse: collapse; margin: 24px 0;
-  border-radius: var(--radius); overflow: hidden;
-  border: 1px solid var(--gray-100);
-}
-.spec-table th {
-  background: var(--blue-900); color: var(--pure-white);
-  padding: 14px 20px; text-align: left; font-size: 0.85rem;
-  font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-}
-.spec-table td {
-  padding: 14px 20px; border-bottom: 1px solid var(--gray-100);
-  font-size: 0.92rem; color: var(--gray-700);
-}
-.spec-table tr:nth-child(even) td { background: rgba(235,238,242,0.5); }
-.spec-table tr:hover td { background: rgba(59,143,219,0.05); }
-.cta-banner {
-  background: linear-gradient(135deg, var(--blue-900), var(--blue-700));
-  border-radius: var(--radius-lg); padding: 48px; text-align: center;
-  margin: 48px 0;
-}
-.cta-banner h2 { color: var(--pure-white); margin-bottom: 12px; }
-.cta-banner p { color: var(--blue-200); margin-bottom: 24px; }
-.cta-banner .btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--pure-white); color: var(--blue-900);
-  padding: 14px 32px; border-radius: 10px; font-weight: 700;
-  font-size: 0.95rem; transition: all 0.2s ease; text-decoration: none;
-}
-.cta-banner .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin: 32px 0; }
-.contact-card {
-  background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.6); border-radius: 20px; padding: 32px; text-align: center;
-}
-.contact-card .icon {
-  width: 56px; height: 56px; border-radius: 14px; border: 1px solid var(--gray-200); transition: all 0.3s;
-  background: linear-gradient(135deg, var(--blue-50), var(--blue-100));
-  display: flex; align-items: center; justify-content: center;
-  color: var(--blue-700); margin: 0 auto 16px;
-}
-.contact-card h4 { font-size: 1.05rem; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
-.contact-card p { font-size: 0.92rem; color: var(--gray-500); line-height: 1.6; margin: 0; }
-.contact-card a { color: var(--blue-700); font-weight: 600; }
-.sitemap-list { columns: 2; column-gap: 40px; margin: 24px 0; }
-.sitemap-list li { margin-bottom: 10px; break-inside: avoid; }
-.sitemap-list a { color: var(--blue-700); font-weight: 600; transition: color 0.2s; }
-.sitemap-list a:hover { color: var(--blue-500); }
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .feature-grid { grid-template-columns: 1fr; }
-  .contact-grid { grid-template-columns: 1fr; }
-  .sitemap-list { columns: 1; }
-  .cta-banner { padding: 32px 20px; }
+  .fg { grid-template-columns: 1fr 1fr; }
+  .sgrid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+  .sec-cards { grid-template-columns: 1fr; }
+  .builder-toolbar { flex-direction: column; align-items: flex-start; }
+  .cfg-card-head { padding: 12px 16px; }
+  .cfg-card-body { padding: 16px; }
+  .config-container { padding: 16px 12px 40px; }
+}
+@media (max-width: 480px) {
+  .fg { grid-template-columns: 1fr; }
+  .bgroup { flex-direction: column; }
+  .bgroup .btn { width: 100%; justify-content: center; }
 }
 </style>
 </head>
@@ -2502,33 +2588,222 @@ body.nav-locked {
 
 
 <section class="inner-hero">
-  <div class="eyebrow">Services</div>
-  <h1>Affiliate Partner Program</h1>
-  <p>Join the SEMS partner network and bring storm-hardened solar racking to your market.</p>
+  <div class="eyebrow">Our Company</div>
+  <h1>About SEMS</h1>
+  <p>American-made solar racking that doesn't just generate power — it survives to keep generating it.</p>
 </section>
-<div class="content-section">
-  <h2>Grow With SEMS</h2>
-  <p>The SEMS Affiliate Partner Program is designed for solar installers, distributors, and EPC contractors who want to differentiate their offerings with the most durable, resilient solar racking systems available. Partners receive preferential pricing, priority engineering support, and co-marketing resources.</p>
 
-  <h3>Partner Benefits</h3>
-  <ul>
-    <li>Preferential partner pricing and volume discounts</li>
-    <li>Priority access to engineering support and custom design services</li>
-    <li>Co-branded marketing materials and sales collateral</li>
-    <li>Training and certification for installation crews</li>
-    <li>Dedicated partner account manager</li>
-    <li>Lead sharing and project referrals in your territory</li>
-  </ul>
 
-  <h3>Who Should Apply</h3>
-  <p>We are looking for established solar installers, regional distributors, and EPC contractors who serve the commercial, agricultural, or utility-scale markets and share our commitment to quality and resilience.</p>
+<!-- ══════════ PAGE HERO ══════════ -->
+<section class="page-hero-config">
+  <span class="section-label" style="color:rgba(255,255,255,0.5)">ENGINEERING TOOL</span>
+  <h1>Array Configurator</h1>
+  <p>Visual Array Builder &amp; BOM Generator for SEMS Racking Systems</p>
+</section>
 
-  <div class="cta-banner">
-    <h2>Become a SEMS Partner</h2>
-    <p>Apply to join the SEMS Affiliate Partner Program and start offering storm-hardened racking to your customers.</p>
-    <a href="contact.html" class="btn">Apply Now</a>
+<div class="config-container">
+
+<!-- ══════════ PROJECT INFO ══════════ -->
+<div class="cfg-card" id="card-project">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-blue">&#9744;</span> Project Information</h2>
+    <span class="tag tag-blue">Project</span>
+  </div>
+  <div class="cfg-card-body">
+    <div class="fg">
+      <div class="fi"><label>Project Name</label><input type="text" id="projectName" value="SEMS Demo Project"></div>
+      <div class="fi"><label>Customer</label><input type="text" id="customerName" placeholder="Customer / owner"></div>
+      <div class="fi"><label>Site Name</label><input type="text" id="siteName" placeholder="Site name"></div>
+      <div class="fi"><label>Site Address</label><input type="text" id="siteAddress" placeholder="Full address"></div>
+      <div class="fi"><label>Quote / Job #</label><input type="text" id="jobNumber" placeholder="SM-2026-0001"></div>
+      <div class="fi"><label>Prepared By</label><input type="text" id="preparedBy" placeholder="Your name"></div>
+    </div>
+    <div class="fg" style="margin-top:14px">
+      <div class="fi"><label>Date</label><input type="date" id="projectDate"></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="fi"><label>Notes</label><textarea id="projectNotes" placeholder="General project notes..."></textarea></div>
+    </div>
   </div>
 </div>
+
+<!-- ══════════ ARRAY LAYOUT BUILDER ══════════ -->
+<div class="cfg-card" id="card-builder">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-amber">&#9635;</span> Array Layout Builder</h2>
+    <span class="tag tag-amber">Visual Builder</span>
+  </div>
+  <div class="cfg-card-body">
+    <div class="builder-wrap">
+      <div class="builder-toolbar no-print">
+        <div class="palette">
+          <span class="palette-label">Drag to add:</span>
+          <div class="pal-item pal-8" draggable="true" data-palette="8">&#9783; 8-Panel Section</div>
+          <div class="pal-item pal-10" draggable="true" data-palette="10">&#9783; 10-Panel Section</div>
+        </div>
+        <div class="builder-controls">
+          <button class="btn btn-out btn-sm" onclick="addRow()">+ Add Row</button>
+          <button class="btn btn-out btn-sm" onclick="loadDemoLayout()">&#9733; Demo Layout</button>
+          <button class="btn btn-out btn-sm" onclick="autoBalance()">&#8651; Auto-Balance</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearLayout()">&#10005; Clear</button>
+        </div>
+      </div>
+      <div id="canvas" class="canvas"></div>
+      <div class="quick-add no-print">
+        <button class="btn btn-out btn-sm" onclick="quickAdd('8')">+ Add 8-Panel to Last Row</button>
+        <button class="btn btn-out btn-sm" onclick="quickAdd('10')">+ Add 10-Panel to Last Row</button>
+      </div>
+      <div id="layoutTotals" class="layout-totals"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CONFIGURATION & ENGINEERING ══════════ -->
+<div class="cfg-card" id="card-config">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-purple">&#9881;</span> Configuration &amp; Engineering Inputs</h2>
+    <span class="tag tag-purple">Config</span>
+  </div>
+  <div class="cfg-card-body">
+    <div class="fg">
+      <div class="fi"><label>Panel Model</label><select id="panelModel"></select></div>
+      <div class="fi"><label>Panel Wattage (W)</label><input type="number" id="panelWattage" value="430"></div>
+      <div class="fi"><label>Panel Length (in)</label><input type="number" id="panelLength" value="74.8" step="0.1"></div>
+      <div class="fi"><label>Panel Width (in)</label><input type="number" id="panelWidth" value="41.3" step="0.1"></div>
+      <div class="fi"><label>Orientation</label><select id="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div>
+      <div class="fi"><label>Tilt Angle (&deg;)</label><input type="number" id="tiltAngle" value="25"></div>
+      <div class="fi"><label>Ground Clearance (in)</label><input type="number" id="groundClearance" value="24"></div>
+      <div class="fi"><label>Row Spacing (in)</label><input type="number" id="rowSpacing" value="6"><span class="hint">Between module rows within a section</span></div>
+      <div class="fi"><label>Section Spacing (in)</label><input type="number" id="sectionSpacing" value="60"><span class="hint">Between adjacent sections in a row</span></div>
+      <div class="fi"><label>Layout Row Gap (in)</label><input type="number" id="layoutRowGap" value="120"><span class="hint">Between builder rows (N-S)</span></div>
+    </div>
+    <hr class="fdiv">
+    <div class="fg">
+      <div class="fi"><label>Foundation Type</label><select id="foundationType"><option value="ground-screw">Ground Screw</option><option value="driven-pile" selected>Driven Pile (W-Beam)</option><option value="ballast">Ballast Block</option></select></div>
+      <div class="fi"><label>Post Type</label><select id="postType"><option value="w6x9" selected>W6x9 Steel Post</option><option value="w6x12">W6x12 Steel Post</option><option value="round-pipe">3&quot; Round Pipe Post</option></select></div>
+      <div class="fi"><label>Beam / Rail Type</label><select id="beamType"><option value="c-channel" selected>C-Channel Steel Rail</option><option value="unistrut">Unistrut P1000</option><option value="aluminum-rail">Aluminum Extrusion Rail</option></select></div>
+    </div>
+    <hr class="fdiv">
+    <div class="fg">
+      <div class="fi"><label>Inverter Model</label><select id="inverterModel"></select></div>
+      <div class="fi toggle"><input type="checkbox" id="optimizerEnabled" checked><label for="optimizerEnabled">MLPE / Optimizers</label></div>
+      <div class="fi"><label>Waste Factor (%)</label><input type="number" id="wasteFactor" value="3"></div>
+      <div class="fi toggle"><input type="checkbox" id="extraHardware"><label for="extraHardware">Extra Hardware Allowance</label></div>
+      <div class="fi toggle"><input type="checkbox" id="miscAdders"><label for="miscAdders">Miscellaneous Adders</label></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="fi"><label>Engineering Notes</label><textarea id="engNotes" placeholder="Design notes, special conditions..."></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LIVE PROJECT SUMMARY ══════════ -->
+<div class="cfg-card" id="card-summary">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-amber">&#9889;</span> Live Project Summary</h2>
+    <span class="tag tag-amber">Auto-Updated</span>
+  </div>
+  <div class="cfg-card-body">
+    <div id="summaryGrid" class="sgrid"></div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION BREAKDOWN ══════════ -->
+<div class="cfg-card" id="card-sections">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-blue">&#9783;</span> Section-by-Section Breakdown</h2>
+    <span class="tag tag-blue">Structural</span>
+  </div>
+  <div class="cfg-card-body">
+    <div id="sectionCards" class="sec-cards"></div>
+  </div>
+</div>
+
+<!-- ══════════ BILL OF MATERIALS ══════════ -->
+<div class="cfg-card" id="card-bom">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-green">&#9783;</span> Bill of Materials</h2>
+    <span class="tag tag-green">Procurement</span>
+  </div>
+  <div class="cfg-card-body">
+    <div class="tw">
+      <table id="bomTable">
+        <thead>
+          <tr>
+            <th data-col="category">Category</th>
+            <th data-col="item">Item</th>
+            <th data-col="partNumber">Part # / SKU</th>
+            <th data-col="unit">Unit</th>
+            <th data-col="baseQty">Base Qty</th>
+            <th data-col="wastePct">Waste %</th>
+            <th data-col="finalQty">Final Qty</th>
+            <th data-col="notes">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="bomBody"></tbody>
+        <tfoot id="bomFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ASSUMPTIONS ══════════ -->
+<div class="cfg-card" id="card-assumptions">
+  <button class="coll-tog" data-target="assumeBody"><span class="chev">&#9656;</span> Assumptions &amp; Engineering Logic</button>
+  <div class="coll-body" id="assumeBody">
+    <ul>
+      <li><strong>Layout-Driven Design:</strong> The visual builder is the source of truth. All totals, section counts, and BOM quantities derive from the sections placed on the canvas.</li>
+      <li><strong>Section Structure:</strong> Every section contains exactly 2 module rows. An 8-panel section = 4 modules/row. A 10-panel section = 5 modules/row.</li>
+      <li><strong>Post Count:</strong> 4 posts per section (2 per module row, at each end).</li>
+      <li><strong>Beams:</strong> 2 per section (1 per module row).</li>
+      <li><strong>Clamps:</strong> Mid clamps between adjacent modules in a row. End clamps at outer edges.</li>
+      <li><strong>Splices:</strong> 2 per section &mdash; one splice per beam for field-joined segments.</li>
+      <li><strong>Bonding:</strong> 1 clip per panel, 1 grounding lug per section.</li>
+      <li><strong>Inverter:</strong> Sized by ratio of total DC to max DC input per unit.</li>
+      <li><strong>Waste:</strong> Applied to structural categories (clamps, splices, wire, fasteners, brackets, bonding). Not to modules, inverters, or optimizers.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ DEVELOPER DATA GUIDE ══════════ -->
+<div class="cfg-card" id="card-dev">
+  <button class="coll-tog" data-target="devBody"><span class="chev">&#9656;</span> Developer Data Mapping Guide</button>
+  <div class="coll-body" id="devBody">
+    <ul>
+      <li><strong>PANELS[]</strong> &mdash; Panel catalog: id, manufacturer, model, wattage, dimensions.</li>
+      <li><strong>INVERTERS[]</strong> &mdash; Inverter catalog: id, manufacturer, model, acKw, dcMaxKw.</li>
+      <li><strong>SECTION_RULES{}</strong> &mdash; BOM rules per section type ("8"/"10").</li>
+      <li><strong>BOM_ITEMS{}</strong> &mdash; Item master: name, category, unit, sku, wasteEligible.</li>
+      <li><strong>APP_DEFAULTS{}</strong> &mdash; Default form values.</li>
+      <li><strong>CALC_CONSTANTS{}</strong> &mdash; Thresholds, extra hardware %, misc quantities.</li>
+      <li><strong>layoutState[]</strong> &mdash; Runtime layout array.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ EXPORT & UTILITIES ══════════ -->
+<div class="cfg-card no-print" id="card-export">
+  <div class="cfg-card-head">
+    <h2><span class="ico ico-green">&#8681;</span> Export, Print &amp; Utilities</h2>
+  </div>
+  <div class="cfg-card-body">
+    <div class="bgroup">
+      <button class="btn btn-pri" onclick="printFull()">&#128424; Print Full Report</button>
+      <button class="btn btn-out" onclick="printBom()">&#128424; Print BOM Only</button>
+      <button class="btn btn-out" onclick="exportBomCsv()">&#128196; Export BOM CSV</button>
+      <button class="btn btn-out" onclick="exportSummaryCsv()">&#128196; Export Summary CSV</button>
+      <button class="btn btn-out" onclick="copyBom()">&#128203; Copy BOM</button>
+      <button class="btn btn-grn" onclick="saveProject()">&#128190; Save Project</button>
+      <button class="btn btn-out" onclick="restoreProject()">&#128194; Restore</button>
+      <button class="btn btn-red" onclick="resetAll()">&#8634; Reset</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /config-container -->
+
+<div id="toast" class="toast"></div>
+
 
 <!-- ══════════ FOOTER ══════════ -->
 <footer class="footer">
@@ -3737,5 +4012,106 @@ if ('IntersectionObserver' in window) {
 })();
 </script>
 
+
+<script>
+
+<script>
+/* ══════════ SEMS ARRAY CONFIGURATOR ENGINE ══════════ */
+const PANELS=[
+{id:'canadian-430',manufacturer:'Canadian Solar',model:'CS6R-430MS',wattage:430,lengthIn:74.8,widthIn:41.3,cellType:'Mono PERC',notes:'HiKu6 series'},
+{id:'jinko-445',manufacturer:'Jinko Solar',model:'JKM445M-54HL4-V',wattage:445,lengthIn:75.6,widthIn:41.8,cellType:'Mono Half-Cell',notes:'Tiger Neo N-type'},
+{id:'longi-440',manufacturer:'LONGi',model:'LR5-54HTH-440M',wattage:440,lengthIn:75.2,widthIn:41.5,cellType:'Mono HiMO6',notes:'Hi-MO 6 Explorer'},
+];
+const INVERTERS=[
+{id:'se11400',manufacturer:'SolarEdge',model:'SE11400H-US',acKw:11.4,dcMaxKw:17.1,notes:'HD-Wave residential/commercial'},
+{id:'sma77',manufacturer:'SMA',model:'Sunny Boy 7.7-US',acKw:7.7,dcMaxKw:11.55,notes:'Residential string inverter'},
+{id:'se33',manufacturer:'SolarEdge',model:'SE33.3K-USR',acKw:33.3,dcMaxKw:45.0,notes:'Three-phase commercial'},
+];
+const FOUNDATIONS=[{id:'ground-screw',name:'Ground Screw'},{id:'driven-pile',name:'Driven Pile (W-Beam)'},{id:'ballast',name:'Ballast Block'}];
+const STRUCTURAL_MEMBERS=[{id:'c-channel',name:'C-Channel Steel Rail'},{id:'unistrut',name:'Unistrut P1000'},{id:'aluminum-rail',name:'Aluminum Extrusion Rail'}];
+const SECTION_RULES={
+'8':{modules:8,rows:2,panelsPerRow:4,posts:4,beams:2,midClamps:6,endClamps:4,splices:2,bondingClips:4,groundLugs:1,wireMgmtPacks:1,hardwareKits:1},
+'10':{modules:10,rows:2,panelsPerRow:5,posts:4,beams:2,midClamps:8,endClamps:4,splices:2,bondingClips:5,groundLugs:1,wireMgmtPacks:1,hardwareKits:1},
+};
+const BOM_ITEMS={
+modules:{name:'Solar Module',category:'Modules',unit:'ea',sku:'MOD-PANEL',wasteEligible:false},
+inverter:{name:'String Inverter',category:'Inverters / MLPE',unit:'ea',sku:'INV-STRING',wasteEligible:false},
+optimizer:{name:'DC Optimizer (MLPE)',category:'Inverters / MLPE',unit:'ea',sku:'OPT-MLPE',wasteEligible:false},
+post:{name:'Structural Post',category:'Posts / Foundations',unit:'ea',sku:'STR-POST',wasteEligible:false},
+beam:{name:'Primary Beam / Rail',category:'Beams / Rails',unit:'ea',sku:'STR-BEAM',wasteEligible:false},
+midClamp:{name:'Mid Clamp',category:'Mid Clamps',unit:'ea',sku:'CLP-MID',wasteEligible:true},
+endClamp:{name:'End Clamp',category:'End Clamps',unit:'ea',sku:'CLP-END',wasteEligible:true},
+splice:{name:'Rail Splice / Joiner',category:'Splices / Joiners',unit:'ea',sku:'SPL-JOIN',wasteEligible:true},
+bracket:{name:'Post-to-Beam Bracket',category:'Brackets / Connectors',unit:'ea',sku:'BRK-PTB',wasteEligible:true},
+bondingClip:{name:'Module Bonding Clip',category:'Bonding / Grounding',unit:'ea',sku:'GND-BOND',wasteEligible:true},
+groundLug:{name:'Equipment Grounding Lug',category:'Bonding / Grounding',unit:'ea',sku:'GND-LUG',wasteEligible:true},
+wireMgmt:{name:'Wire Management Clip Pack',category:'Wire Management',unit:'pk',sku:'WIR-MGMT',wasteEligible:true},
+hardwareKit:{name:'Section Hardware Kit',category:'Fasteners / Hardware',unit:'kit',sku:'HW-KIT',wasteEligible:true},
+miscAllowance:{name:'Misc Hardware Allowance',category:'Miscellaneous / Allowances',unit:'kit',sku:'MISC-ALLOW',wasteEligible:false},
+};
+const CATEGORY_ORDER=['Modules','Inverters / MLPE','Posts / Foundations','Beams / Rails','Mid Clamps','End Clamps','Splices / Joiners','Brackets / Connectors','Bonding / Grounding','Wire Management','Fasteners / Hardware','Miscellaneous / Allowances'];
+const APP_DEFAULTS={projectName:'SEMS Demo Project',customerName:'',siteName:'',siteAddress:'',jobNumber:'',preparedBy:'',projectDate:new Date().toISOString().split('T')[0],projectNotes:'',panelModel:'canadian-430',panelWattage:430,panelLength:74.8,panelWidth:41.3,orientation:'portrait',tiltAngle:25,groundClearance:24,rowSpacing:6,sectionSpacing:60,layoutRowGap:120,foundationType:'driven-pile',postType:'w6x9',beamType:'c-channel',inverterModel:'se11400',optimizerEnabled:true,wasteFactor:3,extraHardware:false,miscAdders:false,engNotes:''};
+const CALC_CONSTANTS={extraClampPct:.03,extraWireMgmtPct:.05,miscAdderQty:1,bracketPerPost:1};
+let layoutState=[];let _nextSectionId=1;let _nextRowId=1;
+function newSecId(){return 's'+(_nextSectionId++);}function newRowId(){return _nextRowId++;}
+const $=id=>document.getElementById(id);const qs=s=>document.querySelector(s);const qsa=s=>document.querySelectorAll(s);
+const numVal=(id,fb)=>{const v=parseFloat($(id).value);return isNaN(v)?(fb||0):v;};
+const fmt=(n,d)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
+function toast(msg,dur){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur||2500);}
+const STORAGE_KEY='sems_array_builder_v2';
+function getFormState(){return{projectName:$('projectName').value,customerName:$('customerName').value,siteName:$('siteName').value,siteAddress:$('siteAddress').value,jobNumber:$('jobNumber').value,preparedBy:$('preparedBy').value,projectDate:$('projectDate').value,projectNotes:$('projectNotes').value,panelModel:$('panelModel').value,panelWattage:numVal('panelWattage',430),panelLength:numVal('panelLength',74.8),panelWidth:numVal('panelWidth',41.3),orientation:$('orientation').value,tiltAngle:numVal('tiltAngle',25),groundClearance:numVal('groundClearance',24),rowSpacing:numVal('rowSpacing',6),sectionSpacing:numVal('sectionSpacing',60),layoutRowGap:numVal('layoutRowGap',120),foundationType:$('foundationType').value,postType:$('postType').value,beamType:$('beamType').value,inverterModel:$('inverterModel').value,optimizerEnabled:$('optimizerEnabled').checked,wasteFactor:numVal('wasteFactor',3),extraHardware:$('extraHardware').checked,miscAdders:$('miscAdders').checked,engNotes:$('engNotes').value};}
+function setFormState(s){$('projectName').value=s.projectName||'';$('customerName').value=s.customerName||'';$('siteName').value=s.siteName||'';$('siteAddress').value=s.siteAddress||'';$('jobNumber').value=s.jobNumber||'';$('preparedBy').value=s.preparedBy||'';$('projectDate').value=s.projectDate||'';$('projectNotes').value=s.projectNotes||'';$('panelModel').value=s.panelModel||PANELS[0].id;$('panelWattage').value=s.panelWattage||430;$('panelLength').value=s.panelLength||74.8;$('panelWidth').value=s.panelWidth||41.3;$('orientation').value=s.orientation||'portrait';$('tiltAngle').value=s.tiltAngle||25;$('groundClearance').value=s.groundClearance||24;$('rowSpacing').value=s.rowSpacing||6;$('sectionSpacing').value=s.sectionSpacing||60;$('layoutRowGap').value=s.layoutRowGap||120;$('foundationType').value=s.foundationType||'driven-pile';$('postType').value=s.postType||'w6x9';$('beamType').value=s.beamType||'c-channel';$('inverterModel').value=s.inverterModel||INVERTERS[0].id;$('optimizerEnabled').checked=s.optimizerEnabled!==false;$('wasteFactor').value=s.wasteFactor||3;$('extraHardware').checked=!!s.extraHardware;$('miscAdders').checked=!!s.miscAdders;$('engNotes').value=s.engNotes||'';}
+function autoSave(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({form:getFormState(),layout:layoutState,nextSec:_nextSectionId,nextRow:_nextRowId}));}catch(e){}}
+function autoRestore(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const d=JSON.parse(raw);if(d.form)setFormState(d.form);if(d.layout&&d.layout.length){layoutState=d.layout;_nextSectionId=d.nextSec||100;_nextRowId=d.nextRow||100;}return true;}}catch(e){}return false;}
+function addRow(){layoutState.push({rowId:newRowId(),sections:[]});renderCanvas();recalcAll();}
+function removeRow(rowId){layoutState=layoutState.filter(r=>r.rowId!==rowId);renumberSections();renderCanvas();recalcAll();}
+function addSectionToRow(rowId,type){const row=layoutState.find(r=>r.rowId===rowId);if(row){row.sections.push({id:newSecId(),type:type});}renumberSections();renderCanvas();recalcAll();}
+function removeSectionById(secId){layoutState.forEach(r=>{r.sections=r.sections.filter(s=>s.id!==secId);});layoutState=layoutState.filter(r=>r.sections.length>0||layoutState.length<=1);if(layoutState.length===0)layoutState.push({rowId:newRowId(),sections:[]});renumberSections();renderCanvas();recalcAll();}
+function duplicateSection(secId){for(const row of layoutState){const idx=row.sections.findIndex(s=>s.id===secId);if(idx>=0){row.sections.splice(idx+1,0,{id:newSecId(),type:row.sections[idx].type});break;}}renumberSections();renderCanvas();recalcAll();}
+function quickAdd(type){if(layoutState.length===0)layoutState.push({rowId:newRowId(),sections:[]});layoutState[layoutState.length-1].sections.push({id:newSecId(),type:type});renumberSections();renderCanvas();recalcAll();}
+function clearLayout(){if(!confirm('Clear the entire array layout?'))return;layoutState=[{rowId:newRowId(),sections:[]}];renumberSections();renderCanvas();recalcAll();toast('Layout cleared');}
+function loadDemoLayout(){layoutState=[];layoutState.push({rowId:newRowId(),sections:[{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'}]});layoutState.push({rowId:newRowId(),sections:[{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'}]});layoutState.push({rowId:newRowId(),sections:[{id:newSecId(),type:'8'},{id:newSecId(),type:'8'},{id:newSecId(),type:'10'}]});renumberSections();renderCanvas();recalcAll();toast('Demo layout loaded');}
+function autoBalance(){const allSecs=[];layoutState.forEach(r=>r.sections.forEach(s=>allSecs.push({...s})));if(allSecs.length===0){toast('No sections to balance');return;}const rowCount=Math.max(1,layoutState.length);const perRow=Math.ceil(allSecs.length/rowCount);layoutState=[];for(let i=0;i<allSecs.length;i+=perRow){layoutState.push({rowId:newRowId(),sections:allSecs.slice(i,i+perRow)});}renumberSections();renderCanvas();recalcAll();toast('Rows balanced');}
+function renumberSections(){let n=1;layoutState.forEach(r=>r.sections.forEach(s=>{s._num=n++;}));}
+function getAllSections(){const out=[];layoutState.forEach(r=>r.sections.forEach(s=>out.push(s)));return out;}
+let _dragData=null;
+function initDragAndDrop(){qsa('.pal-item').forEach(el=>{el.addEventListener('dragstart',e=>{_dragData={source:'palette',type:el.dataset.palette};e.dataTransfer.effectAllowed='copy';e.dataTransfer.setData('text/plain','section');el.style.opacity='.5';});el.addEventListener('dragend',e=>{el.style.opacity='1';cleanupDrag();});});}
+function setupCanvasDrag(){qsa('.sec-block').forEach(el=>{el.setAttribute('draggable','true');el.addEventListener('dragstart',e=>{_dragData={source:'canvas',secId:el.dataset.secid,fromRowId:el.closest('.row-lane')?parseInt(el.closest('.row-lane').dataset.rowid):null,type:el.dataset.type};e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','section');requestAnimationFrame(()=>el.classList.add('dragging'));});el.addEventListener('dragend',e=>{el.classList.remove('dragging');cleanupDrag();});});qsa('.row-lane').forEach(lane=>{lane.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect=_dragData&&_dragData.source==='palette'?'copy':'move';lane.classList.add('drag-over');showDropPosition(lane,e);});lane.addEventListener('dragleave',e=>{if(!lane.contains(e.relatedTarget)){lane.classList.remove('drag-over');clearDropIndicators(lane);}});lane.addEventListener('drop',e=>{e.preventDefault();lane.classList.remove('drag-over');clearDropIndicators(lane);if(!_dragData)return;const targetRowId=parseInt(lane.dataset.rowid);const dropIdx=getDropIndex(lane,e);if(_dragData.source==='palette'){const row=layoutState.find(r=>r.rowId===targetRowId);if(row)row.sections.splice(dropIdx,0,{id:newSecId(),type:_dragData.type});}else{let movedSec=null;for(const r of layoutState){const idx=r.sections.findIndex(s=>s.id===_dragData.secId);if(idx>=0){movedSec=r.sections.splice(idx,1)[0];break;}}if(movedSec){const row=layoutState.find(r=>r.rowId===targetRowId);if(row)row.sections.splice(dropIdx,0,movedSec);}layoutState=layoutState.filter(r=>r.sections.length>0);if(layoutState.length===0)layoutState.push({rowId:newRowId(),sections:[]});}_dragData=null;renumberSections();renderCanvas();recalcAll();});});}
+function getDropIndex(lane,e){const blocks=Array.from(lane.querySelectorAll('.sec-block:not(.dragging)'));if(blocks.length===0)return 0;for(let i=0;i<blocks.length;i++){const rect=blocks[i].getBoundingClientRect();if(e.clientX<rect.left+rect.width/2)return i;}return blocks.length;}
+function showDropPosition(lane,e){clearDropIndicators(lane);const sc=lane.querySelector('.row-sections');if(!sc)return;const blocks=Array.from(sc.querySelectorAll('.sec-block:not(.dragging)'));const ind=document.createElement('div');ind.className='drop-indicator';if(blocks.length===0){sc.appendChild(ind);return;}let ins=false;for(let i=0;i<blocks.length;i++){const r=blocks[i].getBoundingClientRect();if(e.clientX<r.left+r.width/2){sc.insertBefore(ind,blocks[i]);ins=true;break;}}if(!ins)sc.appendChild(ind);}
+function clearDropIndicators(lane){if(!lane){qsa('.drop-indicator').forEach(el=>el.remove());return;}lane.querySelectorAll('.drop-indicator').forEach(el=>el.remove());}
+function cleanupDrag(){_dragData=null;qsa('.row-lane').forEach(l=>l.classList.remove('drag-over'));qsa('.drop-indicator').forEach(el=>el.remove());qsa('.sec-block.dragging').forEach(el=>el.classList.remove('dragging'));}
+function calculateSectionBreakdown(sec,state){const rules=SECTION_RULES[sec.type];if(!rules)return null;let mc=rules.midClamps,ec=rules.endClamps,wm=rules.wireMgmtPacks;if(state.extraHardware){mc=Math.ceil(mc*(1+CALC_CONSTANTS.extraClampPct));ec=Math.ceil(ec*(1+CALC_CONSTANTS.extraClampPct));wm=Math.ceil(wm*(1+CALC_CONSTANTS.extraWireMgmtPct));}return{id:sec.id,sectionNumber:sec._num||0,type:sec.type,modules:rules.modules,rows:rules.rows,panelsPerRow:rules.panelsPerRow,posts:rules.posts,beams:rules.beams,midClamps:mc,endClamps:ec,splices:rules.splices,brackets:rules.posts*CALC_CONSTANTS.bracketPerPost,bondingClips:rules.bondingClips,groundLugs:rules.groundLugs,wireMgmtPacks:wm,hardwareKits:rules.hardwareKits,optimizers:state.optimizerEnabled?rules.modules:0};}
+function calculateProjectTotals(state){const allSecs=getAllSections();const bds=allSecs.map(s=>calculateSectionBreakdown(s,state)).filter(Boolean);const t={modules:0,posts:0,beams:0,midClamps:0,endClamps:0,splices:0,brackets:0,bondingClips:0,groundLugs:0,wireMgmtPacks:0,hardwareKits:0,optimizers:0};bds.forEach(b=>{Object.keys(t).forEach(k=>{t[k]+=b[k];});});const tp=t.modules,tw=tp*state.panelWattage,tk=tw/1000;const inv=INVERTERS.find(i=>i.id===state.inverterModel)||INVERTERS[0];const ic=Math.max(tp>0?1:0,Math.ceil(tk/inv.dcMaxKw));const c8=allSecs.filter(s=>s.type==='8').length,c10=allSecs.filter(s=>s.type==='10').length;const pL=state.panelLength,pW=state.panelWidth;let mH,mS;if(state.orientation==='portrait'){mH=pW;mS=pL;}else{mH=pL;mS=pW;}const sd=2*mS+state.rowSpacing;let mxW=0;layoutState.forEach(row=>{if(!row.sections.length)return;let rw=0;row.sections.forEach(sec=>{rw+=(SECTION_RULES[sec.type]?SECTION_RULES[sec.type].panelsPerRow:5)*mH;});rw+=(row.sections.length-1)*state.sectionSpacing;if(rw>mxW)mxW=rw;});const lr=layoutState.filter(r=>r.sections.length>0).length;const td=lr*sd+(Math.max(0,lr-1))*state.layoutRowGap;return{breakdowns:bds,totals:t,totalPanels:tp,totalDcWatts:tw,totalDcKw:tk,inverterCount:ic,inverter:inv,count8:c8,count10:c10,sectionCount:allSecs.length,layoutRows:lr,maxRowWidthFt:mxW/12,totalDepthFt:td/12,footprintSqFt:(mxW/12)*(td/12),secDepthFt:sd/12};}
+function applyWasteFactor(base,pct,el){if(!el||pct<=0)return base;return Math.ceil(base*(1+pct/100));}
+function generateBom(state,calc){const wp=state.wasteFactor;const lines=[];function add(key,qty,note){const it=BOM_ITEMS[key];if(!it||qty<=0)return;lines.push({key,category:it.category,item:it.name,partNumber:it.sku,unit:it.unit,baseQty:qty,wastePct:it.wasteEligible?wp:0,finalQty:applyWasteFactor(qty,wp,it.wasteEligible),notes:note||''});}const panel=PANELS.find(p=>p.id===state.panelModel)||PANELS[0];add('modules',calc.totalPanels,panel.manufacturer+' '+panel.model+' ('+panel.wattage+'W)');add('inverter',calc.inverterCount,calc.inverter.manufacturer+' '+calc.inverter.model);if(state.optimizerEnabled)add('optimizer',calc.totals.optimizers,'1 per module');add('post',calc.totals.posts,state.postType);add('beam',calc.totals.beams,(STRUCTURAL_MEMBERS.find(s=>s.id===state.beamType)||{}).name||'');add('midClamp',calc.totals.midClamps,state.extraHardware?'+3% extra':'');add('endClamp',calc.totals.endClamps,state.extraHardware?'+3% extra':'');add('splice',calc.totals.splices,'');add('bracket',calc.totals.brackets,'1 per post');add('bondingClip',calc.totals.bondingClips,'1 per module');add('groundLug',calc.totals.groundLugs,'1 per section');add('wireMgmt',calc.totals.wireMgmtPacks,state.extraHardware?'+5% extra':'1/section');add('hardwareKit',calc.totals.hardwareKits,'1/section');if(state.miscAdders)add('miscAllowance',CALC_CONSTANTS.miscAdderQty,'Project-level allowance');return lines;}
+function aggregateBomLines(lines){const g={};CATEGORY_ORDER.forEach(c=>{g[c]=[];});lines.forEach(l=>{if(!g[l.category])g[l.category]=[];g[l.category].push(l);});return g;}
+function populateDropdowns(){$('panelModel').innerHTML=PANELS.map(p=>'<option value="'+p.id+'">'+p.manufacturer+' '+p.model+' ('+p.wattage+'W)</option>').join('');$('inverterModel').innerHTML=INVERTERS.map(i=>'<option value="'+i.id+'">'+i.manufacturer+' '+i.model+' ('+i.acKw+' kW)</option>').join('');}
+function syncPanelFields(){const p=PANELS.find(p=>p.id===$('panelModel').value);if(p){$('panelWattage').value=p.wattage;$('panelLength').value=p.lengthIn;$('panelWidth').value=p.widthIn;}}
+function renderCanvas(){const cv=$('canvas');if(layoutState.length===0)layoutState.push({rowId:newRowId(),sections:[]});let h='';layoutState.forEach((row,ri)=>{const sc=row.sections.length;const rp=row.sections.reduce((a,s)=>a+parseInt(s.type),0);h+='<div class="row-lane" data-rowid="'+row.rowId+'"><div class="row-head"><span class="row-label">&#9656; Row '+(ri+1)+'</span><div class="row-stats"><span>'+sc+' section'+(sc!==1?'s':'')+'</span><span>'+rp+' panels</span></div><div class="row-actions no-print">';if(layoutState.length>1)h+='<button class="sb-btn del" title="Remove row" onclick="removeRow('+row.rowId+')">&#10005;</button>';h+='</div></div><div class="row-sections'+(sc===0?' empty':'')+'">'; if(sc===0){h+='<span class="row-empty-msg">Drag a section here to start building this row</span>';}else{row.sections.forEach(sec=>{const t=sec.type;const ppr=SECTION_RULES[t]?SECTION_RULES[t].panelsPerRow:5;const gc=ppr<=4?'g4':'g5';const cells=Array(parseInt(t)).fill(0).map(()=>'<div class="mini-cell"></div>').join('');h+='<div class="sec-block s'+t+'" data-secid="'+sec.id+'" data-type="'+t+'" draggable="true"><div class="sb-actions"><button class="sb-btn" title="Duplicate" onclick="event.stopPropagation();duplicateSection(\''+sec.id+'\')">&#10697;</button><button class="sb-btn del" title="Remove" onclick="event.stopPropagation();removeSectionById(\''+sec.id+'\')">&#10005;</button></div><div class="sb-head"><span class="sb-num">#'+(sec._num||'')+'</span><span class="sb-type">'+t+'-P</span></div><div class="mini-grid '+gc+'">'+cells+'</div><div class="sb-panels">'+t+' panels &middot; 2&times;'+ppr+'</div></div>';});}h+='</div></div>';});cv.innerHTML=h;setupCanvasDrag();renderLayoutTotals();autoSave();}
+function renderLayoutTotals(){const as=getAllSections();const ts=as.length;const c8=as.filter(s=>s.type==='8').length;const c10=as.filter(s=>s.type==='10').length;const tp=as.reduce((a,s)=>a+parseInt(s.type),0);const w=numVal('panelWattage',430);const dk=(tp*w/1000).toFixed(2);const r=layoutState.filter(r=>r.sections.length>0).length;$('layoutTotals').innerHTML='<div class="lt-item">Rows: <strong>'+r+'</strong></div><div class="lt-item">Sections: <strong>'+ts+'</strong></div><div class="lt-item">8-Panel: <strong>'+c8+'</strong></div><div class="lt-item">10-Panel: <strong>'+c10+'</strong></div><div class="lt-item">Total Panels: <strong>'+tp+'</strong></div><div class="lt-item">DC Size: <strong>'+dk+' kW</strong></div>';}
+function renderSummary(state,calc){const panel=PANELS.find(p=>p.id===state.panelModel)||PANELS[0];const bl=generateBom(state,calc);const items=[{l:'Layout Rows',v:calc.layoutRows,u:'',c:''},{l:'Total Sections',v:calc.sectionCount,u:'',c:''},{l:'8-Panel Sections',v:calc.count8,u:'',c:''},{l:'10-Panel Sections',v:calc.count10,u:'',c:''},{l:'Total Panels',v:fmt(calc.totalPanels),u:'modules',c:'hi'},{l:'Total DC',v:fmt(calc.totalDcKw,2),u:'kW DC',c:'hi'},{l:'Total DC Watts',v:fmt(calc.totalDcWatts),u:'W',c:'ac'},{l:'Panel',v:panel.model,u:panel.manufacturer,c:''},{l:'Inverter',v:calc.inverter.model,u:calc.inverterCount+' unit(s)',c:''},{l:'Optimizer',v:state.optimizerEnabled?'Enabled':'Off',u:state.optimizerEnabled?calc.totals.optimizers+' units':'\u2014',c:''},{l:'Array Width',v:fmt(calc.maxRowWidthFt,1),u:'ft (longest row)',c:''},{l:'Array Depth',v:fmt(calc.totalDepthFt,1),u:'ft (N-S)',c:''},{l:'Footprint',v:fmt(calc.footprintSqFt,0),u:'sq ft',c:'ac'},{l:'Est. Posts',v:fmt(calc.totals.posts),u:'ea',c:''},{l:'Est. Beams',v:fmt(calc.totals.beams),u:'ea',c:''},{l:'Est. Clamps',v:fmt(calc.totals.midClamps+calc.totals.endClamps),u:'mid+end',c:''},{l:'BOM Lines',v:bl.length,u:'unique',c:''}];$('summaryGrid').innerHTML=items.map(i=>'<div class="scard '+i.c+'"><span class="sl">'+i.l+'</span><span class="sv">'+i.v+'</span><span class="su">'+i.u+'</span></div>').join('');}
+function renderSectionCards(calc){const bds=calc.breakdowns;const mx=50;const show=bds.length<=mx?bds:bds.slice(0,6);let h='';show.forEach(b=>{h+='<div class="sbc"><div class="sbc-head"><span class="sn">Section '+b.sectionNumber+'</span><span class="tag '+(b.type==='8'?'tag-blue':'tag-purple')+'">'+b.type+'-Panel</span></div><div class="sbc-body">';h+=dr('Modules',b.modules)+dr('Rows',b.rows)+dr('Panels/Row',b.panelsPerRow)+dr('Posts',b.posts)+dr('Beams',b.beams)+dr('Mid Clamps',b.midClamps)+dr('End Clamps',b.endClamps)+dr('Splices',b.splices)+dr('Brackets',b.brackets)+dr('Bonding Clips',b.bondingClips)+dr('Ground Lugs',b.groundLugs)+dr('Wire Mgmt',b.wireMgmtPacks)+dr('Hardware Kits',b.hardwareKits);if(b.optimizers>0)h+=dr('Optimizers',b.optimizers);h+='</div></div>';});if(bds.length>mx)h+='<div class="sbc" style="display:flex;align-items:center;justify-content:center;min-height:100px;padding:16px;text-align:center"><div><strong>+ '+(bds.length-6)+' more sections</strong><br><span style="font-size:.76rem;color:var(--cfg-tsec)">All sections listed in BOM below</span></div></div>';$('sectionCards').innerHTML=h;}
+function dr(l,v){return '<div class="dr"><span class="dl">'+l+'</span><span class="dv">'+v+'</span></div>';}
+function renderBomTable(state,calc){const bl=generateBom(state,calc);const groups=aggregateBomLines(bl);let h='',gt=0,ul=0;CATEGORY_ORDER.forEach(cat=>{const lines=groups[cat];if(!lines||!lines.length)return;h+='<tr class="cat-h"><td colspan="8">'+cat+'</td></tr>';let ct=0;lines.forEach(l=>{h+='<tr><td>'+l.category+'</td><td>'+l.item+'</td><td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td><td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td><td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'\u2014')+'</td><td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td><td style="font-size:.7rem;color:var(--cfg-tsec)">'+l.notes+'</td></tr>';ct+=l.finalQty;ul++;});h+='<tr class="sub"><td colspan="6" style="text-align:right">Subtotal \u2014 '+cat+'</td><td style="text-align:right">'+fmt(ct)+'</td><td></td></tr>';gt+=ct;});$('bomBody').innerHTML=h;$('bomFoot').innerHTML='<tr><td colspan="4" style="text-align:right">Grand Total</td><td></td><td></td><td style="text-align:right;font-size:.92rem">'+fmt(gt)+' items</td><td>'+ul+' lines</td></tr>';window._bomLines=bl;window._calc=calc;window._state=state;}
+function recalcAll(){if(!validate())return;const state=getFormState();const calc=calculateProjectTotals(state);renderSummary(state,calc);renderSectionCards(calc);renderBomTable(state,calc);renderLayoutTotals();autoSave();}
+function validate(){let ok=true;[{id:'panelWattage',min:100,max:800},{id:'panelLength',min:20,max:120},{id:'panelWidth',min:20,max:60},{id:'tiltAngle',min:5,max:60},{id:'groundClearance',min:6,max:96},{id:'rowSpacing',min:1,max:120},{id:'sectionSpacing',min:6,max:360},{id:'layoutRowGap',min:12,max:600},{id:'wasteFactor',min:0,max:25}].forEach(f=>{const el=$(f.id),fg=el.closest('.fi'),v=parseFloat(el.value);if(isNaN(v)||v<f.min||v>f.max){fg.classList.add('error');let e=fg.querySelector('.errmsg');if(!e){e=document.createElement('span');e.className='errmsg';fg.appendChild(e);}e.textContent=f.min+'\u2013'+f.max;ok=false;}else{fg.classList.remove('error');}});return ok;}
+function csvEsc(v){const s=String(v==null?'':v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}
+function dlCsv(name,csv){const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
+function exportBomCsv(){if(!window._bomLines){toast('No BOM');return;}let csv='Category,Item,Part #,Unit,Base Qty,Waste %,Final Qty,Notes\n';window._bomLines.forEach(l=>{csv+=[l.category,l.item,l.partNumber,l.unit,l.baseQty,l.wastePct>0?l.wastePct+'%':'',l.finalQty,l.notes].map(csvEsc).join(',')+'\n';});dlCsv(($('jobNumber').value||'SM')+'_BOM_'+new Date().toISOString().split('T')[0]+'.csv',csv);toast('BOM CSV exported');}
+function exportSummaryCsv(){if(!window._calc||!window._state){toast('No data');return;}const s=window._state,c=window._calc;const rows=[['Project',s.projectName],['Customer',s.customerName],['Site',s.siteName],['Address',s.siteAddress],['Job #',s.jobNumber],['Date',s.projectDate],['Layout Rows',c.layoutRows],['Sections',c.sectionCount],['8-Panel',c.count8],['10-Panel',c.count10],['Total Panels',c.totalPanels],['DC kW',c.totalDcKw.toFixed(2)],['Panel',((PANELS.find(p=>p.id===s.panelModel)||{}).model||'')],['Inverter',c.inverter.model],['Inverters',c.inverterCount],['Optimizer',s.optimizerEnabled?'Yes':'No'],['Width ft',c.maxRowWidthFt.toFixed(1)],['Depth ft',c.totalDepthFt.toFixed(1)],['Footprint sqft',c.footprintSqFt.toFixed(0)]];let csv='Field,Value\n';rows.forEach(r=>{csv+=r.map(csvEsc).join(',')+'\n';});dlCsv(($('jobNumber').value||'SM')+'_Summary_'+new Date().toISOString().split('T')[0]+'.csv',csv);toast('Summary exported');}
+function copyBom(){if(!window._bomLines){toast('No BOM');return;}let t='Category\tItem\tPart #\tUnit\tBase Qty\tWaste %\tFinal Qty\tNotes\n';window._bomLines.forEach(l=>{t+=[l.category,l.item,l.partNumber,l.unit,l.baseQty,l.wastePct>0?l.wastePct+'%':'',l.finalQty,l.notes].join('\t')+'\n';});navigator.clipboard.writeText(t).then(()=>toast('BOM copied')).catch(()=>toast('Copy failed'));}
+function printFull(){qsa('.coll-body').forEach(el=>el.classList.add('open'));window.print();}
+function printBom(){const s=document.createElement('style');s.id='bp';s.textContent='@media print{.cfg-card:not(#card-bom):not(#card-project){display:none!important}.nav,.footer,.page-hero-config{display:none!important}}';document.head.appendChild(s);window.print();setTimeout(()=>{const e=document.getElementById('bp');if(e)e.remove();},1e3);}
+function saveProject(){autoSave();toast('Saved to local storage');}
+function restoreProject(){if(autoRestore()){syncPanelFields();renderCanvas();recalcAll();toast('Restored');}else{toast('No saved project');}}
+function resetAll(){if(!confirm('Reset everything to defaults?'))return;setFormState(APP_DEFAULTS);syncPanelFields();layoutState=[];_nextSectionId=1;_nextRowId=1;layoutState.push({rowId:newRowId(),sections:[]});renderCanvas();recalcAll();toast('Reset complete');}
+function initCollapsibles(){qsa('.coll-tog').forEach(t=>{t.addEventListener('click',function(){const body=$(this.dataset.target);if(body){body.classList.toggle('open');this.classList.toggle('open');}});});}
+function initTableSort(){qsa('#bomTable thead th').forEach(th=>{th.addEventListener('click',function(){const col=this.dataset.col;if(!col||!window._bomLines)return;const lines=[...window._bomLines];const asc=!this._asc;this._asc=asc;lines.sort((a,b)=>{let va=a[col]||'',vb=b[col]||'';if(typeof va==='number'&&typeof vb==='number')return asc?va-vb:vb-va;return asc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));});let h='';lines.forEach(l=>{h+='<tr><td>'+l.category+'</td><td>'+l.item+'</td><td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td><td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td><td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'\u2014')+'</td><td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td><td style="font-size:.7rem;color:var(--cfg-tsec)">'+l.notes+'</td></tr>';});$('bomBody').innerHTML=h;});});}
+function init(){populateDropdowns();$('projectDate').value=APP_DEFAULTS.projectDate;const restored=autoRestore();if(!restored){setFormState(APP_DEFAULTS);loadDemoLayout();}else{syncPanelFields();renumberSections();renderCanvas();}syncPanelFields();$('panelModel').addEventListener('change',()=>{syncPanelFields();recalcAll();});qsa('#card-config input,#card-config select,#card-config textarea').forEach(el=>{el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',recalcAll);});qsa('#card-project input,#card-project textarea').forEach(el=>{el.addEventListener('input',autoSave);});initCollapsibles();initTableSort();initDragAndDrop();recalcAll();}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+
+</script>
 </body>
 </html>
