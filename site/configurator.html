@@ -1387,11 +1387,15 @@ img { max-width: 100%; display: block; }
 .cfg-cta {
   padding: 80px 20px;
   background: var(--white);
+  position: relative;
+  overflow: hidden;
 }
 .cfg-cta-card {
   max-width: 1080px;
   margin: 0 auto;
   display: grid;
+  position: relative;
+  z-index: 1;
   grid-template-columns: 1fr 1fr;
   border-radius: 24px;
   overflow: hidden;
