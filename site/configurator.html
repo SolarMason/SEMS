@@ -4012,9 +4012,6 @@ if ('IntersectionObserver' in window) {
 })();
 </script>
 
-
-<script>
-
 <script>
 /* ══════════ SEMS ARRAY CONFIGURATOR ENGINE ══════════ */
 const PANELS=[
@@ -4110,8 +4107,6 @@ function initCollapsibles(){qsa('.coll-tog').forEach(t=>{t.addEventListener('cli
 function initTableSort(){qsa('#bomTable thead th').forEach(th=>{th.addEventListener('click',function(){const col=this.dataset.col;if(!col||!window._bomLines)return;const lines=[...window._bomLines];const asc=!this._asc;this._asc=asc;lines.sort((a,b)=>{let va=a[col]||'',vb=b[col]||'';if(typeof va==='number'&&typeof vb==='number')return asc?va-vb:vb-va;return asc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));});let h='';lines.forEach(l=>{h+='<tr><td>'+l.category+'</td><td>'+l.item+'</td><td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td><td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td><td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'\u2014')+'</td><td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td><td style="font-size:.7rem;color:var(--cfg-tsec)">'+l.notes+'</td></tr>';});$('bomBody').innerHTML=h;});});}
 function init(){populateDropdowns();$('projectDate').value=APP_DEFAULTS.projectDate;const restored=autoRestore();if(!restored){setFormState(APP_DEFAULTS);loadDemoLayout();}else{syncPanelFields();renumberSections();renderCanvas();}syncPanelFields();$('panelModel').addEventListener('change',()=>{syncPanelFields();recalcAll();});qsa('#card-config input,#card-config select,#card-config textarea').forEach(el=>{el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',recalcAll);});qsa('#card-project input,#card-project textarea').forEach(el=>{el.addEventListener('input',autoSave);});initCollapsibles();initTableSort();initDragAndDrop();recalcAll();}
 document.addEventListener('DOMContentLoaded',init);
-</script>
-
 </script>
 </body>
 </html>
