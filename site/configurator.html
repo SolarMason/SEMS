@@ -2602,11 +2602,18 @@ body.nav-locked {
         </div>
         <div class="builder-controls">
           <button class="btn btn-out btn-sm" onclick="addRow()">+ Add Row</button>
-          <button class="btn btn-out btn-sm" onclick="loadDemoLayout()">&#9733; Demo Layout</button>
+
           <button class="btn btn-out btn-sm" onclick="autoBalance()">&#8651; Auto-Balance</button>
           <button class="btn btn-out btn-sm" onclick="convertAll('8')" title="Convert every section to 8.0 Series">&#8644; All &rarr; 8.0</button>
           <button class="btn btn-out btn-sm" onclick="convertAll('10')" title="Convert every section to 10.0 Series">&#8644; All &rarr; 10.0</button>
           <button class="btn btn-ghost btn-sm" onclick="clearLayout()">&#10005; Clear</button>
+        </div>
+        <div class="builder-controls" style="margin-top:6px">
+          <span style="font-size:.7rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-right:4px">Presets:</span>
+          <button class="btn btn-out btn-sm" onclick="generateSystem(250)" title="Auto-generate a ~250 kW DC system">&#9889; 250 kW</button>
+          <button class="btn btn-out btn-sm" onclick="generateSystem(500)" title="Auto-generate a ~500 kW DC system">&#9889; 500 kW</button>
+          <button class="btn btn-out btn-sm" onclick="generateSystem(750)" title="Auto-generate a ~750 kW DC system">&#9889; 750 kW</button>
+          <button class="btn btn-out btn-sm" onclick="generateSystem(1000)" title="Auto-generate a ~1 MW DC system">&#9889; 1 MW</button>
         </div>
       </div>
       <div id="canvasViewport" class="canvas-viewport">
@@ -4067,8 +4074,9 @@ function removeSectionById(secId){layoutState.forEach(r=>{r.sections=r.sections.
 function duplicateSection(secId){for(const row of layoutState){const idx=row.sections.findIndex(s=>s.id===secId);if(idx>=0){if(row.sections.length>=MAX_SECTIONS_PER_ROW){toast('Max '+MAX_SECTIONS_PER_ROW+' sections per row');return;}row.sections.splice(idx+1,0,{id:newSecId(),type:row.sections[idx].type});break;}}renumberSections();renderCanvas();recalcAll();}
 function quickAdd(type){if(layoutState.length===0)layoutState.push({rowId:newRowId(),sections:[]});const lastRow=layoutState[layoutState.length-1];if(lastRow.sections.length>=MAX_SECTIONS_PER_ROW){layoutState.push({rowId:newRowId(),sections:[]});toast('Row full — started new row');}layoutState[layoutState.length-1].sections.push({id:newSecId(),type:type});renumberSections();renderCanvas();recalcAll();}
 function clearLayout(){if(!confirm('Clear the entire array layout?'))return;layoutState=[{rowId:newRowId(),sections:[]}];renumberSections();renderCanvas();recalcAll();toast('Layout cleared');}
-function loadDemoLayout(){layoutState=[];layoutState.push({rowId:newRowId(),sections:[{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'}]});layoutState.push({rowId:newRowId(),sections:[{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'},{id:newSecId(),type:'10'}]});layoutState.push({rowId:newRowId(),sections:[{id:newSecId(),type:'8'},{id:newSecId(),type:'8'},{id:newSecId(),type:'10'}]});renumberSections();renderCanvas();recalcAll();toast('Demo layout loaded');}
+
 function autoBalance(){const allSecs=[];layoutState.forEach(r=>r.sections.forEach(s=>allSecs.push({...s})));if(allSecs.length===0){toast('No sections to balance');return;}const rowCount=Math.max(1,layoutState.length);const perRow=Math.ceil(allSecs.length/rowCount);layoutState=[];for(let i=0;i<allSecs.length;i+=perRow){layoutState.push({rowId:newRowId(),sections:allSecs.slice(i,i+perRow)});}renumberSections();renderCanvas();recalcAll();toast('Rows balanced');}
+function generateSystem(targetKw){const panel=PANELS.find(p=>p.id===$('panelModel').value)||PANELS[0];const pw=panel.widthIn;const watt=panel.wattage;/* Use 10.0 Series for utility-scale presets */const secType='10';const mc=getSectionModuleCount(secType,pw);const kwPerSec=(mc.modules*watt)/1000;if(kwPerSec<=0){toast('Cannot calculate — check panel selection');return;}const totalSecs=Math.ceil(targetKw/kwPerSec);const rowCount=Math.ceil(totalSecs/MAX_SECTIONS_PER_ROW);layoutState=[];let placed=0;for(let r=0;r<rowCount;r++){const secsThisRow=Math.min(MAX_SECTIONS_PER_ROW,totalSecs-placed);const secs=[];for(let s=0;s<secsThisRow;s++){secs.push({id:newSecId(),type:secType});}layoutState.push({rowId:newRowId(),sections:secs});placed+=secsThisRow;}renumberSections();renderCanvas();recalcAll();const actualKw=(totalSecs*mc.modules*watt/1000).toFixed(1);toast(actualKw+' kW DC — '+totalSecs+' sections across '+rowCount+' row'+(rowCount!==1?'s':''));}
 function convertAll(targetType){const allSecs=getAllSections();if(allSecs.length===0){toast('No sections to convert');return;}const already=allSecs.every(s=>s.type===targetType);if(already){toast('All sections are already '+targetType+'.0 Series');return;}layoutState.forEach(r=>{r.sections.forEach(s=>{s.type=targetType;});});renumberSections();renderCanvas();recalcAll();toast('Converted all to '+targetType+'.0 Series');}
 function renumberSections(){let n=1;layoutState.forEach(r=>r.sections.forEach(s=>{s._num=n++;}));}
 function getAllSections(){const out=[];layoutState.forEach(r=>r.sections.forEach(s=>out.push(s)));return out;}
