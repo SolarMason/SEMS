@@ -15,6 +15,17 @@ export const metadata: Metadata = {
   authors: [{ name: "Noel Segui" }],
   creator: "Noel Segui, CEO of Solar Mason",
   generator: "Designed by Noel Segui — CEO, Solar Mason",
+  icons: {
+    icon: "/images/sems-logo.jpg",
+    shortcut: "/images/sems-logo.jpg",
+    apple: "/images/sems-logo.jpg",
+  },
+  openGraph: {
+    title: "SEMS — Sustainable Energy Management Systems",
+    description:
+      "American-made, storm-hardened closed-form solar racking and tracking systems.",
+    images: ["/images/sems-logo.jpg"],
+  },
 };
 
 export default function RootLayout({

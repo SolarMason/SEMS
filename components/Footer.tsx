@@ -4,14 +4,21 @@
  * @copyright Original design and engineering © Noel Segui.
  * ============================================================================ */
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="mt-24 border-t border-sems-navy/10 bg-sems-navy text-white">
       <div className="container-xl grid gap-10 py-12 md:grid-cols-4">
         <div>
-          <div className="text-lg font-bold">SEMS</div>
-          <p className="mt-3 text-sm text-white/70">
+          <Image
+            src="/images/sems-logo.jpg"
+            alt="SEMS"
+            width={640}
+            height={200}
+            className="h-10 w-auto brightness-0 invert"
+          />
+          <p className="mt-4 text-sm text-white/70">
             Sustainable Energy Management Systems, LLC — American-made,
             storm-hardened solar racking and tracking systems, headquartered in
             Scranton, PA.
