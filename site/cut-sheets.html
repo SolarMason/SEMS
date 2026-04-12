@@ -276,16 +276,33 @@ img { max-width: 100%; display: block; }
   grid-template-columns: 1fr 1fr 1fr;
   gap: 0;
 }
+.mega-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--gray-100);
+}
+.mega-col:last-child { border-right: none; }
+.mega-col-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--blue-500);
+  padding: 16px 28px 10px;
+  background: linear-gradient(180deg, var(--gray-50), transparent);
+  border-bottom: 1px solid var(--gray-100);
+}
 .mega-item {
   display: flex;
-  gap: 16px;
-  padding: 22px 28px;
+  gap: 14px;
+  padding: 16px 28px;
   transition: all 0.2s;
   border-bottom: 1px solid var(--gray-100);
-  border-right: 1px solid var(--gray-100);
   position: relative;
   overflow: hidden;
+  text-decoration: none;
 }
+.mega-item:last-child { border-bottom: none; }
 .mega-item::before {
   content: '';
   position: absolute;
@@ -302,13 +319,11 @@ img { max-width: 100%; display: block; }
 .mega-item:hover::before {
   transform: scaleY(1);
 }
-.mega-item:nth-child(3n) { border-right: none; }
-.mega-item:nth-last-child(-n+3) { border-bottom: none; }
 .mega-icon {
-  width: 44px; height: 44px; min-width: 44px;
+  width: 40px; height: 40px; min-width: 40px;
   background: linear-gradient(135deg, var(--blue-100), var(--gray-100));
   border: 1px solid var(--gray-200);
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -322,20 +337,19 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 4px 16px rgba(38,96,164,0.25);
 }
 .mega-text h4 {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--gray-900);
-  margin-bottom: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+  letter-spacing: 0.01em;
   transition: color 0.2s;
 }
 .mega-item:hover .mega-text h4 { color: var(--blue-700); }
 .mega-text p {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--gray-500);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 .mega-footer {
   padding: 14px 28px;
@@ -1795,6 +1809,10 @@ img { max-width: 100%; display: block; }
 .mobile-accordion-trigger:active {
   background: var(--gray-50);
 }
+.mobile-accordion.is-open .mobile-accordion-trigger {
+  color: var(--blue-700);
+  background: var(--blue-50);
+}
 
 .mobile-accordion-trigger svg {
   flex-shrink: 0;
@@ -1871,6 +1889,19 @@ img { max-width: 100%; display: block; }
   margin: 4px 0 0;
   font-size: 13px;
   color: var(--gray-600);
+}
+.mobile-section-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--blue-500);
+  padding: 14px 24px 8px;
+  background: linear-gradient(180deg, var(--gray-100), var(--gray-50));
+  border-bottom: 1px solid var(--gray-100);
+}
+.mobile-section-label:first-child {
+  padding-top: 12px;
 }
 
 .mobile-nav-link {
@@ -1983,6 +2014,10 @@ img { max-width: 100%; display: block; }
   }
   .mobile-accordion-item p {
     font-size: 12px;
+  }
+  .mobile-section-label {
+    padding: 12px 20px 6px;
+    font-size: 9px;
   }
   .mobile-nav-link {
     padding: 14px 20px;
@@ -2576,6 +2611,7 @@ body.nav-locked {
     <div class="mobile-accordion">
       <button class="mobile-accordion-trigger">Products <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mobile-accordion-panel">
+        <div class="mobile-section-label">Product Series</div>
         <a href="avans-rac-series.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
           <div>
@@ -2597,6 +2633,7 @@ body.nav-locked {
             <p>Tilt solar tracker</p>
           </div>
         </a>
+        <div class="mobile-section-label">Applications</div>
         <a href="fixed-ground.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/></svg>
           <div>
@@ -2618,6 +2655,7 @@ body.nav-locked {
             <p>Dual-axis tracking</p>
           </div>
         </a>
+        <div class="mobile-section-label">Specifications</div>
         <a href="storm-hardened.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 16.9A5 5 0 0018 7h-1.26a8 8 0 10-11.62 9"/><polyline points="13 11 9 17 15 17 11 23"/></svg>
           <div>
@@ -2646,6 +2684,7 @@ body.nav-locked {
     <div class="mobile-accordion">
       <button class="mobile-accordion-trigger">Solutions <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mobile-accordion-panel">
+        <div class="mobile-section-label">Markets</div>
         <a href="utility-scale.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="22" height="12" rx="2"/><path d="M1 10h22"/></svg>
           <div>
@@ -2667,6 +2706,7 @@ body.nav-locked {
             <p>Agrivoltaic solutions</p>
           </div>
         </a>
+        <div class="mobile-section-label">Resources</div>
         <a href="resources.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
           <div>
@@ -2688,6 +2728,7 @@ body.nav-locked {
     <div class="mobile-accordion">
       <button class="mobile-accordion-trigger">Company <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mobile-accordion-panel">
+        <div class="mobile-section-label">About</div>
         <a href="about-us.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           <div>
@@ -2709,6 +2750,7 @@ body.nav-locked {
             <p>Join the SEMS team</p>
           </div>
         </a>
+        <div class="mobile-section-label">Programs</div>
         <a href="project-finance-program.html" class="mobile-accordion-item">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           <div>
