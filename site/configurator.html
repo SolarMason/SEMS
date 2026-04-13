@@ -5226,8 +5226,18 @@ function calcFoundation(windLoads, params) {
     Math.sqrt(2 * requiredUpliftResist / (Ks * soilGamma * Math.tan(delta * Math.PI / 180) * perimeter)) : 2;
 
   /* Required embedment by bearing */
-  const reqBearingArea = totalDownward * SF_bearing / bearingPsf; // sq ft
-  const embedByBearing = reqBearingArea / pileWidth;
+  /* Required embedment by bearing (end bearing + skin friction must support total downward * SF)
+     Q(L) = q_b * A_tip + Ks * (gamma*L/2) * tan(delta) * perimeter * L
+     Solve iteratively for L where Q(L) >= totalDownward * SF_bearing */
+  const tipAreaCalc = (post.depth * post.flange) / 144; // sq ft
+  const Qb_tip = bearingPsf * tipAreaCalc;
+  const skinCoeff = 0.5 * Ks * soilGamma * Math.tan(delta * Math.PI / 180) * perimeter;
+  const demandBearing = totalDownward * SF_bearing;
+  let embedByBearing = 3; // minimum
+  for (let L = 3; L <= 20; L += 0.5) {
+    if (Qb_tip + skinCoeff * L * L >= demandBearing) { embedByBearing = L; break; }
+    embedByBearing = L;
+  }
 
   /* Frost line requirement */
   const embedByFrost = frostIn / 12 + 0.5; // frost depth + 6" below
@@ -5247,10 +5257,17 @@ function calcFoundation(windLoads, params) {
   pile.embedments = pileEmbedments;
 
   /* Pile axial capacity check */
-  pile.bearingCapacity = bearingPsf * pileWidth * pileWidth;
-  pile.bearingDCR = +(totalDownward / pile.bearingCapacity).toFixed(2);
+  /* Pile total axial capacity = end bearing + skin friction */
+  const tipArea = (post.depth * post.flange) / 144; // sq ft (full cross-section area)
+  const Qb = bearingPsf * tipArea; // end bearing, lbs
+  const sigma_v_avg = soilGamma * pile.embedDepth / 2; // avg vertical effective stress
+  const Qs = Ks * sigma_v_avg * Math.tan(delta * Math.PI / 180) * perimeter * pile.embedDepth; // skin friction
+  pile.endBearing = +Qb.toFixed(0);
+  pile.skinFriction = +Qs.toFixed(0);
+  pile.bearingCapacity = +(Qb + Qs).toFixed(0);
+  pile.bearingDCR = +((totalDownward * SF_bearing) / (Qb + Qs)).toFixed(2);
   pile.upliftResist = 0.5 * Ks * soilGamma * Math.tan(delta * Math.PI / 180) * perimeter * pile.embedDepth * pile.embedDepth;
-  pile.upliftDCR = netUplift > 0 ? +(netUplift / pile.upliftResist * SF_uplift).toFixed(2) : 0;
+  pile.upliftDCR = netUplift > 0 ? +(netUplift * SF_uplift / pile.upliftResist).toFixed(2) : 0;
 
   /* Bending stress check on post */
   const M_max = windLoads.overturningMoment; // ft-lbs
@@ -5418,6 +5435,9 @@ function renderFoundationResults(wind, fnd, params) {
     h += '<div class="eo-row"><span class="eo-label">Embed by bearing</span><span class="eo-val">' + p.embedments.bearing + ' ft</span></div>';
     h += '<div class="eo-row"><span class="eo-label">Embed by frost</span><span class="eo-val">' + p.embedments.frost + ' ft</span></div>';
     h += '<div class="eo-divider"></div>';
+    h += '<div class="eo-row"><span class="eo-label">End bearing capacity</span><span class="eo-val">' + fmt(p.endBearing) + ' lbs</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Skin friction capacity</span><span class="eo-val">' + fmt(p.skinFriction) + ' lbs</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Total axial capacity</span><span class="eo-val">' + fmt(p.bearingCapacity) + ' lbs</span></div>';
     h += '<div class="eo-row"><span class="eo-label">Bearing DCR</span><span class="eo-val ' + dcrClass(p.bearingDCR) + '">' + p.bearingDCR + ' (' + dcrLabel(p.bearingDCR) + ')</span></div>';
     h += '<div class="eo-row"><span class="eo-label">Uplift DCR</span><span class="eo-val ' + dcrClass(p.upliftDCR) + '">' + p.upliftDCR + ' (' + dcrLabel(p.upliftDCR) + ')</span></div>';
     h += '<div class="eo-row"><span class="eo-label">Bending stress</span><span class="eo-val">' + fmt(p.bendingStress) + ' / ' + fmt(p.allowableBending) + ' psi</span></div>';
