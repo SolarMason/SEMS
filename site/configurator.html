@@ -1572,6 +1572,63 @@ img { max-width: 100%; display: block; }
   }
 }
 
+
+/* ══════════ FOUNDATION ENGINEERING MODULE ══════════ */
+.eng-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.eng-group { background: linear-gradient(135deg, rgba(27,58,92,0.04), rgba(38,96,164,0.06));
+  border: 1px solid rgba(27,58,92,0.1); border-radius: var(--radius); padding: 18px; }
+.eng-group h4 { font-size: .82rem; font-weight: 700; color: var(--blue-900); margin: 0 0 12px;
+  padding-bottom: 8px; border-bottom: 2px solid rgba(27,58,92,0.12);
+  display: flex; align-items: center; gap: 8px; }
+.eng-group h4 .eg-ico { display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 6px; font-size: .82rem; }
+.eg-wind { background: rgba(59,143,219,0.15); color: var(--blue-600); }
+.eg-soil { background: rgba(139,90,43,0.15); color: #8b5a2b; }
+.eg-seismic { background: rgba(220,53,69,0.15); color: #dc3545; }
+.eg-frost { background: rgba(0,180,216,0.15); color: #00b4d8; }
+.eg-code { background: rgba(38,96,164,0.15); color: var(--blue-700); }
+.eng-out-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.eo-card { background: var(--pure-white); border: 1px solid var(--gray-100);
+  border-radius: var(--radius); padding: 18px; position: relative; overflow: hidden; }
+.eo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.eo-card.eo-wind::before { background: linear-gradient(90deg, var(--blue-500), var(--blue-700)); }
+.eo-card.eo-fnd::before { background: linear-gradient(90deg, #8b5a2b, #d4a574); }
+.eo-card.eo-embed::before { background: linear-gradient(90deg, #00b4d8, #0077b6); }
+.eo-card.eo-summary::before { background: linear-gradient(90deg, #198754, #20c997); }
+.eo-card.eo-cat5::before { background: linear-gradient(90deg, #dc3545, #ff6b6b); }
+.eo-title { font-size: .82rem; font-weight: 700; color: var(--blue-900); margin: 0 0 12px;
+  display: flex; align-items: center; gap: 8px; }
+.eo-title .eo-ico { font-size: 1rem; }
+.eo-row { display: flex; justify-content: space-between; align-items: baseline;
+  padding: 5px 0; border-bottom: 1px dotted var(--gray-100); font-size: .78rem; }
+.eo-row:last-child { border-bottom: none; }
+.eo-label { color: var(--gray-600); font-weight: 500; }
+.eo-val { font-weight: 700; color: var(--gray-900); font-family: var(--mono); }
+.eo-val.pass { color: #198754; }
+.eo-val.warn { color: #fd7e14; }
+.eo-val.fail { color: #dc3545; }
+.eo-note { font-size: .72rem; color: var(--gray-500); margin-top: 8px;
+  padding: 8px 10px; background: rgba(27,58,92,0.03); border-radius: 6px;
+  border-left: 3px solid var(--blue-300); }
+.eo-rec { margin-top: 14px; padding: 12px 14px; border-radius: 8px; font-size: .78rem; }
+.eo-rec.rec-ok { background: rgba(25,135,84,0.08); border: 1px solid rgba(25,135,84,0.2); color: #146c43; }
+.eo-rec.rec-warn { background: rgba(253,126,20,0.08); border: 1px solid rgba(253,126,20,0.2); color: #b85c00; }
+.eo-rec.rec-fail { background: rgba(220,53,69,0.08); border: 1px solid rgba(220,53,69,0.2); color: #b02a37; }
+.eo-rec strong { display: block; margin-bottom: 4px; }
+.cat5-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+  background: linear-gradient(135deg, #dc3545, #ff6b6b); color: #fff; border-radius: 6px;
+  font-size: .72rem; font-weight: 700; letter-spacing: 0.5px; }
+.eo-divider { height: 1px; background: var(--gray-100); margin: 10px 0; }
+.fi select option { font-size: .82rem; }
+.fi .hint-eng { display: block; font-size: .68rem; color: var(--gray-500); margin-top: 2px; }
+.eng-check-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.eng-check-row .fi { margin: 0; }
+@media (max-width: 767px) {
+  .eng-grid { grid-template-columns: 1fr; }
+  .eng-out-grid { grid-template-columns: 1fr; }
+  .eng-check-row { grid-template-columns: 1fr; }
+}
+
 /* ══════════ FOOTER ══════════ */
 .footer {
   background: linear-gradient(165deg, #0B1929 0%, var(--blue-900) 35%, #1a3a5c 65%, var(--blue-700) 100%);
@@ -3236,7 +3293,7 @@ body.nav-locked {
     </div>
     <hr class="fdiv">
     <div class="fg">
-      <div class="fi"><label>Foundation Type</label><select id="foundationType"><option value="ground-screw">Ground Screw</option><option value="driven-pile" selected>Driven Pile (W-Beam)</option><option value="ballast">Ballast Block</option></select></div>
+      <div class="fi"><label>Foundation Type</label><select id="foundationType"><option value="ground-screw">Ground Screw</option><option value="driven-pile" selected>Driven Pile (W-Beam)</option><option value="ballast">Ballast Block</option><option value="concrete-pier">Concrete Pier</option></select></div>
       <div class="fi"><label>Post Type</label><select id="postType"><option value="w6x9" selected>W6x9 Steel Post</option><option value="w6x12">W6x12 Steel Post</option><option value="round-pipe">3&quot; Round Pipe Post</option></select></div>
       <div class="fi"><label>Beam / Rail Type</label><select id="beamType"><option value="w-beam" selected>Avans Series W-Beam (W6x9)</option><option value="main-rail">Avans Series Main Rails</option><option value="bearing-rail">Avans Series Bearing Rail</option></select></div>
     </div>
@@ -3250,6 +3307,170 @@ body.nav-locked {
     </div>
     <div style="margin-top:14px">
       <div class="fi"><label>Engineering Notes</label><textarea id="engNotes" placeholder="Design notes, special conditions..."></textarea></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════ SITE CONDITIONS & ENVIRONMENTAL ENGINEERING ══════════ -->
+<div class="cfg-card" id="card-site">
+  <div class="cfg-card-head">
+    <h2><span class="ico" style="background:rgba(0,180,216,0.15);color:#0077b6">&#127758;</span> Site Conditions &amp; Environmental Engineering</h2>
+    <span class="tag" style="background:rgba(0,180,216,0.12);color:#0077b6">ASCE 7-22</span>
+  </div>
+  <div class="cfg-card-body">
+    <div class="eng-grid">
+
+      <!-- WIND LOADS -->
+      <div class="eng-group">
+        <h4><span class="eg-ico eg-wind">&#127744;</span> Wind Load Parameters</h4>
+        <div class="fg">
+          <div class="fi"><label>Basic Wind Speed (mph)</label>
+            <select id="windSpeed">
+              <option value="90">90 mph &mdash; Low risk inland</option>
+              <option value="100">100 mph &mdash; Typical inland</option>
+              <option value="110" selected>110 mph &mdash; Moderate (common default)</option>
+              <option value="115">115 mph &mdash; Category B coast</option>
+              <option value="120">120 mph &mdash; Coastal moderate</option>
+              <option value="130">130 mph &mdash; Coastal high-wind</option>
+              <option value="140">140 mph &mdash; Hurricane zone</option>
+              <option value="150">150 mph &mdash; High-velocity hurricane (Cat 3)</option>
+              <option value="160">160 mph &mdash; Cat 4 hurricane zone</option>
+              <option value="170">170 mph &mdash; Extreme hurricane (SE FL)</option>
+              <option value="180">180 mph &mdash; Cat 5 rated (FL Keys / PR)</option>
+              <option value="195">195 mph &mdash; Cat 5+ maximum design</option>
+            </select>
+            <span class="hint-eng">ASCE 7-22 V<sub>ult</sub> (3-sec gust, Risk Cat II)</span>
+          </div>
+          <div class="fi"><label>Exposure Category</label>
+            <select id="exposureCat">
+              <option value="B" selected>B &mdash; Urban / suburban / wooded</option>
+              <option value="C">C &mdash; Open terrain, flat / farmland</option>
+              <option value="D">D &mdash; Flat unobstructed / shoreline</option>
+            </select>
+            <span class="hint-eng">ASCE 7-22 Section 26.7 terrain roughness</span>
+          </div>
+          <div class="fi"><label>Risk Category</label>
+            <select id="riskCategory">
+              <option value="I">I &mdash; Low risk (agricultural, temporary)</option>
+              <option value="II" selected>II &mdash; Standard occupancy (most projects)</option>
+              <option value="III">III &mdash; Essential facility / high occupancy</option>
+              <option value="IV">IV &mdash; Essential / critical infrastructure</option>
+            </select>
+            <span class="hint-eng">ASCE 7-22 Table 1.5-1</span>
+          </div>
+          <div class="fi"><label>Topographic Factor (K<sub>zt</sub>)</label>
+            <input type="number" id="kzt" value="1.0" step="0.01" min="1.0" max="2.0">
+            <span class="hint-eng">1.0 = flat terrain; &gt;1.0 for hills, ridges, escarpments</span>
+          </div>
+          <div class="fi"><label>Ground Elevation Factor (K<sub>e</sub>)</label>
+            <input type="number" id="ke" value="1.0" step="0.01" min="0.80" max="1.0">
+            <span class="hint-eng">ASCE 7-22 Table 26.9-1 (1.0 = sea level, 0.80 = 6000ft+)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOIL CONDITIONS -->
+      <div class="eng-group">
+        <h4><span class="eg-ico eg-soil">&#129704;</span> Soil Conditions</h4>
+        <div class="fg">
+          <div class="fi"><label>Soil Classification (USCS)</label>
+            <select id="soilClass">
+              <option value="GW">GW &mdash; Well-graded gravel (excellent)</option>
+              <option value="GP">GP &mdash; Poorly-graded gravel (good)</option>
+              <option value="GM">GM &mdash; Silty gravel (good)</option>
+              <option value="GC">GC &mdash; Clayey gravel (good)</option>
+              <option value="SW">SW &mdash; Well-graded sand (good)</option>
+              <option value="SP">SP &mdash; Poorly-graded sand (fair)</option>
+              <option value="SM" selected>SM &mdash; Silty sand (fair, typical)</option>
+              <option value="SC">SC &mdash; Clayey sand (fair)</option>
+              <option value="ML">ML &mdash; Low-plasticity silt (fair)</option>
+              <option value="CL">CL &mdash; Low-plasticity clay (poor)</option>
+              <option value="MH">MH &mdash; High-plasticity silt (poor)</option>
+              <option value="CH">CH &mdash; High-plasticity clay (very poor)</option>
+              <option value="OL">OL &mdash; Organic silt (unsuitable)</option>
+              <option value="OH">OH &mdash; Organic clay (unsuitable)</option>
+              <option value="PT">PT &mdash; Peat (unsuitable)</option>
+            </select>
+            <span class="hint-eng">Unified Soil Classification System (ASTM D2487)</span>
+          </div>
+          <div class="fi"><label>Allowable Bearing Pressure (psf)</label>
+            <input type="number" id="bearingPressure" value="1500" step="100" min="250" max="12000">
+            <span class="hint-eng">Per geotechnical report; auto-estimated from soil class if unknown</span>
+          </div>
+          <div class="fi"><label>Lateral Soil Pressure (pcf)</label>
+            <input type="number" id="lateralSoilPressure" value="200" step="10" min="50" max="800">
+            <span class="hint-eng">Passive earth pressure coefficient &times; soil unit weight</span>
+          </div>
+          <div class="fi"><label>Soil Unit Weight (pcf)</label>
+            <input type="number" id="soilUnitWeight" value="110" step="5" min="70" max="140">
+            <span class="hint-eng">Moist in-situ unit weight; 100-130 pcf typical</span>
+          </div>
+          <div class="fi"><label>Water Table Depth (ft)</label>
+            <input type="number" id="waterTableDepth" value="20" step="1" min="0" max="100">
+            <span class="hint-eng">Depth to seasonal high groundwater</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEISMIC / FROST / CODES -->
+      <div class="eng-group">
+        <h4><span class="eg-ico eg-seismic">&#127754;</span> Seismic, Frost &amp; Code Parameters</h4>
+        <div class="fg">
+          <div class="fi"><label>Seismic Design Category</label>
+            <select id="seismicCat">
+              <option value="A" selected>A &mdash; Very low seismic risk</option>
+              <option value="B">B &mdash; Low seismic risk</option>
+              <option value="C">C &mdash; Moderate seismic risk</option>
+              <option value="D">D &mdash; High seismic risk (CA, AK, etc.)</option>
+              <option value="E">E &mdash; Very high seismic risk</option>
+            </select>
+            <span class="hint-eng">ASCE 7-22 Chapter 11; per site-specific S<sub>DS</sub>/S<sub>D1</sub></span>
+          </div>
+          <div class="fi"><label>Spectral Accel S<sub>DS</sub> (g)</label>
+            <input type="number" id="sds" value="0.15" step="0.01" min="0" max="3.0">
+            <span class="hint-eng">Short-period design spectral acceleration</span>
+          </div>
+          <div class="fi"><label>Ground Snow Load (psf)</label>
+            <input type="number" id="snowLoad" value="15" step="5" min="0" max="300">
+            <span class="hint-eng">ASCE 7-22 Fig. 7.2-1; 0 in FL, 15-30 in PA, 100+ in mountains</span>
+          </div>
+          <div class="fi"><label>Frost Line Depth (in)</label>
+            <input type="number" id="frostDepth" value="36" step="1" min="0" max="100">
+            <span class="hint-eng">Local building code minimum; 0 in FL, 36 in PA, 60+ in northern states</span>
+          </div>
+          <div class="fi"><label>Design Code</label>
+            <select id="designCode">
+              <option value="ASCE7-22" selected>ASCE 7-22 (current)</option>
+              <option value="ASCE7-16">ASCE 7-16</option>
+              <option value="IBC-2021">IBC 2021</option>
+              <option value="FBC-2023">FBC 2023 (Florida Building Code)</option>
+            </select>
+            <span class="hint-eng">Governing structural design code for jurisdiction</span>
+          </div>
+        </div>
+        <div class="eng-check-row">
+          <div class="fi toggle"><input type="checkbox" id="hvhzCheck"><label for="hvhzCheck">High-Velocity Hurricane Zone (HVHZ)</label></div>
+          <div class="fi toggle"><input type="checkbox" id="floodZoneCheck"><label for="floodZoneCheck">Flood Zone (FEMA A/V zone)</label></div>
+          <div class="fi toggle"><input type="checkbox" id="corrosionCheck"><label for="corrosionCheck">Corrosive Environment (coastal salt spray)</label></div>
+          <div class="fi toggle"><input type="checkbox" id="cat5Check"><label for="cat5Check">CAT 5 Hurricane Rating Required</label></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════ FOUNDATION ENGINEERING RESULTS ══════════ -->
+<div class="cfg-card" id="card-foundation">
+  <div class="cfg-card-head">
+    <h2><span class="ico" style="background:rgba(139,90,43,0.15);color:#8b5a2b">&#9875;</span> Foundation Engineering Analysis</h2>
+    <span class="tag" style="background:rgba(139,90,43,0.12);color:#8b5a2b">Structural</span>
+  </div>
+  <div class="cfg-card-body">
+    <div id="foundationResults">
+      <p style="color:var(--gray-500);font-size:.82rem">Configure site conditions above to generate foundation analysis...</p>
     </div>
   </div>
 </div>
@@ -4781,7 +5002,7 @@ function renderSummary(state,calc){const panel=PANELS.find(p=>p.id===state.panel
 function renderSectionCards(calc){const bds=calc.breakdowns;const el=$('sectionCards');if(!el)return;const mx=50;const show=bds.length<=mx?bds:bds.slice(0,6);let h='';show.forEach(b=>{h+='<div class="sbc"><div class="sbc-head"><span class="sn">Section '+b.sectionNumber+'</span><span class="tag '+(b.type==='8'?'tag-blue':'tag-purple')+'">'+b.type+'.0 Series</span></div><div class="sbc-body">';h+=dr('Modules',b.modules)+dr('Rows',b.rows)+dr('Panels/Row',b.panelsPerRow)+dr('Posts',b.posts)+dr('W-Beams',b.wBeams)+dr('Main Rails',b.mainRails)+dr('Mid Rails',b.midRails)+dr('Side Rails',b.sideRails)+dr('Bearing Rails',b.bearingRails)+dr('Diag Braces',b.diagBraces)+dr('Mid Clamps',b.midClamps)+dr('End Clamps',b.endClamps)+dr('Splices',b.splices)+dr('Assembly Brackets',b.assemblyBrackets)+dr('Bonding Clips',b.bondingClips)+dr('Ground Lugs',b.groundLugs)+dr('Wire Mgmt',b.wireMgmtPacks);if(b.optimizers>0)h+=dr('Optimizers',b.optimizers);h+='</div></div>';});if(bds.length>mx)h+='<div class="sbc" style="display:flex;align-items:center;justify-content:center;min-height:100px;padding:16px;text-align:center"><div><strong>+ '+(bds.length-6)+' more sections</strong><br><span style="font-size:.76rem;color:var(--cfg-tsec)">All sections listed in BOM below</span></div></div>';el.innerHTML=h;}
 function dr(l,v){return '<div class="dr"><span class="dl">'+l+'</span><span class="dv">'+v+'</span></div>';}
 function renderBomTable(state,calc){const bl=generateBom(state,calc);const groups=aggregateBomLines(bl);let h='',mh='',gt=0,ul=0;CATEGORY_ORDER.forEach(cat=>{const lines=groups[cat];if(!lines||!lines.length)return;h+='<tr class="cat-h"><td colspan="8">'+cat+'</td></tr>';mh+='<div class="bom-cat-header">'+cat+'</div>';let ct=0;lines.forEach(l=>{h+='<tr><td>'+l.category+'</td><td>'+l.item+'</td><td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td><td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td><td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'\u2014')+'</td><td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td><td style="font-size:.7rem;color:var(--cfg-tsec)">'+l.notes+'</td></tr>';mh+='<div class="bom-mobile-card"><div class="bmc-item">'+l.item+'</div><div class="bmc-meta">'+(l.partNumber?'<span class="bmc-part">'+l.partNumber+'</span>':'')+'<span>'+l.unit+'</span><span>Base: '+fmt(l.baseQty)+'</span>'+(l.wastePct>0?'<span>Waste: '+l.wastePct+'%</span>':'')+'<span class="bmc-qty">Final: '+fmt(l.finalQty)+'</span>'+(l.notes?'<span>'+l.notes+'</span>':'')+'</div></div>';ct+=l.finalQty;ul++;});h+='<tr class="sub"><td colspan="6" style="text-align:right">Subtotal \u2014 '+cat+'</td><td style="text-align:right">'+fmt(ct)+'</td><td></td></tr>';mh+='<div class="bom-mobile-sub">Subtotal: '+fmt(ct)+'</div>';gt+=ct;});$('bomBody').innerHTML=h;$('bomFoot').innerHTML='<tr><td colspan="4" style="text-align:right">Grand Total</td><td></td><td></td><td style="text-align:right;font-size:.92rem">'+fmt(gt)+' items</td><td>'+ul+' lines</td></tr>';mh+='<div class="bom-mobile-foot">Grand Total: '+fmt(gt)+' items &middot; '+ul+' lines</div>';var mel=$('bomMobile');if(mel)mel.innerHTML=mh;window._bomLines=bl;window._calc=calc;window._state=state;}
-function recalcAll(){if(!validate())return;const state=getFormState();const calc=calculateProjectTotals(state);renderSummary(state,calc);renderSectionCards(calc);renderBomTable(state,calc);}
+function recalcAll(){if(!validate())return;const state=getFormState();const calc=calculateProjectTotals(state);renderSummary(state,calc);renderSectionCards(calc);renderBomTable(state,calc);try{const sp=getSiteParams();const wl=calcWindLoads(sp);const fd=calcFoundation(wl,sp);renderFoundationResults(wl,fd,sp);}catch(e){console.warn("Foundation calc:",e);}}
 function validate(){let ok=true;[{id:'panelWattage',min:100,max:800},{id:'panelLength',min:20,max:120},{id:'panelWidth',min:20,max:60},{id:'tiltAngle',min:5,max:60},{id:'groundClearance',min:6,max:96},{id:'rowSpacing',min:1,max:120},{id:'sectionSpacing',min:6,max:360},{id:'layoutRowGap',min:12,max:600},{id:'wasteFactor',min:0,max:25}].forEach(f=>{const el=$(f.id),fg=el.closest('.fi'),v=parseFloat(el.value);if(isNaN(v)||v<f.min||v>f.max){fg.classList.add('error');let e=fg.querySelector('.errmsg');if(!e){e=document.createElement('span');e.className='errmsg';fg.appendChild(e);}e.textContent=f.min+'\u2013'+f.max;ok=false;}else{fg.classList.remove('error');}});return ok;}
 function csvEsc(v){const s=String(v==null?'':v);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}
 function dlCsv(name,csv){const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
@@ -4796,7 +5017,538 @@ function resetAll(){if(!confirm('Reset everything to defaults?'))return;setFormS
 function initCollapsibles(){qsa('.coll-tog').forEach(t=>{t.addEventListener('click',function(){const body=$(this.dataset.target);if(body){body.classList.toggle('open');this.classList.toggle('open');}});});}
 function initTableSort(){qsa('#bomTable thead th').forEach(th=>{th.addEventListener('click',function(){const col=this.dataset.col;if(!col||!window._bomLines)return;const lines=[...window._bomLines];const asc=!this._asc;this._asc=asc;lines.sort((a,b)=>{let va=a[col]||'',vb=b[col]||'';if(typeof va==='number'&&typeof vb==='number')return asc?va-vb:vb-va;return asc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));});let h='',mh='';lines.forEach(l=>{h+='<tr><td>'+l.category+'</td><td>'+l.item+'</td><td style="font-family:var(--mono);font-size:.72rem">'+l.partNumber+'</td><td>'+l.unit+'</td><td style="text-align:right;font-weight:600">'+fmt(l.baseQty)+'</td><td style="text-align:right">'+(l.wastePct>0?l.wastePct+'%':'\u2014')+'</td><td style="text-align:right;font-weight:700;color:var(--navy)">'+fmt(l.finalQty)+'</td><td style="font-size:.7rem;color:var(--cfg-tsec)">'+l.notes+'</td></tr>';mh+='<div class="bom-mobile-card"><div class="bmc-item">'+l.item+'</div><div class="bmc-meta">'+(l.partNumber?'<span class="bmc-part">'+l.partNumber+'</span>':'')+'<span>'+l.unit+'</span><span>Base: '+fmt(l.baseQty)+'</span>'+(l.wastePct>0?'<span>Waste: '+l.wastePct+'%</span>':'')+'<span class="bmc-qty">Final: '+fmt(l.finalQty)+'</span>'+(l.notes?'<span>'+l.notes+'</span>':'')+'</div></div>';});$('bomBody').innerHTML=h;var mel=$('bomMobile');if(mel)mel.innerHTML=mh;});});}
 function init(){populateDropdowns();$('projectDate').value=APP_DEFAULTS.projectDate;const restored=autoRestore();if(!restored){setFormState(APP_DEFAULTS);layoutState=[{rowId:newRowId(),sections:[]}];renderCanvas();}else{syncPanelFields();renumberSections();renderCanvas();}syncPanelFields();$('panelModel').addEventListener('change',()=>{syncPanelFields();recalcAll();});qsa('#card-config input,#card-config select,#card-config textarea').forEach(el=>{el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',recalcAll);});qsa('#card-project input,#card-project textarea').forEach(el=>{el.addEventListener('input',autoSave);});initCollapsibles();initTableSort();initDragAndDrop();initTouchDrag();recalcAll();}
-document.addEventListener('DOMContentLoaded',init);
+document.addEventListener('DOMContentLoaded',function(){
+  init();
+  syncSoilDefaults();
+  /* Wire site condition inputs to recalcAll */
+  ['windSpeed','exposureCat','riskCategory','kzt','ke','soilClass','bearingPressure',
+   'lateralSoilPressure','soilUnitWeight','waterTableDepth','seismicCat','sds',
+   'snowLoad','frostDepth','designCode','hvhzCheck','floodZoneCheck','corrosionCheck','cat5Check'
+  ].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',recalcAll);
+  });
+});
+</script>
+<script>
+
+/* ══════════ FOUNDATION ENGINEERING MODULE ══════════
+   ASCE 7-22 wind load calculations, soil bearing capacity,
+   embedment depth, foundation type selection engine.
+   Integrated with SEMS storm-hardened design philosophy.
+   ══════════════════════════════════════════════════════ */
+
+/* ── ASCE 7-22 WIND PRESSURE COEFFICIENTS ── */
+const WIND_EXPOSURE = {
+  B: { alpha: 7.0, zg: 1200, coeffs: [
+    [0,15,0.57],[15,20,0.62],[20,25,0.66],[25,30,0.70],[30,40,0.76],
+    [40,50,0.81],[50,60,0.85],[60,70,0.89],[70,80,0.93],[80,90,0.96],
+    [90,100,0.99],[100,120,1.04],[120,140,1.09],[140,160,1.13],
+    [160,180,1.17],[180,200,1.20]] },
+  C: { alpha: 9.5, zg: 900, coeffs: [
+    [0,15,0.85],[15,20,0.90],[20,25,0.94],[25,30,0.98],[30,40,1.04],
+    [40,50,1.09],[50,60,1.13],[60,70,1.17],[70,80,1.21],[80,90,1.24],
+    [90,100,1.26],[100,120,1.31],[120,140,1.36],[140,160,1.39],
+    [160,180,1.43],[180,200,1.46]] },
+  D: { alpha: 11.5, zg: 700, coeffs: [
+    [0,15,1.03],[15,20,1.08],[20,25,1.12],[25,30,1.16],[30,40,1.22],
+    [40,50,1.27],[50,60,1.31],[60,70,1.34],[70,80,1.38],[80,90,1.40],
+    [90,100,1.43],[100,120,1.48],[120,140,1.52],[140,160,1.55],
+    [160,180,1.58],[180,200,1.61]] }
+};
+
+/* GCp net pressure coefficients for ground-mounted solar (ASCE 7-22 Section 29.4) */
+const SOLAR_GCp = {
+  interior: { pos: 0.9, neg: -1.1 },
+  edge:     { pos: 1.1, neg: -1.5 },
+  corner:   { pos: 1.2, neg: -2.0 }
+};
+
+/* ── SOIL ENGINEERING DATA ── */
+const SOIL_DATA = {
+  GW: { desc:'Well-graded gravel', bearing:6000, lateral:400, friction:38, cohesion:0, rating:'Excellent', suitability:{drivenPile:5,groundScrew:5,ballast:4,concretePier:5} },
+  GP: { desc:'Poorly-graded gravel', bearing:5000, lateral:350, friction:36, cohesion:0, rating:'Good', suitability:{drivenPile:5,groundScrew:4,ballast:4,concretePier:5} },
+  GM: { desc:'Silty gravel', bearing:4000, lateral:300, friction:34, cohesion:100, rating:'Good', suitability:{drivenPile:5,groundScrew:4,ballast:3,concretePier:5} },
+  GC: { desc:'Clayey gravel', bearing:3500, lateral:250, friction:32, cohesion:200, rating:'Good', suitability:{drivenPile:4,groundScrew:4,ballast:3,concretePier:5} },
+  SW: { desc:'Well-graded sand', bearing:4000, lateral:300, friction:35, cohesion:0, rating:'Good', suitability:{drivenPile:5,groundScrew:5,ballast:4,concretePier:4} },
+  SP: { desc:'Poorly-graded sand', bearing:2500, lateral:200, friction:32, cohesion:0, rating:'Fair', suitability:{drivenPile:4,groundScrew:4,ballast:3,concretePier:4} },
+  SM: { desc:'Silty sand', bearing:2000, lateral:200, friction:30, cohesion:50, rating:'Fair', suitability:{drivenPile:4,groundScrew:4,ballast:3,concretePier:4} },
+  SC: { desc:'Clayey sand', bearing:2000, lateral:200, friction:28, cohesion:200, rating:'Fair', suitability:{drivenPile:3,groundScrew:3,ballast:3,concretePier:4} },
+  ML: { desc:'Low-plasticity silt', bearing:1500, lateral:150, friction:26, cohesion:100, rating:'Fair', suitability:{drivenPile:3,groundScrew:3,ballast:2,concretePier:3} },
+  CL: { desc:'Low-plasticity clay', bearing:1500, lateral:150, friction:22, cohesion:400, rating:'Poor', suitability:{drivenPile:3,groundScrew:2,ballast:2,concretePier:3} },
+  MH: { desc:'High-plasticity silt', bearing:1000, lateral:100, friction:20, cohesion:200, rating:'Poor', suitability:{drivenPile:2,groundScrew:2,ballast:2,concretePier:3} },
+  CH: { desc:'High-plasticity clay', bearing:1000, lateral:100, friction:18, cohesion:600, rating:'Very Poor', suitability:{drivenPile:2,groundScrew:1,ballast:2,concretePier:3} },
+  OL: { desc:'Organic silt', bearing:500, lateral:50, friction:15, cohesion:100, rating:'Unsuitable', suitability:{drivenPile:1,groundScrew:1,ballast:1,concretePier:2} },
+  OH: { desc:'Organic clay', bearing:400, lateral:50, friction:12, cohesion:200, rating:'Unsuitable', suitability:{drivenPile:1,groundScrew:1,ballast:1,concretePier:2} },
+  PT: { desc:'Peat', bearing:200, lateral:25, friction:5, cohesion:50, rating:'Unsuitable', suitability:{drivenPile:1,groundScrew:0,ballast:1,concretePier:1} }
+};
+
+/* ── POST SECTION PROPERTIES ── */
+const POST_PROPS = {
+  'w6x9':     { Ix: 16.4, Sx: 5.56, weight: 9, depth: 5.90, flange: 3.94, area: 2.68, Fy: 50 },
+  'w6x12':    { Ix: 22.1, Sx: 7.31, weight: 12, depth: 6.03, flange: 4.00, area: 3.55, Fy: 50 },
+  'round-pipe':{ Ix: 3.02, Sx: 2.01, weight: 7.58, depth: 3.50, flange: 3.50, area: 2.23, Fy: 35 }
+};
+
+/* ── SAFFIR-SIMPSON HURRICANE SCALE ── */
+const HURRICANE_SCALE = [
+  { cat: 'TS', min: 39, max: 73, label: 'Tropical Storm' },
+  { cat: '1', min: 74, max: 95, label: 'Category 1' },
+  { cat: '2', min: 96, max: 110, label: 'Category 2' },
+  { cat: '3', min: 111, max: 129, label: 'Major — Category 3' },
+  { cat: '4', min: 130, max: 156, label: 'Major — Category 4' },
+  { cat: '5', min: 157, max: 999, label: 'Catastrophic — Category 5' }
+];
+
+function getHurricaneCategory(windMph) {
+  for (const h of HURRICANE_SCALE) { if (windMph >= h.min && windMph <= h.max) return h; }
+  return windMph < 39 ? { cat: 'Sub-TS', min: 0, max: 38, label: 'Below tropical storm' } : HURRICANE_SCALE[5];
+}
+
+/* ══════════ ASCE 7-22 WIND LOAD CALCULATION ENGINE ══════════ */
+function calcWindLoads(params) {
+  const V = params.windSpeed;          // mph, 3-sec gust
+  const exp = params.exposureCat;      // B, C, D
+  const Kzt = params.kzt;              // topographic factor
+  const Ke = params.ke;                // ground elevation factor
+  const tilt = params.tiltAngle;       // degrees
+  const clearance = params.groundClearance / 12; // convert inches to feet
+  const panelH = params.panelLength / 12;        // ft (portrait mode)
+
+  /* Mean roof height for ground-mount solar = ground clearance + panel projection */
+  const arrayH = clearance + panelH * Math.sin(tilt * Math.PI / 180);
+  const h = Math.max(arrayH, 1); // minimum 1ft
+
+  /* Kz — velocity pressure exposure coefficient (ASCE 7-22 Table 26.10-1) */
+  const expData = WIND_EXPOSURE[exp];
+  let Kz = expData.coeffs[0][2]; // default to lowest
+  for (const row of expData.coeffs) {
+    if (h >= row[0] && h < row[1]) { Kz = row[2]; break; }
+    if (h >= row[0]) Kz = row[2]; // take last matching
+  }
+
+  /* Kd — wind directionality factor for solar panels = 0.85 (ASCE 7-22 Table 26.6-1) */
+  const Kd = 0.85;
+
+  /* qh — velocity pressure at mean height (ASCE 7-22 Eq. 26.10-1) */
+  /* qz = 0.00256 * Kz * Kzt * Kd * Ke * V^2 (psf) */
+  const qh = 0.00256 * Kz * Kzt * Kd * Ke * V * V;
+
+  /* Net design pressures for ground-mounted solar array */
+  const results = {};
+  for (const zone of ['interior','edge','corner']) {
+    const gcp = SOLAR_GCp[zone];
+    results[zone] = {
+      uplift: Math.abs(qh * gcp.neg),   // uplift (psf)
+      downward: qh * gcp.pos,            // downward (psf)
+      net: Math.max(Math.abs(qh * gcp.neg), qh * gcp.pos) // governing
+    };
+  }
+
+  /* Component forces per post (tributary area approach) */
+  /* Assume 4 posts per section, 2 rows of panels */
+  const sectionWidth = 20; // approximate section width, ft (will be refined)
+  const sectionDepth = (2 * panelH + params.rowSpacing / 12);
+  const tribArea = (sectionWidth / 4) * sectionDepth; // per post
+  const maxUpliftPerPost = results.corner.uplift * tribArea; // lbs
+  const maxDownwardPerPost = results.corner.downward * tribArea; // lbs
+
+  /* Overturning moment at base per post */
+  const momentArm = clearance + (panelH * Math.sin(tilt * Math.PI / 180)) / 2;
+  const lateralForce = qh * 1.3 * tribArea * Math.sin(tilt * Math.PI / 180); // lateral component
+  const overturningMoment = lateralForce * momentArm + maxUpliftPerPost * (sectionWidth / 8);
+
+  return {
+    V, exp, Kz: +Kz.toFixed(3), Kzt, Kd, Ke, qh: +qh.toFixed(2),
+    h: +h.toFixed(1),
+    zones: results,
+    maxUpliftPerPost: +maxUpliftPerPost.toFixed(0),
+    maxDownwardPerPost: +maxDownwardPerPost.toFixed(0),
+    lateralForce: +lateralForce.toFixed(0),
+    overturningMoment: +overturningMoment.toFixed(0),
+    tribArea: +tribArea.toFixed(1),
+    hurricaneCat: getHurricaneCategory(V)
+  };
+}
+
+/* ══════════ FOUNDATION SIZING ENGINE ══════════ */
+function calcFoundation(windLoads, params) {
+  const soil = SOIL_DATA[params.soilClass];
+  const post = POST_PROPS[params.postType];
+  const bearingPsf = params.bearingPressure;
+  const lateralPcf = params.lateralSoilPressure;
+  const soilGamma = params.soilUnitWeight;
+  const frostIn = params.frostDepth;
+  const waterTable = params.waterTableDepth;
+  const isCat5 = params.cat5Check;
+  const isHVHZ = params.hvhzCheck;
+  const fndType = params.foundationType;
+  const sds = params.sds;
+
+  /* Safety factors */
+  const SF_bearing = isCat5 ? 3.0 : 2.5;
+  const SF_lateral = isCat5 ? 2.0 : 1.5;
+  const SF_uplift = isCat5 ? 2.0 : 1.5;
+  const SF_overturn = isCat5 ? 2.0 : 1.5;
+
+  /* Dead load per post (self-weight of racking + modules) */
+  const DL_post = 150; // lbs typical (post + rail + 2 panels + hardware)
+
+  /* Total vertical load per post */
+  const snowPsf = params.snowLoad;
+  const snowPerPost = snowPsf * windLoads.tribArea;
+  const totalDownward = windLoads.maxDownwardPerPost + DL_post + snowPerPost;
+  const netUplift = Math.max(0, windLoads.maxUpliftPerPost - DL_post);
+
+  /* ── DRIVEN PILE CALCULATION ── */
+  const pile = {};
+
+  /* Required embedment by lateral capacity (Broms method, short rigid pile in cohesionless soil) */
+  /* Hu = Kp * gamma * D * L^2 / 2  →  L = sqrt(2 * Hu * SF / (Kp * gamma * D)) */
+  const Kp = Math.pow(Math.tan((45 + soil.friction / 2) * Math.PI / 180), 2);
+  const pileWidth = post.flange / 12; // ft
+  const requiredLateral = windLoads.lateralForce * SF_lateral;
+  const embedByLateral = Math.sqrt(2 * requiredLateral / (Kp * soilGamma * pileWidth)) || 3;
+
+  /* Required embedment by overturning moment */
+  /* M_resist = Kp * gamma * D * L^3 / 6 → L = cbrt(6 * M * SF / (Kp * gamma * D)) */
+  const requiredMoment = windLoads.overturningMoment * SF_overturn;
+  const embedByMoment = Math.pow(6 * requiredMoment / (Kp * soilGamma * pileWidth), 1/3) || 3;
+
+  /* Required embedment by uplift (skin friction) */
+  /* For H-pile: f = Ks * sigma_v * tan(delta) * perimeter * L */
+  const delta = soil.friction * 0.67; // soil-steel interface angle
+  const Ks = 0.8; // earth pressure coefficient at rest
+  const perimeter = 2 * (post.depth + post.flange) / 12; // ft
+  /* f = Ks * (gamma * L/2) * tan(delta) * perimeter * L = 0.5 * Ks * gamma * tan(delta) * perimeter * L^2 */
+  const requiredUpliftResist = netUplift * SF_uplift;
+  const embedByUplift = requiredUpliftResist > 0 ?
+    Math.sqrt(2 * requiredUpliftResist / (Ks * soilGamma * Math.tan(delta * Math.PI / 180) * perimeter)) : 2;
+
+  /* Required embedment by bearing */
+  const reqBearingArea = totalDownward * SF_bearing / bearingPsf; // sq ft
+  const embedByBearing = reqBearingArea / pileWidth;
+
+  /* Frost line requirement */
+  const embedByFrost = frostIn / 12 + 0.5; // frost depth + 6" below
+
+  /* Governing embedment */
+  const pileEmbedments = {
+    lateral: +embedByLateral.toFixed(1),
+    moment: +embedByMoment.toFixed(1),
+    uplift: +embedByUplift.toFixed(1),
+    bearing: +embedByBearing.toFixed(1),
+    frost: +embedByFrost.toFixed(1)
+  };
+  const pileEmbed = Math.max(embedByLateral, embedByMoment, embedByUplift, embedByBearing, embedByFrost, 3);
+  pile.embedDepth = +Math.ceil(pileEmbed * 2) / 2; // round up to nearest 0.5 ft
+  pile.totalLength = +(pile.embedDepth + (params.groundClearance / 12) + 2).toFixed(1); // +2ft above for rail
+  pile.governedBy = Object.entries(pileEmbedments).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+  pile.embedments = pileEmbedments;
+
+  /* Pile axial capacity check */
+  pile.bearingCapacity = bearingPsf * pileWidth * pileWidth;
+  pile.bearingDCR = +(totalDownward / pile.bearingCapacity).toFixed(2);
+  pile.upliftResist = 0.5 * Ks * soilGamma * Math.tan(delta * Math.PI / 180) * perimeter * pile.embedDepth * pile.embedDepth;
+  pile.upliftDCR = netUplift > 0 ? +(netUplift / pile.upliftResist * SF_uplift).toFixed(2) : 0;
+
+  /* Bending stress check on post */
+  const M_max = windLoads.overturningMoment; // ft-lbs
+  const fb = (M_max * 12) / post.Sx; // psi (convert ft-lbs to in-lbs)
+  const Fb = post.Fy * 1000 * 0.66; // allowable bending (0.66Fy for compact sections), psi
+  pile.bendingStress = +fb.toFixed(0);
+  pile.allowableBending = +Fb.toFixed(0);
+  pile.bendingDCR = +(fb / Fb).toFixed(2);
+
+  /* ── GROUND SCREW CALCULATION ── */
+  const screw = {};
+  const screwDia = 2.875 / 12; // ft (typical 2-7/8" helical shaft)
+  const helixDia = 10 / 12; // ft (typical 10" helix)
+  const helixArea = Math.PI * Math.pow(helixDia / 2, 2);
+
+  /* Bearing on helix */
+  screw.bearingCapacity = bearingPsf * helixArea * 3; // 3 helices typical
+  screw.bearingDCR = +(totalDownward / screw.bearingCapacity).toFixed(2);
+
+  /* Uplift on helix (breakout cone) */
+  const screwEmbedByUplift = requiredUpliftResist > 0 ?
+    Math.sqrt(requiredUpliftResist / (Math.PI * soilGamma * 2)) : 3;
+  const screwEmbedByFrost = frostIn / 12 + 1; // helix must be below frost
+  const screwEmbedByLateral = embedByLateral * 0.85; // screws resist lateral slightly better
+  screw.embedDepth = +Math.ceil(Math.max(screwEmbedByUplift, screwEmbedByFrost, screwEmbedByLateral, 4) * 2) / 2;
+  screw.totalLength = +(screw.embedDepth + 1).toFixed(1);
+
+  /* Torque correlation (ICC-ES AC358) */
+  /* Ultimate capacity = Kt * T (Kt = 10 for typical helical, T in ft-lbs) */
+  screw.requiredTorque = +(Math.max(totalDownward, netUplift) / 10).toFixed(0);
+  screw.minInstallTorque = +(screw.requiredTorque * SF_bearing).toFixed(0);
+
+  /* ── BALLAST CALCULATION ── */
+  const ballast = {};
+  /* Required ballast weight to resist uplift + overturning */
+  const ballastSF = isCat5 ? 2.0 : 1.5;
+  ballast.requiredWeight = +((netUplift * ballastSF) + DL_post).toFixed(0);
+  ballast.concreteVolume = +(ballast.requiredWeight / 150).toFixed(1); // 150 pcf concrete
+  ballast.cubicYards = +(ballast.concreteVolume / 27).toFixed(2);
+  /* Bearing check */
+  const ballastFootprint = 3 * 3; // 3ft x 3ft typical block
+  ballast.bearingPressure = +(ballast.requiredWeight / ballastFootprint).toFixed(0);
+  ballast.bearingDCR = +(ballast.bearingPressure / bearingPsf).toFixed(2);
+  /* Sliding check */
+  const frictionCoeff = Math.tan(soil.friction * 0.67 * Math.PI / 180);
+  ballast.slidingResist = +(ballast.requiredWeight * frictionCoeff).toFixed(0);
+  ballast.slidingDCR = windLoads.lateralForce > 0 ?
+    +(windLoads.lateralForce / ballast.slidingResist).toFixed(2) : 0;
+
+  /* ── CONCRETE PIER CALCULATION ── */
+  const pier = {};
+  const pierDia = 18 / 12; // 18" diameter typical
+  const pierArea = Math.PI * Math.pow(pierDia / 2, 2);
+  /* Bearing */
+  pier.bearingCapacity = bearingPsf * pierArea;
+  pier.bearingDCR = +(totalDownward / pier.bearingCapacity).toFixed(2);
+  /* Embedment by frost + lateral + uplift */
+  const pierEmbedByFrost = frostIn / 12 + 0.5;
+  const pierWeight_per_ft = 150 * pierArea; // concrete density * area
+  const pierEmbedByUplift = requiredUpliftResist > 0 ?
+    requiredUpliftResist / pierWeight_per_ft : 2;
+  pier.embedDepth = +Math.ceil(Math.max(pierEmbedByFrost, embedByLateral * 0.7, pierEmbedByUplift, 3) * 2) / 2;
+  pier.volume = +(pierArea * pier.embedDepth).toFixed(2);
+  pier.cubicYards = +(pier.volume / 27).toFixed(3);
+  pier.concretePerPost = +(pier.volume * 150).toFixed(0); // lbs
+
+  /* ── SEISMIC CHECK ── */
+  const seismic = {};
+  seismic.baseShear = +(0.2 * sds * totalDownward).toFixed(0); // simplified ASCE 7 Eq 12.14-11
+  seismic.governs = seismic.baseShear > windLoads.lateralForce;
+
+  /* ── FOUNDATION RECOMMENDATION ── */
+  const suitability = soil.suitability;
+  const fndTypes = [
+    { id: 'driven-pile', name: 'Driven Pile (W-Beam)', score: suitability.drivenPile, data: pile },
+    { id: 'ground-screw', name: 'Ground Screw (Helical)', score: suitability.groundScrew, data: screw },
+    { id: 'ballast', name: 'Ballast Block', score: suitability.ballast, data: ballast },
+    { id: 'concrete-pier', name: 'Concrete Pier', score: suitability.concretePier, data: pier }
+  ];
+
+  /* Penalize types unsuitable for conditions */
+  if (waterTable < 5) { fndTypes[0].score -= 1; fndTypes[3].score -= 1; }
+  if (isCat5 || windLoads.V >= 150) { fndTypes[2].score -= 2; } // ballast poor for Cat 5
+  if (params.corrosionCheck) { fndTypes[0].score -= 1; } // corrosion risk for steel piles
+  if (soil.rating === 'Unsuitable') { fndTypes.forEach(f => { if (f.id !== 'concrete-pier') f.score -= 2; }); }
+
+  const recommended = [...fndTypes].sort((a, b) => b.score - a.score)[0];
+
+  return {
+    pile, screw, ballast, pier, seismic,
+    fndTypes, recommended,
+    soil, post,
+    totalDownward: +totalDownward.toFixed(0),
+    netUplift: +netUplift.toFixed(0),
+    DL_post,
+    snowPerPost: +snowPerPost.toFixed(0),
+    SF_bearing, SF_lateral, SF_uplift, SF_overturn,
+    isCat5, isHVHZ,
+    Kp: +Kp.toFixed(2)
+  };
+}
+
+/* ══════════ RENDER FOUNDATION RESULTS ══════════ */
+function renderFoundationResults(wind, fnd, params) {
+  const el = document.getElementById('foundationResults');
+  if (!el) return;
+
+  const dcrClass = v => v <= 0.7 ? 'pass' : v <= 1.0 ? 'warn' : 'fail';
+  const dcrLabel = v => v <= 0.7 ? 'OK' : v <= 1.0 ? 'Marginal' : 'EXCEEDS';
+
+  let h = '';
+
+  /* Cat 5 banner */
+  if (fnd.isCat5 || wind.V >= 157) {
+    h += '<div style="margin-bottom:16px;padding:14px 18px;background:linear-gradient(135deg,rgba(220,53,69,0.08),rgba(255,107,107,0.06));border:1px solid rgba(220,53,69,0.25);border-radius:10px;display:flex;align-items:center;gap:12px">';
+    h += '<span class="cat5-badge">&#9888; CAT 5</span>';
+    h += '<div><strong style="color:#b02a37;font-size:.82rem">Category 5 Hurricane Design</strong>';
+    h += '<div style="font-size:.72rem;color:#6c757d;margin-top:2px">Safety factors elevated: Bearing ' + fnd.SF_bearing.toFixed(1) + 'x, Lateral ' + fnd.SF_lateral.toFixed(1) + 'x, Uplift ' + fnd.SF_uplift.toFixed(1) + 'x, Overturn ' + fnd.SF_overturn.toFixed(1) + 'x. All foundations must meet FBC 2023 HVHZ requirements.</div>';
+    h += '</div></div>';
+  }
+
+  h += '<div class="eng-out-grid">';
+
+  /* ── WIND LOADS CARD ── */
+  h += '<div class="eo-card eo-wind">';
+  h += '<div class="eo-title"><span class="eo-ico">&#127744;</span> Wind Load Analysis (ASCE 7-22)</div>';
+  h += '<div class="eo-row"><span class="eo-label">Design Wind Speed (V<sub>ult</sub>)</span><span class="eo-val">' + wind.V + ' mph</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Hurricane Rating</span><span class="eo-val">' + wind.hurricaneCat.label + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Exposure Category</span><span class="eo-val">' + wind.exp + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Array Height (h)</span><span class="eo-val">' + wind.h + ' ft</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">K<sub>z</sub> (velocity pressure)</span><span class="eo-val">' + wind.Kz + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">K<sub>zt</sub> (topographic)</span><span class="eo-val">' + wind.Kzt + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">K<sub>d</sub> (directionality)</span><span class="eo-val">' + wind.Kd + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">K<sub>e</sub> (elevation)</span><span class="eo-val">' + wind.Ke + '</span></div>';
+  h += '<div class="eo-divider"></div>';
+  h += '<div class="eo-row"><span class="eo-label">q<sub>h</sub> (velocity pressure)</span><span class="eo-val" style="font-size:.92rem">' + wind.qh + ' psf</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Interior zone uplift</span><span class="eo-val">' + wind.zones.interior.uplift.toFixed(1) + ' psf</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Edge zone uplift</span><span class="eo-val">' + wind.zones.edge.uplift.toFixed(1) + ' psf</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Corner zone uplift</span><span class="eo-val" style="color:#dc3545">' + wind.zones.corner.uplift.toFixed(1) + ' psf</span></div>';
+  h += '<div class="eo-divider"></div>';
+  h += '<div class="eo-row"><span class="eo-label">Max uplift per post</span><span class="eo-val">' + fmt(wind.maxUpliftPerPost) + ' lbs</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Max downward per post</span><span class="eo-val">' + fmt(wind.maxDownwardPerPost) + ' lbs</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Lateral force per post</span><span class="eo-val">' + fmt(wind.lateralForce) + ' lbs</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Overturning moment per post</span><span class="eo-val">' + fmt(wind.overturningMoment) + ' ft&middot;lbs</span></div>';
+  h += '<div class="eo-note">ASCE 7-22 Section 29.4 ground-mounted solar provisions. V<sub>ult</sub> = ' + wind.V + ' mph 3-sec gust at 33ft, Risk Category ' + params.riskCategory + '.</div>';
+  h += '</div>';
+
+  /* ── FOUNDATION SIZING CARD ── */
+  const selFnd = params.foundationType;
+  const fndLabel = selFnd === 'driven-pile' ? 'Driven Pile' : selFnd === 'ground-screw' ? 'Ground Screw' : selFnd === 'ballast' ? 'Ballast Block' : 'Concrete Pier';
+
+  h += '<div class="eo-card eo-fnd">';
+  h += '<div class="eo-title"><span class="eo-ico">&#9875;</span> Foundation Design: ' + fndLabel + '</div>';
+
+  if (selFnd === 'driven-pile') {
+    const p = fnd.pile;
+    h += '<div class="eo-row"><span class="eo-label">Post profile</span><span class="eo-val">' + params.postType.toUpperCase().replace('-',' ') + '</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Required embedment</span><span class="eo-val" style="font-size:.92rem">' + p.embedDepth.toFixed(1) + ' ft (' + (p.embedDepth * 12).toFixed(0) + '")</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Governed by</span><span class="eo-val">' + p.governedBy + '</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Total post length</span><span class="eo-val">' + p.totalLength + ' ft</span></div>';
+    h += '<div class="eo-divider"></div>';
+    h += '<div class="eo-row"><span class="eo-label">Embed by lateral</span><span class="eo-val">' + p.embedments.lateral + ' ft</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Embed by moment</span><span class="eo-val">' + p.embedments.moment + ' ft</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Embed by uplift</span><span class="eo-val">' + p.embedments.uplift + ' ft</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Embed by bearing</span><span class="eo-val">' + p.embedments.bearing + ' ft</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Embed by frost</span><span class="eo-val">' + p.embedments.frost + ' ft</span></div>';
+    h += '<div class="eo-divider"></div>';
+    h += '<div class="eo-row"><span class="eo-label">Bearing DCR</span><span class="eo-val ' + dcrClass(p.bearingDCR) + '">' + p.bearingDCR + ' (' + dcrLabel(p.bearingDCR) + ')</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Uplift DCR</span><span class="eo-val ' + dcrClass(p.upliftDCR) + '">' + p.upliftDCR + ' (' + dcrLabel(p.upliftDCR) + ')</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Bending stress</span><span class="eo-val">' + fmt(p.bendingStress) + ' / ' + fmt(p.allowableBending) + ' psi</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Bending DCR</span><span class="eo-val ' + dcrClass(p.bendingDCR) + '">' + p.bendingDCR + ' (' + dcrLabel(p.bendingDCR) + ')</span></div>';
+  } else if (selFnd === 'ground-screw') {
+    const s = fnd.screw;
+    h += '<div class="eo-row"><span class="eo-label">Helix diameter</span><span class="eo-val">10" (3 helices)</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Shaft diameter</span><span class="eo-val">2-7/8"</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Required embedment</span><span class="eo-val" style="font-size:.92rem">' + s.embedDepth.toFixed(1) + ' ft (' + (s.embedDepth * 12).toFixed(0) + '")</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Total screw length</span><span class="eo-val">' + s.totalLength + ' ft</span></div>';
+    h += '<div class="eo-divider"></div>';
+    h += '<div class="eo-row"><span class="eo-label">Bearing DCR</span><span class="eo-val ' + dcrClass(s.bearingDCR) + '">' + s.bearingDCR + ' (' + dcrLabel(s.bearingDCR) + ')</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Min install torque</span><span class="eo-val">' + fmt(s.minInstallTorque) + ' ft&middot;lbs</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Required torque</span><span class="eo-val">' + fmt(s.requiredTorque) + ' ft&middot;lbs</span></div>';
+    h += '<div class="eo-note">Per ICC-ES AC358 helical pile acceptance criteria. K<sub>t</sub> = 10 (default empirical torque factor). Verify with site-specific load test.</div>';
+  } else if (selFnd === 'ballast') {
+    const b = fnd.ballast;
+    h += '<div class="eo-row"><span class="eo-label">Required weight per post</span><span class="eo-val" style="font-size:.92rem">' + fmt(b.requiredWeight) + ' lbs</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Concrete volume per post</span><span class="eo-val">' + b.concreteVolume + ' cu ft (' + b.cubicYards + ' CY)</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Bearing pressure</span><span class="eo-val">' + fmt(b.bearingPressure) + ' psf</span></div>';
+    h += '<div class="eo-divider"></div>';
+    h += '<div class="eo-row"><span class="eo-label">Bearing DCR</span><span class="eo-val ' + dcrClass(b.bearingDCR) + '">' + b.bearingDCR + ' (' + dcrLabel(b.bearingDCR) + ')</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Sliding resistance</span><span class="eo-val">' + fmt(b.slidingResist) + ' lbs</span></div>';
+    h += '<div class="eo-row"><span class="eo-label">Sliding DCR</span><span class="eo-val ' + dcrClass(b.slidingDCR) + '">' + b.slidingDCR + ' (' + dcrLabel(b.slidingDCR) + ')</span></div>';
+    if (wind.V >= 140) {
+      h += '<div class="eo-rec rec-warn"><strong>&#9888; Ballast Warning</strong>Ballast systems are generally not recommended for design wind speeds above 140 mph. Consider driven piles or ground screws for this wind zone.</div>';
+    }
+  }
+
+  h += '<div class="eo-note">Dead load per post: ' + fnd.DL_post + ' lbs. Snow load per post: ' + fmt(fnd.snowPerPost) + ' lbs. Net uplift: ' + fmt(fnd.netUplift) + ' lbs. Safety factors: ' + fnd.SF_bearing + 'x bearing, ' + fnd.SF_lateral + 'x lateral.</div>';
+  h += '</div>';
+
+  /* ── SOIL & EMBEDMENT CARD ── */
+  h += '<div class="eo-card eo-embed">';
+  h += '<div class="eo-title"><span class="eo-ico">&#129704;</span> Soil &amp; Embedment Analysis</div>';
+  h += '<div class="eo-row"><span class="eo-label">Soil classification</span><span class="eo-val">' + params.soilClass + ' — ' + fnd.soil.desc + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Soil rating</span><span class="eo-val">' + fnd.soil.rating + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Friction angle (&phi;)</span><span class="eo-val">' + fnd.soil.friction + '&deg;</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Cohesion (c)</span><span class="eo-val">' + fnd.soil.cohesion + ' psf</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Passive earth pressure (K<sub>p</sub>)</span><span class="eo-val">' + fnd.Kp + '</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Allowable bearing</span><span class="eo-val">' + fmt(params.bearingPressure) + ' psf</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Frost line depth</span><span class="eo-val">' + params.frostDepth + '" (' + (params.frostDepth / 12).toFixed(1) + ' ft)</span></div>';
+  h += '<div class="eo-row"><span class="eo-label">Water table</span><span class="eo-val">' + params.waterTableDepth + ' ft</span></div>';
+  if (fnd.seismic.governs) {
+    h += '<div class="eo-rec rec-warn"><strong>&#9888; Seismic Governs</strong>Seismic base shear (' + fmt(fnd.seismic.baseShear) + ' lbs) exceeds wind lateral force (' + fmt(wind.lateralForce) + ' lbs). Foundation design governed by seismic loads.</div>';
+  }
+  h += '</div>';
+
+  /* ── RECOMMENDATION CARD ── */
+  h += '<div class="eo-card eo-summary">';
+  h += '<div class="eo-title"><span class="eo-ico">&#9989;</span> Foundation Recommendation</div>';
+
+  /* Score all foundation types */
+  fnd.fndTypes.sort((a, b) => b.score - a.score);
+  fnd.fndTypes.forEach((f, i) => {
+    const stars = '&#9733;'.repeat(Math.max(f.score, 0)) + '&#9734;'.repeat(Math.max(5 - Math.max(f.score, 0), 0));
+    const isSel = f.id === selFnd;
+    const isRec = i === 0;
+    h += '<div class="eo-row" style="' + (isSel ? 'background:rgba(27,58,92,0.06);border-radius:4px;padding:6px 8px;margin:2px -8px' : '') + '">';
+    h += '<span class="eo-label">' + f.name + (isRec ? ' <strong style="color:#198754">(RECOMMENDED)</strong>' : '') + (isSel ? ' <strong style="color:var(--blue-700)">(SELECTED)</strong>' : '') + '</span>';
+    h += '<span class="eo-val" style="font-size:.82rem;color:#b8860b">' + stars + '</span>';
+    h += '</div>';
+  });
+
+  const rec = fnd.recommended;
+  if (rec.id !== selFnd) {
+    h += '<div class="eo-rec rec-warn"><strong>&#128161; Consider Switching</strong>Based on soil conditions (' + params.soilClass + '), wind loads (' + wind.V + ' mph), and site factors, <strong>' + rec.name + '</strong> scores highest for this project. Currently selected: ' + fndLabel + '.</div>';
+  } else {
+    h += '<div class="eo-rec rec-ok"><strong>&#10004; Selection Confirmed</strong>The selected foundation type (' + fndLabel + ') is well-suited for the site conditions: ' + fnd.soil.desc + ' soil, ' + wind.V + ' mph wind, ' + params.frostDepth + '" frost depth.</div>';
+  }
+
+  /* Code compliance note */
+  h += '<div class="eo-note">Design per ' + params.designCode + '. ';
+  if (fnd.isHVHZ) h += 'HVHZ provisions apply (FBC Section 1626). ';
+  if (fnd.isCat5) h += 'Cat 5 design: elevated safety factors per FEMA P-2055 & SEMS storm-hardened standard. ';
+  if (params.corrosionCheck) h += 'Corrosive environment: specify hot-dip galvanized or stainless steel connections. ';
+  if (params.floodZoneCheck) h += 'Flood zone: foundations must comply with ASCE 24 (flood resistant design). ';
+  h += 'All foundations require site-specific geotechnical verification. This analysis is preliminary &mdash; a licensed PE must stamp final design.</div>';
+
+  h += '</div>';
+
+  h += '</div>'; // close eng-out-grid
+
+  el.innerHTML = h;
+}
+
+/* ══════════ INTEGRATION: WIRE INTO recalcAll ══════════ */
+function getSiteParams() {
+  return {
+    windSpeed:         parseInt(document.getElementById('windSpeed').value) || 110,
+    exposureCat:       document.getElementById('exposureCat').value || 'B',
+    riskCategory:      document.getElementById('riskCategory').value || 'II',
+    kzt:               parseFloat(document.getElementById('kzt').value) || 1.0,
+    ke:                parseFloat(document.getElementById('ke').value) || 1.0,
+    soilClass:         document.getElementById('soilClass').value || 'SM',
+    bearingPressure:   parseInt(document.getElementById('bearingPressure').value) || 1500,
+    lateralSoilPressure: parseInt(document.getElementById('lateralSoilPressure').value) || 200,
+    soilUnitWeight:    parseInt(document.getElementById('soilUnitWeight').value) || 110,
+    waterTableDepth:   parseInt(document.getElementById('waterTableDepth').value) || 20,
+    seismicCat:        document.getElementById('seismicCat').value || 'A',
+    sds:               parseFloat(document.getElementById('sds').value) || 0.15,
+    snowLoad:          parseInt(document.getElementById('snowLoad').value) || 15,
+    frostDepth:        parseInt(document.getElementById('frostDepth').value) || 36,
+    designCode:        document.getElementById('designCode').value || 'ASCE7-22',
+    hvhzCheck:         document.getElementById('hvhzCheck').checked,
+    floodZoneCheck:    document.getElementById('floodZoneCheck').checked,
+    corrosionCheck:    document.getElementById('corrosionCheck').checked,
+    cat5Check:         document.getElementById('cat5Check').checked,
+    tiltAngle:         parseFloat(document.getElementById('tiltAngle').value) || 25,
+    groundClearance:   parseFloat(document.getElementById('groundClearance').value) || 24,
+    panelLength:       parseFloat(document.getElementById('panelLength').value) || 74.8,
+    rowSpacing:        parseFloat(document.getElementById('rowSpacing').value) || 6,
+    foundationType:    document.getElementById('foundationType').value || 'driven-pile',
+    postType:          document.getElementById('postType').value || 'w6x9'
+  };
+}
+
+/* Auto-update bearing pressure when soil class changes */
+function syncSoilDefaults() {
+  var sel = document.getElementById('soilClass');
+  if (!sel) return;
+  sel.addEventListener('change', function() {
+    var sd = SOIL_DATA[this.value];
+    if (sd) {
+      document.getElementById('bearingPressure').value = sd.bearing;
+      document.getElementById('lateralSoilPressure').value = sd.lateral;
+    }
+    recalcAll();
+  });
+}
+
 </script>
 </body>
 </html>
