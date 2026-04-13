@@ -5153,10 +5153,17 @@ function calcWindLoads(params) {
   const maxUpliftPerPost = results.corner.uplift * tribArea; // lbs
   const maxDownwardPerPost = results.corner.downward * tribArea; // lbs
 
-  /* Overturning moment at base per post */
+  /* Lateral force and overturning moment at base per post
+     Lateral = horizontal component of wind pressure on tilted array surface
+     Using edge-zone GCp (1.5) for conservative lateral design
+     Moment arm = height to center of wind pressure on tilted panel */
   const momentArm = clearance + (panelH * Math.sin(tilt * Math.PI / 180)) / 2;
-  const lateralForce = qh * 1.3 * tribArea * Math.sin(tilt * Math.PI / 180); // lateral component
-  const overturningMoment = lateralForce * momentArm + maxUpliftPerPost * (sectionWidth / 8);
+  const GCp_lateral = SOLAR_GCp.edge.neg; // edge zone negative (governing for lateral)
+  const lateralForce = Math.abs(qh * GCp_lateral) * tribArea * Math.sin(tilt * Math.PI / 180);
+  /* Overturning = lateral moment + uplift couple across post spacing
+     Post spacing ~= sectionWidth / (nPosts - 1) for 4 posts in a line */
+  const postSpacing = sectionWidth / 3; // 4 posts at ~equal spacing across section width
+  const overturningMoment = lateralForce * momentArm + maxUpliftPerPost * (postSpacing / 2);
 
   return {
     V, exp, Kz: +Kz.toFixed(3), Kzt, Kd, Ke, qh: +qh.toFixed(2),
@@ -5203,17 +5210,21 @@ function calcFoundation(windLoads, params) {
   /* ── DRIVEN PILE CALCULATION ── */
   const pile = {};
 
-  /* Required embedment by lateral capacity (Broms method, short rigid pile in cohesionless soil) */
-  /* Hu = Kp * gamma * D * L^2 / 2  →  L = sqrt(2 * Hu * SF / (Kp * gamma * D)) */
+  /* Required embedment by lateral capacity (Broms 1964, short rigid pile in cohesionless soil)
+     Broms uses 3x Rankine passive to account for 3D pile-soil interaction:
+     Hu = 1.5 * Kp * gamma * D * L^2  →  L = sqrt(Hu_req / (1.5 * Kp * gamma * D))
+     Reference: Broms, B. (1964) "Lateral Resistance of Piles in Cohesionless Soils"
+     ASCE J. Soil Mech. & Found. Div., Vol 90, SM3, pp. 123-156 */
   const Kp = Math.pow(Math.tan((45 + soil.friction / 2) * Math.PI / 180), 2);
   const pileWidth = post.flange / 12; // ft
   const requiredLateral = windLoads.lateralForce * SF_lateral;
-  const embedByLateral = Math.sqrt(2 * requiredLateral / (Kp * soilGamma * pileWidth)) || 3;
+  const embedByLateral = Math.sqrt(requiredLateral / (1.5 * Kp * soilGamma * pileWidth)) || 3;
 
-  /* Required embedment by overturning moment */
-  /* M_resist = Kp * gamma * D * L^3 / 6 → L = cbrt(6 * M * SF / (Kp * gamma * D)) */
+  /* Required embedment by overturning moment (Broms 1964)
+     M_resist = 0.5 * Kp * gamma * D * L^3  →  L = cbrt(M_req / (0.5 * Kp * gamma * D))
+     Integrating 3*Kp*gamma*z*D*(L-z) dz from 0 to L for moment about pile tip */
   const requiredMoment = windLoads.overturningMoment * SF_overturn;
-  const embedByMoment = Math.pow(6 * requiredMoment / (Kp * soilGamma * pileWidth), 1/3) || 3;
+  const embedByMoment = Math.pow(requiredMoment / (0.5 * Kp * soilGamma * pileWidth), 1/3) || 3;
 
   /* Required embedment by uplift (skin friction) */
   /* For H-pile: f = Ks * sigma_v * tan(delta) * perimeter * L */
