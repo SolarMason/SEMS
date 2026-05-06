@@ -4,55 +4,39 @@
 
 ### Added — `site/configurator.html`
 
-Five integrated modules adding 16 SaaS-grade features plus a critical structural correction. The original 5,584-line configurator is unchanged above the SaaS layer block; new code occupies lines 5,589–11,123.
+Five integrated modules adding 16 SaaS-grade features plus a structural correction. The original 5,584-line configurator is unchanged above the SaaS layer block; new code occupies lines 5,589–11,162.
 
 **Phase 1 · Foundation:** nav rail, progress bar, validation badges, command palette (⌘K), undo/redo, multi-project workspace.
 
-**Phase 2 · Walkthrough:** first-run tour (smart-gated for returning users), Quick Start wizard, templates gallery (6 starters).
+**Phase 2 · Walkthrough:** first-run tour, Quick Start wizard, templates gallery.
 
-**Phase 3 · Intelligence:** ZIP defaults (50 states + DC + PR + hazard overlays), live engineering console (ASCE 7-22 formulas), year-1 PV production, 9-category cost roll-up.
+**Phase 3 · Intelligence:** ZIP defaults, live engineering console (ASCE 7-22), year-1 PV production, cost roll-up.
 
 **Phase 4 · Visualization:**
-- 3D preview tab — Three.js orbit-able scene with **same-direction continuous tilted plane** geometry matching SEMS Avans product reality. Both module rows of a section share a join line where the bearing rail and posts attach. Custom orbit/zoom/pan controls with touch support. Three.js lazy-loaded only when modal opens.
-- Sun-path / shading toy — SunCalc-style astronomy inlined (~80 lines). Three sun arcs (summer / equinox / winter) projected onto polar SVG. Time-of-day slider drives both the SVG marker and the 3D scene's directional light, so adjacent-row shadows update realistically. Lat/lng auto-derived from site ZIP.
-- Heatmap overlay — color sections by DC kW, panel count, section cost, or **wind load factor** with ASCE 7-22 zone amplification (corner = 1.5×, edge = 1.2×, interior = 1.0×).
+- 3D preview tab — orbit-able Three.js scene with hemisphere-aware sun-facing orientation. Northern hemisphere → panels face south (rotation.x = +tilt, south edge low, north edge high). Southern hemisphere → panels face north. Geometry is one continuous tilted plane per section with a structural rail at the join line and posts shared between adjacent sections.
+- Sun-path / shading toy — full-circle stereographic projection with proper compass cardinal placement (N up, E right, S down, W left). SunCalc azimuth correctly maps to compass azimuth (compass = az + π). Includes a panel-direction marker at center so the visual alignment between sun arc and panel orientation is unambiguous.
+- Heatmap overlay — color sections by DC kW, panel count, cost, or wind load factor with ASCE 7-22 zone amplification.
 
-**Phase 4.1 · Structural correction (BOM + engineering):**
-- Patches `SECTION_RULES['8'].posts` and `['10'].posts` from 4 → 2 (per-section count, before sharing)
-- Wraps `calculateProjectTotals` so `totals.posts = total_sections + num_layout_rows` (the correct material count given that adjacent sections share boundary posts)
-- Wraps `generateBom` to add an explanatory note on the post line item ("adjacent sections share boundary posts")
-- Wraps the engineering console refresh to inject a callout: corrected post count means each interior post supports a full section's tributary area (not 1/4), so uplift per post is ~4× higher than the host's stock ASCE calculation indicates — relevant for foundation sizing review
-
-This corrects a long-standing misalignment between the host's BOM logic and SEMS's actual product geometry. Verified against multiple layouts:
-
-| Layout | Old | Corrected |
-|--------|-----|-----------|
-| 5 sections × 1 row | 20 | 6 |
-| 4 sections × 3 rows | 48 | 15 |
-| 1 MW (~40 sections × 4 rows) | 160 | 44 |
-
-### Architecture
-
-- All features namespaced under `window.SAAS` with sub-namespaces: `palette`, `wizard`, `modal`, `drawer`, `tour`, `undo`, `engcon`, `zip`, `compute`, `intel`, `viz3d`
-- Host's `let layoutState`, `_nextSectionId`, `_nextRowId`, `const SECTION_RULES` are reached via `new Function()` accessors that run in global scope
-- Storage keys are namespaced — host's `sems_array_builder_v2` is untouched
-- The entire layer is hidden under `@media print` — existing report layouts and PDF exports continue working unchanged
-- Three.js is the only external dependency, loaded on demand. SunCalc is inlined.
+**Phase 4.1 · Structural correction:**
+- `SECTION_RULES['8'].posts` and `['10'].posts` patched from 4 → 2
+- `calculateProjectTotals` wrapped so `totals.posts = total_sections + num_layout_rows`
+- `generateBom` wrapped to add explanatory note on the post line
+- Engineering console callout: corrected post count means each interior post supports a full section's tributary area, not 1/4 — uplift per post is ~4× higher than the host's stock ASCE calculation indicates
 
 ### Validation
 
-44/44 functional checks pass against the patched configurator running in jsdom. End-to-end coverage for all 4 phases, plus dedicated structural-correction tests verifying that `SECTION_RULES` is correctly patched, `calculateProjectTotals` returns the corrected formula, and the BOM line includes the explanatory note.
+- All 4 cardinal sun-path projection tests pass (south plots at S label, north at N label, east at E label, west at W label)
+- Northern hemisphere noon: sun plots below center, panel direction marker also below center → ALIGNED
+- Southern hemisphere noon (Sydney summer solstice): sun plots above center, panel direction marker also above center → ALIGNED
+- 12/12 integration tests pass against the patched configurator: SECTION_RULES correctly patched, post formula correct, BOM line has share note, heatmap functional, undo/redo functional, all phases attached
+- Multi-row math: 3 rows × 4 sections = 12 sections + 3 rows = **15 posts** (was 48)
 
 ### Files
 
-- **`site/configurator.html`** — patched (5,584 → 11,124 lines)
+- **`site/configurator.html`** — patched (5,584 → 11,163 lines)
 - `site/saas/sems-saas-phase-1-2.html` — Phases 1+2 source
 - `site/saas/sems-saas-phase-3.html` — Phase 3 source
-- `site/saas/sems-saas-phase-4.html` — Phase 4 source
+- `site/saas/sems-saas-phase-4.html` — Phase 4 source (with corrected geometry + sun-path widget)
 - `site/saas/sems-saas-phase-4-1.html` — Phase 4.1 structural correction
 - `site/saas/INTEGRATION.md` — full feature documentation
 - `site/saas/sems-saas-DEMO.html` — standalone demo with mocked configurator API
-
-### Roadmap
-
-**Phase 5 (Customer-facing) — pending:** URL-encoded share links, presentation mode, branded PDF export, specifier mode, project package zip via JSZip.

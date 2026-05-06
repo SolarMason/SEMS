@@ -8,22 +8,24 @@ Drop-in zip for the `solarmason/SEMS` repo.
 2. Commit and push:
    ```bash
    git add site/configurator.html site/saas/ CHANGELOG.md
-   git commit -m "Add SaaS layer Phases 1-4 + structural correction (post count fix)"
+   git commit -m "Add SaaS layer Phases 1-4 + structural correction"
    git push origin main
    ```
 3. GitHub Pages will redeploy in ~60 seconds.
 
-## What this fixes
+## What's in this update
 
-**3D rendering:** rows now form one continuous tilted plane (same-direction tilt, joined at the rail line), with one post per side per section, posts shared between adjacent sections.
+**3D rendering:** rows form one continuous tilted plane (same-direction tilt, joined at the rail line). One post per side per section, shared between adjacent sections. **Panels face the sun** (south in northern hemisphere, north in southern hemisphere — derived from the site ZIP).
 
-**BOM:** post count corrected from `4 × sections` to `sections + layout_rows`. For typical layouts, that's a 70-75% reduction in overstated posts.
+**Sun-path widget:** rebuilt as a proper full-circle stereographic plot. North at top, south at bottom, east right, west left. SunCalc azimuth = 0 (south) now correctly plots at the bottom of the dome where the S label sits. A blue marker at center shows the panel direction so you can visually verify alignment.
 
-**Engineering console:** flag added showing the implications of the corrected post count for tributary area and per-post uplift loads.
+**BOM:** post count corrected from `4 × sections` to `sections + layout_rows`.
+
+**Engineering console:** flag added showing tributary area implications of the corrected post count.
 
 ## Validation
 
-44/44 tests pass: 20 structural correction tests (multi-row math, BOM line accuracy, SECTION_RULES patching) plus 24 regression tests across all prior phases.
+12/12 integration tests pass · 4/4 sun-path cardinal tests pass · Northern + southern hemisphere alignment verified.
 
 ## Rollback
 
@@ -32,5 +34,3 @@ git checkout HEAD~1 -- site/configurator.html
 git commit -m "Rollback SaaS layer"
 git push
 ```
-
-User saves under `sems_array_builder_v2` are untouched by this layer.

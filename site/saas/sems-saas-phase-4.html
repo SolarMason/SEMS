@@ -808,11 +808,12 @@
           <div class="saas-3d-section">
             <div class="saas-3d-section-label">Sun position</div>
             <div class="saas-sunpath">
-              <svg viewBox="0 0 280 160" id="saas-sunpath-svg"></svg>
+              <svg viewBox="0 0 280 280" id="saas-sunpath-svg"></svg>
               <div class="saas-sunpath-leg">
                 <span><div class="saas-sunpath-leg-dot" style="background:rgba(245,158,11,0.7)"></div>Summer</span>
                 <span><div class="saas-sunpath-leg-dot" style="background:rgba(91,188,228,0.8)"></div>Equinox</span>
                 <span><div class="saas-sunpath-leg-dot" style="background:rgba(255,255,255,0.4)"></div>Winter</span>
+                <span><div class="saas-sunpath-leg-dot" style="background:rgba(91,188,228,1);width:8px;height:8px;border-radius:50%"></div>Panel facing</span>
               </div>
             </div>
           </div>
@@ -1002,9 +1003,15 @@
     // SEMS GEOMETRY · same-direction continuous tilt.
     //
     // Both rows of a section tilt the same direction (south-facing in northern
-    // hemisphere). The NORTH edge of the lower (south) row meets the SOUTH edge
-    // of the upper (north) row at a shared "join line" — the structural rail.
-    // This forms ONE continuous tilted plane, not two separate panel groups.
+    // hemisphere; north-facing in southern hemisphere). The NORTH edge of the
+    // lower row meets the SOUTH edge of the upper row at a shared "join line"
+    // — the structural rail. This forms ONE continuous tilted plane, not two
+    // separate panel groups.
+    //
+    // SUN-FACING DIRECTION: northern hemisphere → panels face south (rotation.x
+    // = +tilt makes south edge low, north edge high — face normal points
+    // up + south, toward the southern sky where the sun sits at noon).
+    // Southern hemisphere → panels face north (rotation.x = -tilt).
     //
     // POSTS: exactly one post per side of each section, standing under the
     // join line. Adjacent sections share their boundary post — so a row of N
@@ -1019,6 +1026,13 @@
     const halfDist = moduleL / 2;
     const pivotY   = gc + moduleL * Math.sin(tilt);
     const sectionDepth = 2 * moduleL * Math.cos(tilt); // N-S ground projection
+
+    // Hemisphere-aware tilt direction. Northern hemisphere: panels face south
+    // (+tilt makes south edge low). Southern hemisphere: panels face north
+    // (-tilt makes north edge low).
+    const _siteLoc = findLatLng();
+    const tiltSign = _siteLoc.lat >= 0 ? +1 : -1;
+    const tiltedAngle = tiltSign * tilt;
 
     // Compute layout row depths along X for centering
     const rowDepths = [];
@@ -1054,16 +1068,18 @@
         const sectionWidth = ppr * moduleW;
 
         // Build the section: one continuous tilted plane composed of two
-        // module rows. Row 0 (south, lower) sits south of the pivot; row 1
-        // (north, upper) sits north. Both tilt the same direction.
+        // module rows. Row 0 sits "downslope" of the pivot; row 1 sits
+        // "upslope". For northern hemisphere, downslope = south side. For
+        // southern hemisphere, downslope = north side. Both rows tilt the
+        // same direction so they form one continuous plane.
         for (let rowIdx = 0; rowIdx < 2; rowIdx++) {
-          // sign: +1 for south row (panel center on +Z side), -1 for north row.
+          // sign: +1 for downslope row (panel center on +Z side for N. hemi),
+          //       -1 for upslope row.
           const sign = rowIdx === 0 ? +1 : -1;
-          // Module center, relative to pivot, along the tilted plane:
-          //   - South row: lower & south of pivot
-          //   - North row: higher & north of pivot
+          // Module center, relative to pivot, along the tilted plane.
+          // tiltSign flips the geometry for southern hemisphere.
           const cy = pivotY - sign * halfDist * Math.sin(tilt);
-          const dz = sign * halfDist * Math.cos(tilt);
+          const dz = tiltSign * sign * halfDist * Math.cos(tilt);
 
           for (let p = 0; p < ppr; p++) {
             const panelGeom = new THREE.BoxGeometry(moduleW * 0.97, 1.2, moduleL * 0.985);
@@ -1073,9 +1089,10 @@
 
             const px = xCursor + p * moduleW + moduleW / 2;
             m.position.set(px, cy, zCenter + dz);
-            // rotation.x = +tilt makes south edge (+Z) go DOWN and north edge
-            // (-Z) go UP — proper south-facing tilt for northern hemisphere.
-            m.rotation.x = +tilt;
+            // tiltedAngle = ±tilt depending on hemisphere. For northern hemi,
+            // +tilt makes south edge (+Z) go DOWN, north edge (-Z) go UP, so
+            // the panel face normal points UP-AND-SOUTH — toward the noon sun.
+            m.rotation.x = tiltedAngle;
             scene.add(m);
 
             const edges = new THREE.EdgesGeometry(panelGeom);
@@ -1319,35 +1336,42 @@
   function drawSunPathSVG(loc, season, hour, currentAz, currentAlt) {
     const svg = document.getElementById('saas-sunpath-svg');
     if (!svg) return;
-    const W = 280, H = 160;
-    // Polar projection: horizon = circle, zenith = center
-    const cx = W / 2, cy = H - 12, r = Math.min(W * 0.42, H - 30);
+    // Full-circle stereographic projection looking down at the celestial dome.
+    // Compass convention: N up, E right, S down, W left (standard map).
+    // Center of plot = zenith. Edge of plot = horizon.
+    const W = 280, H = 280;
+    const cx = W / 2, cy = H / 2, r = Math.min(W, H) * 0.40;
 
-    // Draw horizon arc + cardinal points
-    let html = `
-      <g class="saas-sunpath-grid">
-        <path d="M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}" fill="none" class="saas-sunpath-horizon"/>
-        <line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" />
-        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - r}" />
-      </g>
-      <text x="${cx - r - 4}" y="${cy + 4}" text-anchor="end" class="saas-sunpath-label">E</text>
-      <text x="${cx + r + 4}" y="${cy + 4}" text-anchor="start" class="saas-sunpath-label">W</text>
-      <text x="${cx}" y="${cy - r - 3}" text-anchor="middle" class="saas-sunpath-label">N</text>
-      <text x="${cx}" y="${cy + 12}" text-anchor="middle" class="saas-sunpath-label">S</text>
-    `;
-
+    // SunCalc azimuth convention: 0 = south, +π/2 = west, ±π = north,
+    // -π/2 = east. Compass azimuth (clockwise from N) = SunCalc az + π.
+    // For a point at compass azimuth A on a north-up plot:
+    //   x = cx + dist * sin(A)
+    //   y = cy - dist * cos(A)   (SVG y inverted)
     function project(az, alt) {
-      // SunCalc: az 0=south, π/2=west, -π/2=east, ±π=north
-      // Polar: x = -sin(az)*r*(1-alt/half) … no let's do: dist from center = r*(1 - alt/(π/2))
-      const distFromCenter = r * (1 - alt / (PI / 2));
-      // azimuth: north = up (-y), east = -x, south = +y (but we put south at bottom of SVG, so cy + something)
-      // We want: south=down, north=up, east=left, west=right
-      const x = cx - distFromCenter * Math.sin(az);
-      const y = cy - distFromCenter * Math.cos(az);
+      const distFromCenter = r * Math.max(0, 1 - alt / (PI / 2));
+      const compassA = az + PI; // SunCalc → compass
+      const x = cx + distFromCenter * Math.sin(compassA);
+      const y = cy - distFromCenter * Math.cos(compassA);
       return { x, y };
     }
 
-    // Three arcs
+    // Background: horizon circle, altitude rings, cardinal cross
+    let html = `
+      <g class="saas-sunpath-grid">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+        <circle cx="${cx}" cy="${cy}" r="${(r * 2 / 3).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.07)"/>
+        <circle cx="${cx}" cy="${cy}" r="${(r * 1 / 3).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.07)"/>
+        <line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="rgba(255,255,255,0.06)"/>
+        <line x1="${cx}" y1="${cy - r}" x2="${cx}" y2="${cy + r}" stroke="rgba(255,255,255,0.06)"/>
+        <circle cx="${cx}" cy="${cy}" r="2" fill="rgba(255,255,255,0.35)"/>
+      </g>
+      <text x="${cx}" y="${cy - r - 6}" text-anchor="middle" class="saas-sunpath-label">N</text>
+      <text x="${cx}" y="${cy + r + 14}" text-anchor="middle" class="saas-sunpath-label">S</text>
+      <text x="${cx + r + 6}" y="${cy + 4}" text-anchor="start" class="saas-sunpath-label">E</text>
+      <text x="${cx - r - 6}" y="${cy + 4}" text-anchor="end" class="saas-sunpath-label">W</text>
+    `;
+
+    // Three sun-path arcs (summer, equinox, winter)
     const year = new Date().getFullYear();
     const dates = {
       summer:  new Date(year, 5, 21),
@@ -1370,10 +1394,25 @@
       html += `<path d="${path}" class="saas-sunpath-arc-${key}"/>`;
     });
 
-    // Current sun position (only if above horizon)
+    // Panel-orientation indicator: a small wedge at the center showing where
+    // the panels are pointing (their azimuth). Northern hemisphere → south
+    // (compass π); southern hemisphere → north (compass 0).
+    const panelCompassA = loc.lat >= 0 ? PI : 0;
+    const panelDir = {
+      x: cx + (r * 0.18) * Math.sin(panelCompassA),
+      y: cy - (r * 0.18) * Math.cos(panelCompassA)
+    };
+    html += `
+      <line x1="${cx}" y1="${cy}" x2="${panelDir.x.toFixed(1)}" y2="${panelDir.y.toFixed(1)}"
+            stroke="rgba(91, 188, 228, 0.75)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="${panelDir.x.toFixed(1)}" cy="${panelDir.y.toFixed(1)}" r="3"
+              fill="rgba(91, 188, 228, 1)"/>
+    `;
+
+    // Current sun position marker (only if above horizon)
     if (currentAlt > 0) {
       const p = project(currentAz, currentAlt);
-      html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" class="saas-sunpath-sun"/>`;
+      html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5.5" class="saas-sunpath-sun"/>`;
     }
     svg.innerHTML = html;
   }
