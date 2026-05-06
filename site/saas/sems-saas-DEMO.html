@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>SEMS SaaS Layer · Demo (All 4 Phases)</title>
+<title>SEMS SaaS Layer · Demo (All Phases)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <style>
 :root {
@@ -5155,7 +5155,7 @@ ps = <em>Cs</em> × pf
     const tilt = sp.tilt * Math.PI / 180;
 
     const moduleW = panel.width;        // along the rail (X direction)
-    const moduleL = panel.length;       // across the rail (Z direction)
+    const moduleL = panel.length;       // across the rail (Z direction, slope length)
     const gc = sp.groundClearance;
     const sectionGap = sp.sectionSpacing;
     const rowGap = sp.layoutRowGap;
@@ -5168,12 +5168,32 @@ ps = <em>Cs</em> × pf
     const postMat = new THREE.MeshStandardMaterial({
       color: 0x9CA3B0, metalness: 0.6, roughness: 0.5
     });
-    const railMat = new THREE.MeshStandardMaterial({
-      color: 0xD8DEE6, metalness: 0.7, roughness: 0.4
+    const beamMat = new THREE.MeshStandardMaterial({
+      color: 0xB8C0CC, metalness: 0.7, roughness: 0.45
     });
 
-    // Compute total bounding so we can center the array
-    let totalDepth = 0;
+    // SEMS GEOMETRY · same-direction continuous tilt.
+    //
+    // Both rows of a section tilt the same direction (south-facing in northern
+    // hemisphere). The NORTH edge of the lower (south) row meets the SOUTH edge
+    // of the upper (north) row at a shared "join line" — the structural rail.
+    // This forms ONE continuous tilted plane, not two separate panel groups.
+    //
+    // POSTS: exactly one post per side of each section, standing under the
+    // join line. Adjacent sections share their boundary post — so a row of N
+    // sections needs N+1 posts, not 4N.
+    //
+    // We build everything around a "pivot" — the (x, y, z) point where the
+    // join line crosses the section boundary.
+    //   pivotY = gc + moduleL * sin(tilt)       (height of join above ground)
+    //   pivotZ = section's N-S center (z = 0 in section-local coords)
+    // Module centers sit at ±halfDist along the tilted plane from the pivot.
+
+    const halfDist = moduleL / 2;
+    const pivotY   = gc + moduleL * Math.sin(tilt);
+    const sectionDepth = 2 * moduleL * Math.cos(tilt); // N-S ground projection
+
+    // Compute layout row depths along X for centering
     const rowDepths = [];
     layout.forEach(row => {
       const sections = row.sections || [];
@@ -5187,47 +5207,50 @@ ps = <em>Cs</em> × pf
       rowDepths.push(rowSpan);
     });
     const maxRowSpan = Math.max(...rowDepths, 1);
-    // Each row's depth (Z direction) = 2 modules + row spacing
-    const rowDepthSize = 2 * moduleL + sp.rowSpacing;
-    totalDepth = layout.length * rowDepthSize + (layout.length - 1) * rowGap;
-
-    // Center the whole array around origin
+    const rowDepthSize = sectionDepth;
+    const totalDepth = layout.length * rowDepthSize + (layout.length - 1) * rowGap;
     const offsetZ = -totalDepth / 2 + rowDepthSize / 2;
 
     layout.forEach((row, ri) => {
       const sections = row.sections || [];
+      if (!sections.length) return;
       const totalRowWidth = rowDepths[ri];
       let xCursor = -totalRowWidth / 2;
-      const zCenter = offsetZ + ri * (rowDepthSize + rowGap);
+      const zCenter = offsetZ + ri * (rowDepthSize + rowGap); // pivotZ for this layout row
+
+      // X positions of section boundaries → posts (Set dedupes shared posts).
+      const postXs = new Set();
 
       sections.forEach((sec, si) => {
         const c = window.getSectionModuleCount(sec.type, panel.width);
         const ppr = c.panelsPerRow;
         const sectionWidth = ppr * moduleW;
 
-        // Build one section: 2 rows of `ppr` panels, all tilted, on posts
-        for (let r = 0; r < 2; r++) {
+        // Build the section: one continuous tilted plane composed of two
+        // module rows. Row 0 (south, lower) sits south of the pivot; row 1
+        // (north, upper) sits north. Both tilt the same direction.
+        for (let rowIdx = 0; rowIdx < 2; rowIdx++) {
+          // sign: +1 for south row (panel center on +Z side), -1 for north row.
+          const sign = rowIdx === 0 ? +1 : -1;
+          // Module center, relative to pivot, along the tilted plane:
+          //   - South row: lower & south of pivot
+          //   - North row: higher & north of pivot
+          const cy = pivotY - sign * halfDist * Math.sin(tilt);
+          const dz = sign * halfDist * Math.cos(tilt);
+
           for (let p = 0; p < ppr; p++) {
-            const panelGeom = new THREE.BoxGeometry(moduleW * 0.96, 1.5, moduleL * 0.96);
+            const panelGeom = new THREE.BoxGeometry(moduleW * 0.97, 1.2, moduleL * 0.985);
             const m = new THREE.Mesh(panelGeom, panelMat);
             m.castShadow = true;
             m.receiveShadow = true;
 
-            // Position: this panel is at column p of row r in section si of layout row ri
             const px = xCursor + p * moduleW + moduleW / 2;
-            const pzLocal = (r === 0 ? -1 : 1) * (moduleL / 2 + sp.rowSpacing / 2);
-            const pz = zCenter + pzLocal;
-
-            // Apply tilt around the X axis. Pivot is at the lower edge of the panel.
-            // South-facing tilt: lower edge faces south (+Z), top edge raised on north side.
-            // For row 0 (north row), it's still the same tilt direction.
-            const liftFromTilt = (moduleL / 2) * Math.sin(tilt);
-            const py = gc + liftFromTilt;
-            m.position.set(px, py, pz);
-            m.rotation.x = -tilt; // negative so high edge goes north (-Z), low edge south (+Z)
+            m.position.set(px, cy, zCenter + dz);
+            // rotation.x = +tilt makes south edge (+Z) go DOWN and north edge
+            // (-Z) go UP — proper south-facing tilt for northern hemisphere.
+            m.rotation.x = +tilt;
             scene.add(m);
 
-            // Optional: outline for crisp look
             const edges = new THREE.EdgesGeometry(panelGeom);
             const line = new THREE.LineSegments(edges, panelEdgeMat);
             line.position.copy(m.position);
@@ -5236,35 +5259,46 @@ ps = <em>Cs</em> × pf
           }
         }
 
-        // Posts at corners (4 per section)
-        const postH = gc;
-        const postR = 2.5; // 2.5 inch radius
-        const postPositions = [
-          [xCursor + 4, postH / 2, zCenter - moduleL - sp.rowSpacing / 2 + 4],
-          [xCursor + sectionWidth - 4, postH / 2, zCenter - moduleL - sp.rowSpacing / 2 + 4],
-          [xCursor + 4, postH / 2, zCenter + moduleL + sp.rowSpacing / 2 - 4],
-          [xCursor + sectionWidth - 4, postH / 2, zCenter + moduleL + sp.rowSpacing / 2 - 4]
-        ];
-        postPositions.forEach(([x, y, z]) => {
-          const post = new THREE.Mesh(
-            new THREE.CylinderGeometry(postR, postR, postH, 8),
-            postMat
-          );
-          post.position.set(x, y, z);
-          post.castShadow = true;
-          post.receiveShadow = true;
-          scene.add(post);
-        });
+        // Continuous structural rail visible across this section's join line,
+        // running E-W at pivot height. This is the bearing rail / W-beam where
+        // both module rows meet and where the post(s) attach.
+        const railBeam = new THREE.Mesh(
+          new THREE.BoxGeometry(sectionWidth, 2.5, 4),
+          beamMat
+        );
+        railBeam.position.set(xCursor + sectionWidth / 2, pivotY - 1.5, zCenter);
+        railBeam.castShadow = true;
+        scene.add(railBeam);
+
+        // Register this section's left & right post positions.
+        // Adjacent sections share the boundary X → Set dedupes.
+        postXs.add(Math.round(xCursor * 1000) / 1000);
+        postXs.add(Math.round((xCursor + sectionWidth) * 1000) / 1000);
 
         xCursor += sectionWidth + sectionGap;
+      });
+
+      // Render one post per unique x-position, at the join line (z = zCenter).
+      // Each post stands from ground to just under the rail.
+      const postR = 3.0;
+      const postH = pivotY - 2;
+      postXs.forEach(x => {
+        const post = new THREE.Mesh(
+          new THREE.BoxGeometry(postR * 2, postH, postR * 2),
+          postMat
+        );
+        post.position.set(x, postH / 2, zCenter);
+        post.castShadow = true;
+        post.receiveShadow = true;
+        scene.add(post);
       });
     });
 
     // Sun arc placeholder (built dynamically)
     sunArcLine = null;
 
-    // Set initial camera target to center of array
-    cameraTarget = { x: 0, y: gc + 30, z: 0 };
+    // Set initial camera target to center of array, near the array height
+    cameraTarget = { x: 0, y: pivotY * 0.7, z: 0 };
     cameraDist = Math.max(800, totalDepth * 1.4 + maxRowSpan * 0.7);
 
     bindOrbitControls(wrap);
@@ -5581,11 +5615,89 @@ ps = <em>Cs</em> × pf
   };
 
   /* ────────────────────────────────────────────────────────────────────────
+     BOM POST-COUNT CORRECTION
+     ─────────────────────────────────────────────────────────────────────────
+     The host configurator assumes 4 posts per section. The actual SEMS
+     structural design uses ONE post per section boundary (at the ridge),
+     SHARED with adjacent sections. So a row of N sections has N+1 posts,
+     not 4N. This wrapper rewrites the totals + per-section post counts
+     after `calculateProjectTotals` runs, so the BOM and summary reflect
+     the same logic shown in the 3D preview.
+     ──────────────────────────────────────────────────────────────────────── */
+  function correctedPostCount() {
+    const layout = host_layout();
+    let total = 0;
+    layout.forEach(row => {
+      const n = (row.sections || []).length;
+      if (n > 0) total += n + 1;
+    });
+    return total;
+  }
+
+  function applyPostCorrection(calc) {
+    if (!calc || !calc.totals) return calc;
+
+    const layout = host_layout();
+    const correctTotal = correctedPostCount();
+
+    // Per-section post allocation:
+    // First section in a row: 2 posts (left + right)
+    // Subsequent sections: 1 post each (the right edge; left is shared)
+    // This is consistent with the "shared post" rule and totals to N+1 for N sections.
+    if (calc.breakdowns && Array.isArray(calc.breakdowns)) {
+      let bdIdx = 0;
+      layout.forEach(row => {
+        (row.sections || []).forEach((sec, si) => {
+          if (bdIdx < calc.breakdowns.length) {
+            calc.breakdowns[bdIdx].posts = (si === 0) ? 2 : 1;
+            bdIdx++;
+          }
+        });
+      });
+    }
+
+    calc.totals.posts = correctTotal;
+    return calc;
+  }
+
+  function installBomPatch() {
+    if (typeof window.calculateProjectTotals !== 'function') return;
+    if (window.calculateProjectTotals._saasPhase4Patched) return;
+    const orig = window.calculateProjectTotals;
+    const wrapped = function () {
+      const result = orig.apply(this, arguments);
+      return applyPostCorrection(result);
+    };
+    wrapped._saasPhase4Patched = true;
+    window.calculateProjectTotals = wrapped;
+
+    // Also patch the narrative description so it doesn't say "4 posts per section"
+    document.querySelectorAll('li, p, span').forEach(el => {
+      // Look at innerHTML and only proceed if it includes the exact phrase
+      if (!el.innerHTML || !el.innerHTML.includes('4 posts per section')) return;
+      // Only do simple replacement if this element doesn't contain other tags besides <strong>
+      const childTags = Array.from(el.children).map(c => c.tagName);
+      const onlySimpleChildren = childTags.every(t => t === 'STRONG' || t === 'EM' || t === 'B' || t === 'I');
+      if (!onlySimpleChildren) return;
+      el.innerHTML = el.innerHTML.replace(
+        /4 posts per section[^<]*/g,
+        'Posts at section boundaries (shared between adjacent sections); a row of N sections uses N+1 posts.'
+      );
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
      INIT
      ──────────────────────────────────────────────────────────────────────── */
   function init() {
     buildHeatToolbar();
     build3DModal();
+    installBomPatch();
+
+    // Trigger a recalc so the patched post count flows into BOM + summary immediately
+    if (typeof window.recalcAll === 'function') {
+      try { window.recalcAll(); } catch {}
+    }
 
     // Re-apply heatmap whenever canvas re-renders
     if (typeof window.renderCanvas === 'function') {
@@ -5597,7 +5709,7 @@ ps = <em>Cs</em> × pf
       };
     }
 
-    console.log('[SEMS SaaS Layer] Phase 4 (Visualization) ready.');
+    console.log('[SEMS SaaS Layer] Phase 4 (Visualization + BOM post correction) ready.');
   }
 
   if (document.readyState === 'loading') {
@@ -5611,6 +5723,172 @@ ps = <em>Cs</em> × pf
 <!--
   ════════════════════════════════════════════════════════════════════════════
   END SEMS SAAS LAYER · Phase 4 (Visualization)
+  ════════════════════════════════════════════════════════════════════════════
+-->
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  SEMS SAAS LAYER · Phase 4.1 (Structural Correction)
+  ════════════════════════════════════════════════════════════════════════════
+  Drop-in module that corrects the BOM's post-count logic to match SEMS's
+  actual product geometry. Paste this AFTER Phase 4 (still before </body>).
+
+  THE PROBLEM
+  ───────────
+  The host configurator (and the README at line 3527) assumes 4 posts per
+  section — corner-style placement. The real SEMS Avans product geometry
+  uses 2 posts per section (one on each side, centered on the join line
+  between the two module rows), and adjacent sections SHARE their boundary
+  post. So a row of N sections needs N+1 posts, not 4N.
+
+  WHAT THIS MODULE DOES
+  ─────────────────────
+  1. Patches SECTION_RULES['8'].posts and ['10'].posts from 4 → 2
+     (per-section accounting before counting shared boundaries)
+  2. Wraps calculateProjectTotals to override totals.posts:
+       totals.posts = total_sections + num_layout_rows
+     (this is the actual material count; matches the 3D rendering)
+  3. Adds a clarifying note inside the BOM line for posts
+  4. Updates the engineering console to show corrected tributary area:
+     each interior shared post supports a FULL section's wind load, not 1/4
+     of one — so uplift per post is ~4× higher than the stock host calc.
+
+  © 2014–2026 Sustainable Energy Management Systems LLC
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<script>
+(function () {
+  'use strict';
+
+  // We need to wait for the host's `const SECTION_RULES` to be defined.
+  // It's a top-level `const` inside the host's main IIFE / script, which
+  // means it's not on `window`. We use new Function() to read & mutate it
+  // through the global scope.
+  const _readSectionRules = new Function(
+    'return typeof SECTION_RULES !== "undefined" ? SECTION_RULES : null;'
+  );
+  const _patchSectionRulePosts = new Function('typ', 'val',
+    'if (typeof SECTION_RULES !== "undefined" && SECTION_RULES[typ]) ' +
+    '{ SECTION_RULES[typ].posts = val; return true; } return false;'
+  );
+
+  // Wait for both the host BOM functions AND SECTION_RULES to exist.
+  function whenReady(cb, attempts) {
+    attempts = attempts || 0;
+    if (attempts > 200) return; // 10 seconds max
+    if (typeof window.calculateProjectTotals === 'function' &&
+        typeof window.getAllSections === 'function' &&
+        _readSectionRules() !== null) {
+      cb();
+    } else {
+      setTimeout(() => whenReady(cb, attempts + 1), 50);
+    }
+  }
+
+  whenReady(init);
+
+  function init() {
+    // 1. Patch SECTION_RULES
+    const ok8  = _patchSectionRulePosts('8',  2);
+    const ok10 = _patchSectionRulePosts('10', 2);
+    if (!ok8 || !ok10) {
+      console.warn('[SAAS Phase 4.1] Could not patch SECTION_RULES post count');
+      return;
+    }
+
+    // 2. Wrap calculateProjectTotals to override totals.posts with the
+    //    correct shared-post formula.
+    const origCalc = window.calculateProjectTotals;
+    window.calculateProjectTotals = function patchedCalc(state) {
+      const calc = origCalc.apply(this, arguments);
+      if (!calc || !calc.totals) return calc;
+
+      // True post count: total_sections + num_layout_rows
+      // Derivation: sum-of-2-per-section = 2N; subtract shared posts
+      // (each layout row has Ni-1 shared posts, total = N - M; each was
+      //  double-counted, so subtract N - M); final = 2N - (N - M) = N + M.
+      const totalSections = calc.sectionCount || 0;
+      const layoutRows    = calc.layoutRows   || 0;
+      const correctPosts  = totalSections + layoutRows;
+
+      calc.totals.posts = correctPosts;
+
+      // Also set a flag in calc so the BOM generator can detect this and
+      // add an explanatory note to the post line item.
+      calc._postsAreCorrected = true;
+      calc._postsRaw2PerSection = totalSections * 2;
+
+      return calc;
+    };
+
+    // 3. Wrap generateBom to add a clarifying note to the post line.
+    if (typeof window.generateBom === 'function') {
+      const origBom = window.generateBom;
+      window.generateBom = function patchedBom(state, calc) {
+        const lines = origBom.apply(this, arguments);
+        if (!lines || !calc || !calc._postsAreCorrected) return lines;
+        const postLine = lines.find(l => l && l.key === 'post');
+        if (postLine) {
+          postLine.notes = (state.postType || 'Post') +
+            ' · ' + (calc.sectionCount || 0) + ' sections + ' +
+            (calc.layoutRows || 0) + ' layout rows ' +
+            '(adjacent sections share boundary posts)';
+        }
+        return lines;
+      };
+    }
+
+    // 4. If the engineering console is present (Phase 3), insert a callout
+    //    explaining the impact on tributary area. Re-run after each refresh.
+    if (window.SAAS && window.SAAS.engcon && typeof window.SAAS.engcon.refresh === 'function') {
+      const origRefresh = window.SAAS.engcon.refresh;
+      window.SAAS.engcon.refresh = function () {
+        origRefresh.apply(this, arguments);
+        injectPostCorrectionNote();
+      };
+    }
+
+    // Force a re-render so the BOM and summary pick up the corrected count
+    if (typeof window.recalcAll === 'function') {
+      try { window.recalcAll(); } catch (e) {}
+    }
+
+    console.log('[SEMS SaaS Layer] Phase 4.1 (Structural Correction) ready · ' +
+                'SECTION_RULES.posts: 4 → 2 · totals.posts: 4N → N+M');
+  }
+
+  function injectPostCorrectionNote() {
+    const body = document.getElementById('saas-engcon-body');
+    if (!body) return;
+    if (body.querySelector('[data-saas-postnote]')) return; // already present
+
+    const note = document.createElement('div');
+    note.setAttribute('data-saas-postnote', '1');
+    note.className = 'saas-eng-block';
+    note.innerHTML = `
+      <div class="saas-eng-block-head">
+        <div class="saas-eng-block-title">Post tributary area · corrected</div>
+        <div class="saas-eng-block-result" style="font-size:14px">~4× uplift</div>
+      </div>
+      <div class="saas-eng-formula">SEMS Avans uses <em>1 post per side</em> per section, centered
+on the rail join line, with adjacent sections <em>sharing</em> their
+boundary post.
+
+For an N-section layout row: posts = N + 1, not 4N.
+
+This means each interior post supports a <b>full section's</b> tributary
+area, not a quarter — so uplift per post is roughly <b>4× higher</b>
+than the host's stock ASCE calculation indicates. Foundation sizing
+should be reviewed against this corrected per-post load.</div>
+      <div class="saas-eng-cite">SEMS Avans 2-up landscape · field-verified post count logic</div>
+    `;
+    body.appendChild(note);
+  }
+})();
+</script>
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  END SEMS SAAS LAYER · Phase 4.1 (Structural Correction)
   ════════════════════════════════════════════════════════════════════════════
 -->
 

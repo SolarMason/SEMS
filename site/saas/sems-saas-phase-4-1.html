@@ -1,0 +1,165 @@
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  SEMS SAAS LAYER · Phase 4.1 (Structural Correction)
+  ════════════════════════════════════════════════════════════════════════════
+  Drop-in module that corrects the BOM's post-count logic to match SEMS's
+  actual product geometry. Paste this AFTER Phase 4 (still before </body>).
+
+  THE PROBLEM
+  ───────────
+  The host configurator (and the README at line 3527) assumes 4 posts per
+  section — corner-style placement. The real SEMS Avans product geometry
+  uses 2 posts per section (one on each side, centered on the join line
+  between the two module rows), and adjacent sections SHARE their boundary
+  post. So a row of N sections needs N+1 posts, not 4N.
+
+  WHAT THIS MODULE DOES
+  ─────────────────────
+  1. Patches SECTION_RULES['8'].posts and ['10'].posts from 4 → 2
+     (per-section accounting before counting shared boundaries)
+  2. Wraps calculateProjectTotals to override totals.posts:
+       totals.posts = total_sections + num_layout_rows
+     (this is the actual material count; matches the 3D rendering)
+  3. Adds a clarifying note inside the BOM line for posts
+  4. Updates the engineering console to show corrected tributary area:
+     each interior shared post supports a FULL section's wind load, not 1/4
+     of one — so uplift per post is ~4× higher than the stock host calc.
+
+  © 2014–2026 Sustainable Energy Management Systems LLC
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<script>
+(function () {
+  'use strict';
+
+  // We need to wait for the host's `const SECTION_RULES` to be defined.
+  // It's a top-level `const` inside the host's main IIFE / script, which
+  // means it's not on `window`. We use new Function() to read & mutate it
+  // through the global scope.
+  const _readSectionRules = new Function(
+    'return typeof SECTION_RULES !== "undefined" ? SECTION_RULES : null;'
+  );
+  const _patchSectionRulePosts = new Function('typ', 'val',
+    'if (typeof SECTION_RULES !== "undefined" && SECTION_RULES[typ]) ' +
+    '{ SECTION_RULES[typ].posts = val; return true; } return false;'
+  );
+
+  // Wait for both the host BOM functions AND SECTION_RULES to exist.
+  function whenReady(cb, attempts) {
+    attempts = attempts || 0;
+    if (attempts > 200) return; // 10 seconds max
+    if (typeof window.calculateProjectTotals === 'function' &&
+        typeof window.getAllSections === 'function' &&
+        _readSectionRules() !== null) {
+      cb();
+    } else {
+      setTimeout(() => whenReady(cb, attempts + 1), 50);
+    }
+  }
+
+  whenReady(init);
+
+  function init() {
+    // 1. Patch SECTION_RULES
+    const ok8  = _patchSectionRulePosts('8',  2);
+    const ok10 = _patchSectionRulePosts('10', 2);
+    if (!ok8 || !ok10) {
+      console.warn('[SAAS Phase 4.1] Could not patch SECTION_RULES post count');
+      return;
+    }
+
+    // 2. Wrap calculateProjectTotals to override totals.posts with the
+    //    correct shared-post formula.
+    const origCalc = window.calculateProjectTotals;
+    window.calculateProjectTotals = function patchedCalc(state) {
+      const calc = origCalc.apply(this, arguments);
+      if (!calc || !calc.totals) return calc;
+
+      // True post count: total_sections + num_layout_rows
+      // Derivation: sum-of-2-per-section = 2N; subtract shared posts
+      // (each layout row has Ni-1 shared posts, total = N - M; each was
+      //  double-counted, so subtract N - M); final = 2N - (N - M) = N + M.
+      const totalSections = calc.sectionCount || 0;
+      const layoutRows    = calc.layoutRows   || 0;
+      const correctPosts  = totalSections + layoutRows;
+
+      calc.totals.posts = correctPosts;
+
+      // Also set a flag in calc so the BOM generator can detect this and
+      // add an explanatory note to the post line item.
+      calc._postsAreCorrected = true;
+      calc._postsRaw2PerSection = totalSections * 2;
+
+      return calc;
+    };
+
+    // 3. Wrap generateBom to add a clarifying note to the post line.
+    if (typeof window.generateBom === 'function') {
+      const origBom = window.generateBom;
+      window.generateBom = function patchedBom(state, calc) {
+        const lines = origBom.apply(this, arguments);
+        if (!lines || !calc || !calc._postsAreCorrected) return lines;
+        const postLine = lines.find(l => l && l.key === 'post');
+        if (postLine) {
+          postLine.notes = (state.postType || 'Post') +
+            ' · ' + (calc.sectionCount || 0) + ' sections + ' +
+            (calc.layoutRows || 0) + ' layout rows ' +
+            '(adjacent sections share boundary posts)';
+        }
+        return lines;
+      };
+    }
+
+    // 4. If the engineering console is present (Phase 3), insert a callout
+    //    explaining the impact on tributary area. Re-run after each refresh.
+    if (window.SAAS && window.SAAS.engcon && typeof window.SAAS.engcon.refresh === 'function') {
+      const origRefresh = window.SAAS.engcon.refresh;
+      window.SAAS.engcon.refresh = function () {
+        origRefresh.apply(this, arguments);
+        injectPostCorrectionNote();
+      };
+    }
+
+    // Force a re-render so the BOM and summary pick up the corrected count
+    if (typeof window.recalcAll === 'function') {
+      try { window.recalcAll(); } catch (e) {}
+    }
+
+    console.log('[SEMS SaaS Layer] Phase 4.1 (Structural Correction) ready · ' +
+                'SECTION_RULES.posts: 4 → 2 · totals.posts: 4N → N+M');
+  }
+
+  function injectPostCorrectionNote() {
+    const body = document.getElementById('saas-engcon-body');
+    if (!body) return;
+    if (body.querySelector('[data-saas-postnote]')) return; // already present
+
+    const note = document.createElement('div');
+    note.setAttribute('data-saas-postnote', '1');
+    note.className = 'saas-eng-block';
+    note.innerHTML = `
+      <div class="saas-eng-block-head">
+        <div class="saas-eng-block-title">Post tributary area · corrected</div>
+        <div class="saas-eng-block-result" style="font-size:14px">~4× uplift</div>
+      </div>
+      <div class="saas-eng-formula">SEMS Avans uses <em>1 post per side</em> per section, centered
+on the rail join line, with adjacent sections <em>sharing</em> their
+boundary post.
+
+For an N-section layout row: posts = N + 1, not 4N.
+
+This means each interior post supports a <b>full section's</b> tributary
+area, not a quarter — so uplift per post is roughly <b>4× higher</b>
+than the host's stock ASCE calculation indicates. Foundation sizing
+should be reviewed against this corrected per-post load.</div>
+      <div class="saas-eng-cite">SEMS Avans 2-up landscape · field-verified post count logic</div>
+    `;
+    body.appendChild(note);
+  }
+})();
+</script>
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  END SEMS SAAS LAYER · Phase 4.1 (Structural Correction)
+  ════════════════════════════════════════════════════════════════════════════
+-->

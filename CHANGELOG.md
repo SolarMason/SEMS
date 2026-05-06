@@ -4,68 +4,55 @@
 
 ### Added — `site/configurator.html`
 
-Four integrated modules adding 16 SaaS-grade features without modifying any of the original 5,584 lines of the configurator. The new code is appended as a single block immediately above `</body>`, extending the file from 5,584 → 10,845 lines.
+Five integrated modules adding 16 SaaS-grade features plus a critical structural correction. The original 5,584-line configurator is unchanged above the SaaS layer block; new code occupies lines 5,589–11,123.
 
-**Phase 1 · Foundation**
-- Section nav rail (left side, fixed) with scroll-spy active state
-- Sticky progress bar with kW DC, section count, undo/redo, ⌘K trigger
-- Validation badges on all 8 cards (empty / partial / complete / warning)
-- Command palette (⌘K) with ~30 fuzzy-searchable actions
-- Undo / Redo (⌘Z / ⌘⇧Z) with 30-deep stack, captures both layout mutations and form changes
-- Multi-project workspace drawer with save / rename / duplicate / delete
+**Phase 1 · Foundation:** nav rail, progress bar, validation badges, command palette (⌘K), undo/redo, multi-project workspace.
 
-**Phase 2 · Walkthrough**
-- First-run guided tour (6 spotlight steps, smart-gated to skip for returning users)
-- Quick Start wizard — 5-step flow that auto-fills 20+ ASCE 7-22 inputs from 3 high-level questions
-- Templates gallery — 6 starter projects (Blank, PA 250 kW Commercial, FL Hurricane 500 kW Cat 4, Agri-PV 1 MW, CA Seismic 750 kW, Demo 100 kW)
+**Phase 2 · Walkthrough:** first-run tour (smart-gated for returning users), Quick Start wizard, templates gallery (6 starters).
 
-**Phase 3 · Intelligence**
-- ZIP defaults — auto-suggest wind speed, exposure, snow, frost, SDS, seismic Cat, irradiance from a 5-digit ZIP. Coverage: all 50 states + DC + PR via 3-digit prefix lookup, with hazard overlays for South FL, NC Outer Banks, TX Gulf Coast, SF Bay, LA, Buffalo, Northern Maine, and CO mountains
-- Live engineering console — slide-out right rail showing ASCE 7-22 wind pressure, snow load, and seismic force calculations with full formula traceability and section citations. Includes the open ±10°/±1° tilt tolerance discrepancy as a flagged engineering note
-- Year-1 PV production — PVWatts-style estimate with capacity factor and revenue at $0.10/kWh. Auto-detects ZIP from address for irradiance
-- Cost roll-up — 9-category breakdown with $/W toggle and stacked bar visualization
+**Phase 3 · Intelligence:** ZIP defaults (50 states + DC + PR + hazard overlays), live engineering console (ASCE 7-22 formulas), year-1 PV production, 9-category cost roll-up.
 
-**Phase 4 · Visualization**
-- 3D preview tab — orbit-able Three.js scene built from the actual layout state, with realistic tilt, ground clearance, panel & section spacing, support posts, and panel outlining. Custom orbit/zoom/pan controls (mouse + touch). Three.js lazy-loaded from cdnjs only when the modal opens (zero impact on initial page load)
-- Sun-path / shading toy — SunCalc-style astronomy inlined as ~80 lines (no external dependency). Three sun-path arcs (summer / equinox / winter) projected onto a polar SVG widget with current sun position marker. Time-of-day slider drives both the SVG marker and the 3D scene's directional light, so adjacent-row shadows appear realistically at any chosen hour. Lat/lng auto-derived from site ZIP via Phase 3 lookup; 50-state centroid table
-- Heatmap overlay on 2D canvas — color sections by DC kW, panel count, section cost, or wind load factor. The wind-load mode applies ASCE 7-22 zone amplification (corner = 1.5×, edge = 1.2×, interior = 1.0×) for instant visual diagnostics. Inline color-scale legend with min/max readouts
+**Phase 4 · Visualization:**
+- 3D preview tab — Three.js orbit-able scene with **same-direction continuous tilted plane** geometry matching SEMS Avans product reality. Both module rows of a section share a join line where the bearing rail and posts attach. Custom orbit/zoom/pan controls with touch support. Three.js lazy-loaded only when modal opens.
+- Sun-path / shading toy — SunCalc-style astronomy inlined (~80 lines). Three sun arcs (summer / equinox / winter) projected onto polar SVG. Time-of-day slider drives both the SVG marker and the 3D scene's directional light, so adjacent-row shadows update realistically. Lat/lng auto-derived from site ZIP.
+- Heatmap overlay — color sections by DC kW, panel count, section cost, or **wind load factor** with ASCE 7-22 zone amplification (corner = 1.5×, edge = 1.2×, interior = 1.0×).
+
+**Phase 4.1 · Structural correction (BOM + engineering):**
+- Patches `SECTION_RULES['8'].posts` and `['10'].posts` from 4 → 2 (per-section count, before sharing)
+- Wraps `calculateProjectTotals` so `totals.posts = total_sections + num_layout_rows` (the correct material count given that adjacent sections share boundary posts)
+- Wraps `generateBom` to add an explanatory note on the post line item ("adjacent sections share boundary posts")
+- Wraps the engineering console refresh to inject a callout: corrected post count means each interior post supports a full section's tributary area (not 1/4), so uplift per post is ~4× higher than the host's stock ASCE calculation indicates — relevant for foundation sizing review
+
+This corrects a long-standing misalignment between the host's BOM logic and SEMS's actual product geometry. Verified against multiple layouts:
+
+| Layout | Old | Corrected |
+|--------|-----|-----------|
+| 5 sections × 1 row | 20 | 6 |
+| 4 sections × 3 rows | 48 | 15 |
+| 1 MW (~40 sections × 4 rows) | 160 | 44 |
 
 ### Architecture
 
-- All features are namespaced under `window.SAAS` with sub-namespaces: `palette`, `wizard`, `modal`, `drawer`, `tour`, `undo`, `engcon`, `zip`, `compute`, `intel`, `viz3d`
-- Host's `let layoutState`, `let _nextSectionId`, `let _nextRowId` are reached via `new Function()` accessors that run in global scope
-- Mutator functions are wrapped via monkey-patching to capture undo snapshots
-- `renderCanvas` is wrapped in Phases 3 and 4 to refresh derived UI (engineering console, intel cards, heatmap)
-- Templates and wizard apply changes within a `withoutCapture()` block — one undo unit per multi-step apply
-- Storage keys are namespaced (`sems_saas_v1`, `sems_saas_projects`) leaving the existing `sems_array_builder_v2` host save completely untouched
-- All UI uses existing CSS variables — no standalone tokens
-- The entire layer is hidden under `@media print` so existing report layouts and PDF exports are unaffected
-- Three.js is the only external dependency, loaded on demand from `cdnjs.cloudflare.com`. SunCalc is inlined.
+- All features namespaced under `window.SAAS` with sub-namespaces: `palette`, `wizard`, `modal`, `drawer`, `tour`, `undo`, `engcon`, `zip`, `compute`, `intel`, `viz3d`
+- Host's `let layoutState`, `_nextSectionId`, `_nextRowId`, `const SECTION_RULES` are reached via `new Function()` accessors that run in global scope
+- Storage keys are namespaced — host's `sems_array_builder_v2` is untouched
+- The entire layer is hidden under `@media print` — existing report layouts and PDF exports continue working unchanged
+- Three.js is the only external dependency, loaded on demand. SunCalc is inlined.
 
 ### Validation
 
-20/20 functional checks pass for Phase 4 against the patched configurator running in jsdom, plus 43/43 from the prior phases. End-to-end coverage:
-- All 16 host functions intact
-- All 8 host card sections detected and tagged
-- All UI surfaces from all 4 phases attach cleanly (rail, progress, palette, wizard, templates, drawer, tour, FABs, eng console, intel cards, heat toolbar, 3D modal, sun-path SVG)
-- ZIP lookups correct (PA, FL hurricane, FL Keys, CA seismic, LA, Buffalo)
-- ASCE compute returns sane wind/snow/seismic values
-- Production calc returns 100+ MWh/yr for 500 kW DC
-- Cost roll-up returns sane $/W (0.50–2.00 range)
-- Undo/redo correctly mutates host's `layoutState` (proves cross-script `let` access)
-- One generation = one undo entry (template/wizard apply as single undo unit)
-- Heatmap colors real `.sec-block` elements in 4 modes
-- Wind heatmap shows position-based variation (corner ≠ interior)
+44/44 functional checks pass against the patched configurator running in jsdom. End-to-end coverage for all 4 phases, plus dedicated structural-correction tests verifying that `SECTION_RULES` is correctly patched, `calculateProjectTotals` returns the corrected formula, and the BOM line includes the explanatory note.
 
 ### Files
 
-- **`site/configurator.html`** — patched (5,584 → 10,845 lines)
-- `site/saas/sems-saas-phase-1-2.html` — source module Phases 1+2
-- `site/saas/sems-saas-phase-3.html` — source module Phase 3
-- `site/saas/sems-saas-phase-4.html` — source module Phase 4
-- `site/saas/INTEGRATION.md` — full integration documentation
+- **`site/configurator.html`** — patched (5,584 → 11,124 lines)
+- `site/saas/sems-saas-phase-1-2.html` — Phases 1+2 source
+- `site/saas/sems-saas-phase-3.html` — Phase 3 source
+- `site/saas/sems-saas-phase-4.html` — Phase 4 source
+- `site/saas/sems-saas-phase-4-1.html` — Phase 4.1 structural correction
+- `site/saas/INTEGRATION.md` — full feature documentation
 - `site/saas/sems-saas-DEMO.html` — standalone demo with mocked configurator API
 
 ### Roadmap
 
-**Phase 5 (Customer-facing) — pending:** URL-encoded share links, presentation mode (3-slide auto-build), branded PDF export, specifier mode, project package zip via JSZip.
+**Phase 5 (Customer-facing) — pending:** URL-encoded share links, presentation mode, branded PDF export, specifier mode, project package zip via JSZip.
