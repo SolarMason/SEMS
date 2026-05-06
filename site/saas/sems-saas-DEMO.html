@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>SAAS Layer Test Harness</title>
+<title>SEMS SaaS Layer · Demo (All 4 Phases)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <style>
 :root {
@@ -4168,6 +4168,1449 @@ ps = <em>Cs</em> × pf
 <!--
   ════════════════════════════════════════════════════════════════════════════
   END SEMS SAAS LAYER · Phase 3 (Intelligence)
+  ════════════════════════════════════════════════════════════════════════════
+-->
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  SEMS SAAS LAYER · Phase 4 (Visualization)
+  ════════════════════════════════════════════════════════════════════════════
+  Drop-in module that extends Phases 1+2 and 3. Paste this entire block
+  immediately AFTER both prior layers (still before </body>).
+
+  WHAT YOU GET
+  ────────────
+  14. 3D preview tab · isometric Three.js render of the array using
+      actual tilt, ground clearance, panel & section spacing. Orbit, zoom,
+      pan. Toggles for shadows, sun arc, season.
+  15. Sun-path / shading toy · suncalc-style astronomy, fully client-side.
+      Solstice + equinox arcs, time-of-day slider, sun position (azimuth /
+      altitude) live readout. Drives the 3D scene's directional light so
+      shadows show realistic adjacent-row shading at any date/time.
+  16. Heatmap overlay on the 2D canvas · color sections by DC kW, panel
+      count, section cost, or wind load (with edge-effect amplification).
+      Inline color scale legend.
+
+  Three.js is lazy-loaded from cdnjs only when the 3D modal opens, so initial
+  page load is unaffected. SunCalc is inlined (~80 lines of astronomy).
+
+  © 2014–2026 Sustainable Energy Management Systems LLC
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<style>
+/* ══════════ HEATMAP TOOLBAR (injected into builder card head) ══════════ */
+.saas-heat-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  flex-wrap: wrap;
+}
+.saas-heat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-500, #5A6578);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.saas-heat-select {
+  background: var(--white, #EBEEF2);
+  border: 1px solid var(--gray-200, #C8D0DC);
+  color: var(--gray-700, #353B44);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+.saas-heat-select:hover { border-color: var(--blue-300, #7EC8E8); }
+.saas-heat-select:focus { outline: none; border-color: var(--blue-500, #3B8FDB); box-shadow: 0 0 0 3px rgba(59, 143, 219, 0.15); }
+.saas-heat-3dbtn {
+  background: var(--blue-700, #2660A4);
+  border: none;
+  color: white;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+.saas-heat-3dbtn:hover { background: var(--blue-900, #1B3A5C); transform: translateY(-1px); }
+.saas-heat-3dbtn::before { content: '⊡'; font-size: 14px; line-height: 0; }
+
+/* heatmap legend bar */
+.saas-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  font-weight: 600;
+}
+.saas-heat-legend-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  max-width: 320px;
+}
+.saas-heat-legend-min, .saas-heat-legend-max {
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-700, #353B44);
+}
+.saas-heat-legend-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--gray-400, #8892A4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+
+/* ══════════ 3D MODAL ══════════ */
+.saas-3d-modal {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #0a1828 0%, #1B3A5C 100%);
+  z-index: 10001;
+  display: none;
+  flex-direction: column;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-3d-modal.show { display: flex; animation: saas-fade-in 0.22s ease; }
+
+.saas-3d-head {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(10, 24, 40, 0.85);
+  backdrop-filter: blur(12px) saturate(1.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.saas-3d-back {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+}
+.saas-3d-back:hover { background: rgba(255, 255, 255, 0.14); transform: translateX(-2px); }
+.saas-3d-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.01em;
+}
+.saas-3d-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  margin-top: 2px;
+}
+.saas-3d-spacer { flex: 1; }
+.saas-3d-stats {
+  display: flex;
+  gap: 14px;
+}
+.saas-3d-stat {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+.saas-3d-stat strong { color: white; font-weight: 800; }
+
+.saas-3d-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  overflow: hidden;
+}
+@media (max-width: 880px) {
+  .saas-3d-body { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  .saas-3d-side { max-height: 50vh; }
+}
+
+.saas-3d-canvas-wrap {
+  position: relative;
+  background: radial-gradient(ellipse at center, #2a3f5c 0%, #0a1828 100%);
+  overflow: hidden;
+}
+.saas-3d-canvas-wrap canvas { display: block; cursor: grab; }
+.saas-3d-canvas-wrap canvas:active { cursor: grabbing; }
+
+.saas-3d-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  z-index: 2;
+}
+.saas-3d-loading-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue-400, #5BBCE4);
+  margin: 0 3px;
+  animation: saas-3d-bounce 1.2s ease-in-out infinite;
+}
+.saas-3d-loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.saas-3d-loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes saas-3d-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-6px); opacity: 1; }
+}
+
+.saas-3d-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 40px;
+  line-height: 1.6;
+}
+.saas-3d-empty strong { color: white; font-size: 18px; display: block; margin-bottom: 8px; letter-spacing: -0.01em; }
+
+.saas-3d-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  display: flex;
+  gap: 12px;
+}
+.saas-3d-hint span { display: inline-flex; align-items: center; gap: 5px; }
+
+/* ══════════ 3D SIDE PANEL ══════════ */
+.saas-3d-side {
+  background: rgba(10, 24, 40, 0.92);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-y: auto;
+  padding: 18px 18px 28px;
+  color: white;
+}
+
+.saas-3d-section {
+  margin-bottom: 20px;
+}
+.saas-3d-section-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+
+.saas-3d-pills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.saas-3d-pill {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+.saas-3d-pill:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+.saas-3d-pill.active {
+  background: var(--blue-500, #3B8FDB);
+  color: white;
+  border-color: var(--blue-500, #3B8FDB);
+  box-shadow: 0 4px 12px rgba(59, 143, 219, 0.3);
+}
+
+.saas-3d-time {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.saas-3d-time-display {
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.01em;
+  min-width: 70px;
+}
+.saas-3d-time-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  outline: none;
+}
+.saas-3d-time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue-400, #5BBCE4);
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(91, 188, 228, 0.7);
+}
+.saas-3d-time-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue-400, #5BBCE4);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 12px rgba(91, 188, 228, 0.7);
+}
+.saas-3d-time-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+.saas-3d-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+.saas-3d-toggle:last-child { border-bottom: none; }
+.saas-3d-toggle-switch {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+.saas-3d-toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s ease;
+}
+.saas-3d-toggle.on .saas-3d-toggle-switch { background: var(--blue-500, #3B8FDB); }
+.saas-3d-toggle.on .saas-3d-toggle-switch::after { transform: translateX(14px); }
+
+.saas-3d-readout {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 12px;
+}
+.saas-3d-readout-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 4px 0;
+  font-variant-numeric: tabular-nums;
+}
+.saas-3d-readout-label { color: rgba(255, 255, 255, 0.5); font-weight: 600; }
+.saas-3d-readout-val { color: white; font-weight: 800; }
+
+/* ══════════ SUN-PATH SVG WIDGET ══════════ */
+.saas-sunpath {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+}
+.saas-sunpath svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.saas-sunpath-grid line {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+.saas-sunpath-horizon {
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 1.2;
+}
+.saas-sunpath-arc-summer {
+  stroke: rgba(245, 158, 11, 0.7);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 0;
+}
+.saas-sunpath-arc-equinox {
+  stroke: rgba(91, 188, 228, 0.8);
+  stroke-width: 2;
+  fill: none;
+}
+.saas-sunpath-arc-winter {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 4 3;
+}
+.saas-sunpath-sun {
+  fill: #FFD37A;
+  filter: drop-shadow(0 0 6px rgba(255, 211, 122, 0.8));
+}
+.saas-sunpath-label {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-sunpath-leg {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.saas-sunpath-leg span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.saas-sunpath-leg-dot { width: 12px; height: 2px; border-radius: 1px; }
+
+/* hide print */
+@media print {
+  .saas-heat-bar, .saas-3d-modal, .saas-heat-legend { display: none !important; }
+}
+</style>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SAAS PHASE 4 ENGINE · Visualization
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  if (!window.SAAS) {
+    console.warn('[SAAS Phase 4] window.SAAS not found — Phase 1+2+3 layers must load first.');
+    return;
+  }
+
+  const _getLayout = new Function('return typeof layoutState!=="undefined"?layoutState:[];');
+  function host_layout() { return _getLayout() || []; }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     INLINED SUNCALC · Vladimir Agafonkin (BSD-2)
+     Just enough for sun position (azimuth + altitude) given date, lat, lng
+     ──────────────────────────────────────────────────────────────────────── */
+  const PI = Math.PI;
+  const rad = PI / 180;
+  const dayMs = 1000 * 60 * 60 * 24;
+  const J1970 = 2440588;
+  const J2000 = 2451545;
+  const e = rad * 23.4397; // obliquity of Earth
+
+  function toJulian(date) { return date.valueOf() / dayMs - 0.5 + J1970; }
+  function toDays(date) { return toJulian(date) - J2000; }
+  function rightAscension(l, b) {
+    return Math.atan2(Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e), Math.cos(l));
+  }
+  function declination(l, b) {
+    return Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l));
+  }
+  function azimuth(H, phi, dec) {
+    return Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dec) * Math.cos(phi));
+  }
+  function altitude(H, phi, dec) {
+    return Math.asin(Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(H));
+  }
+  function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
+  function solarMeanAnomaly(d) { return rad * (357.5291 + 0.98560028 * d); }
+  function eclipticLongitude(M) {
+    const C = rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M));
+    const P = rad * 102.9372;
+    return M + C + P + PI;
+  }
+  function sunCoords(d) {
+    const M = solarMeanAnomaly(d);
+    const L = eclipticLongitude(M);
+    return { dec: declination(L, 0), ra: rightAscension(L, 0) };
+  }
+  function getSunPosition(date, lat, lng) {
+    const lw = rad * -lng;
+    const phi = rad * lat;
+    const d = toDays(date);
+    const c = sunCoords(d);
+    const H = siderealTime(d, lw) - c.ra;
+    return { azimuth: azimuth(H, phi, c.dec), altitude: altitude(H, phi, c.dec) };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     STATE LAT/LNG · approx geographic centroid for each US state
+     ──────────────────────────────────────────────────────────────────────── */
+  const STATE_LAT_LNG = {
+    AK: [64.0, -150.0], AL: [33.0, -86.8], AR: [34.7, -92.4], AZ: [34.0, -111.5],
+    CA: [37.3, -119.4], CO: [39.0, -105.5], CT: [41.6, -72.7], DC: [38.9, -77.0],
+    DE: [39.0, -75.5], FL: [28.0, -81.5],  GA: [33.0, -83.5], HI: [20.8, -156.3],
+    IA: [42.0, -93.5],  ID: [44.4, -114.0], IL: [40.0, -89.0], IN: [40.0, -86.3],
+    KS: [38.5, -98.4],  KY: [37.8, -84.7], LA: [31.0, -91.8], MA: [42.3, -71.8],
+    MD: [39.0, -76.7],  ME: [45.4, -69.0], MI: [44.3, -85.4], MN: [46.0, -94.6],
+    MO: [38.5, -92.5],  MS: [33.0, -89.7], MT: [47.0, -110.0], NC: [35.5, -79.4],
+    ND: [47.5, -100.5], NE: [41.5, -99.8], NH: [43.7, -71.6], NJ: [40.2, -74.7],
+    NM: [34.5, -106.0], NV: [39.3, -117.0], NY: [42.9, -75.5], OH: [40.4, -82.8],
+    OK: [35.5, -97.5],  OR: [44.0, -120.5], PA: [41.0, -77.7], PR: [18.2, -66.4],
+    RI: [41.6, -71.5],  SC: [33.9, -80.9], SD: [44.5, -100.2], TN: [36.0, -86.7],
+    TX: [31.0, -99.0],  UT: [39.4, -111.6], VA: [37.5, -78.9], VT: [44.0, -72.7],
+    WA: [47.4, -120.4], WI: [44.5, -89.8], WV: [38.5, -80.6], WY: [43.0, -107.5]
+  };
+
+  function findLatLng() {
+    // Try the user's site address ZIP
+    if (window.SAAS?.zip) {
+      const addrField = document.getElementById('siteAddress');
+      const addr = (addrField?.value || '') + ' ' + (document.getElementById('siteName')?.value || '');
+      const zip = SAAS.zip.findZipInString(addr);
+      if (zip) {
+        const data = SAAS.zip.lookupZip(zip);
+        if (data && STATE_LAT_LNG[data.state]) {
+          return { lat: STATE_LAT_LNG[data.state][0], lng: STATE_LAT_LNG[data.state][1], source: data.state, zip };
+        }
+      }
+    }
+    // Fallback: PA (the SEMS HQ)
+    return { lat: 41.4, lng: -75.66, source: 'Scranton, PA (default)', zip: null };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     SECTION METRICS · per-section data for heatmap and 3D
+     ──────────────────────────────────────────────────────────────────────── */
+  function getPanel() {
+    return {
+      width: parseFloat(document.getElementById('panelWidth')?.value) || 41.3,
+      length: parseFloat(document.getElementById('panelLength')?.value) || 74.8,
+      wattage: parseFloat(document.getElementById('panelWattage')?.value) || 430
+    };
+  }
+  function getSpacing() {
+    return {
+      tilt: parseFloat(document.getElementById('tiltAngle')?.value) || 25,
+      groundClearance: parseFloat(document.getElementById('groundClearance')?.value) || 24,
+      rowSpacing: parseFloat(document.getElementById('rowSpacing')?.value) || 6,
+      sectionSpacing: parseFloat(document.getElementById('sectionSpacing')?.value) || 60,
+      layoutRowGap: parseFloat(document.getElementById('layoutRowGap')?.value) || 120
+    };
+  }
+
+  // Per-section metric calculator
+  // Wind load uses ASCE 7-22 zone factors: corner sections see ~1.5x, edge ~1.2x, interior 1.0x
+  function getSectionMetrics() {
+    const panel = getPanel();
+    const layout = host_layout();
+    const totalRows = layout.length;
+
+    // First compute aggregate kW for cost calculation
+    let totalKw = 0;
+    layout.forEach(row => {
+      (row.sections || []).forEach(sec => {
+        const c = window.getSectionModuleCount(sec.type, panel.width);
+        totalKw += (c.modules * panel.wattage) / 1000;
+      });
+    });
+
+    let totalCost = 0;
+    if (window.SAAS?.compute?.computeCost) {
+      try { totalCost = SAAS.compute.computeCost().total; } catch {}
+    }
+    if (totalCost === 0) totalCost = totalKw * 1000 * 0.95; // fallback ~$0.95/W
+
+    const result = [];
+    layout.forEach((row, ri) => {
+      const sections = row.sections || [];
+      const totalSecs = sections.length;
+      sections.forEach((sec, si) => {
+        const c = window.getSectionModuleCount(sec.type, panel.width);
+        const kw = (c.modules * panel.wattage) / 1000;
+        const isFirstRow = ri === 0;
+        const isLastRow = ri === totalRows - 1;
+        const isFirstSec = si === 0;
+        const isLastSec = si === totalSecs - 1;
+        const isCorner = (isFirstRow || isLastRow) && (isFirstSec || isLastSec);
+        const isEdge = !isCorner && (isFirstRow || isLastRow || isFirstSec || isLastSec);
+        const windFactor = isCorner ? 1.5 : (isEdge ? 1.2 : 1.0);
+        const cost = totalKw > 0 ? (kw / totalKw) * totalCost : 0;
+        result.push({
+          id: sec.id, type: sec.type, rowIdx: ri, secIdx: si,
+          modules: c.modules, panelsPerRow: c.panelsPerRow,
+          kw, cost, windFactor,
+          position: isCorner ? 'corner' : (isEdge ? 'edge' : 'interior')
+        });
+      });
+    });
+    return { sections: result, totalKw, totalCost };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     HEATMAP OVERLAY · color the existing 2D canvas sections
+     ──────────────────────────────────────────────────────────────────────── */
+  const HEATMAP_MODES = [
+    { id: 'none', label: 'No heatmap', unit: '' },
+    { id: 'kw',   label: 'DC kW per section', unit: ' kW DC', low: [220, 235, 248], high: [27, 58, 92] },
+    { id: 'pan',  label: 'Panel count', unit: ' panels', low: [232, 240, 250], high: [38, 96, 164] },
+    { id: 'cost', label: 'Section cost ($)', unit: '', low: [255, 245, 230], high: [180, 60, 12] },
+    { id: 'wind', label: 'Wind load factor', unit: 'x', low: [232, 245, 232], high: [180, 50, 50] }
+  ];
+
+  let currentHeatMode = 'none';
+
+  function buildHeatToolbar() {
+    const card = document.getElementById('card-builder');
+    if (!card) return;
+    const head = card.querySelector('.cfg-card-head');
+    if (!head || head.querySelector('.saas-heat-bar')) return;
+
+    const bar = document.createElement('div');
+    bar.className = 'saas-heat-bar';
+    bar.innerHTML = `
+      <span class="saas-heat-label">Color by</span>
+      <select class="saas-heat-select" id="saas-heat-mode">
+        ${HEATMAP_MODES.map(m => `<option value="${m.id}">${m.label}</option>`).join('')}
+      </select>
+      <button class="saas-heat-3dbtn" id="saas-heat-3dbtn">Open in 3D</button>
+    `;
+    head.appendChild(bar);
+
+    document.getElementById('saas-heat-mode').addEventListener('change', e => {
+      currentHeatMode = e.target.value;
+      applyHeatmap();
+    });
+    document.getElementById('saas-heat-3dbtn').addEventListener('click', () => SAAS.viz3d.open());
+  }
+
+  function lerpColor(a, b, t) {
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * t),
+      Math.round(a[1] + (b[1] - a[1]) * t),
+      Math.round(a[2] + (b[2] - a[2]) * t)
+    ];
+  }
+
+  function applyHeatmap() {
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return;
+
+    // Remove any prior legend
+    const oldLegend = document.getElementById('saas-heat-legend');
+    if (oldLegend) oldLegend.remove();
+
+    const mode = HEATMAP_MODES.find(m => m.id === currentHeatMode);
+    if (!mode || mode.id === 'none') {
+      // Reset
+      canvas.querySelectorAll('.sec-block').forEach(el => {
+        el.style.background = '';
+        el.style.color = '';
+      });
+      return;
+    }
+
+    const { sections } = getSectionMetrics();
+    if (!sections.length) return;
+
+    // Build value map
+    const valueMap = {};
+    sections.forEach(s => {
+      let v = 0;
+      if (mode.id === 'kw') v = s.kw;
+      else if (mode.id === 'pan') v = s.modules;
+      else if (mode.id === 'cost') v = s.cost;
+      else if (mode.id === 'wind') v = s.windFactor;
+      valueMap[s.id] = v;
+    });
+
+    const values = Object.values(valueMap);
+    let min = Math.min(...values);
+    let max = Math.max(...values);
+    if (min === max) { min = min * 0.9; max = max * 1.1 + 1; }
+
+    // Apply colors
+    canvas.querySelectorAll('.sec-block').forEach(el => {
+      const id = el.dataset.secid;
+      const v = valueMap[id];
+      if (v === undefined) return;
+      const t = (v - min) / (max - min);
+      const c = lerpColor(mode.low, mode.high, t);
+      el.style.background = `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+      // Adjust text color for legibility
+      const luminance = (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+      el.style.color = luminance > 0.6 ? 'var(--gray-900)' : 'white';
+    });
+
+    // Legend
+    const legend = document.createElement('div');
+    legend.className = 'saas-heat-legend';
+    legend.id = 'saas-heat-legend';
+    const fmt = v => mode.id === 'cost'
+      ? '$' + Math.round(v).toLocaleString()
+      : (mode.id === 'wind' ? v.toFixed(1) : Math.round(v * 10) / 10);
+    legend.innerHTML = `
+      <span class="saas-heat-legend-label">${mode.label}</span>
+      <span class="saas-heat-legend-min">${fmt(min)}${mode.unit}</span>
+      <div class="saas-heat-legend-bar" style="background:linear-gradient(90deg,
+        rgb(${mode.low.join(',')}),
+        rgb(${mode.high.join(',')}))"></div>
+      <span class="saas-heat-legend-max">${fmt(max)}${mode.unit}</span>
+    `;
+    canvas.parentNode.insertBefore(legend, canvas);
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     3D PREVIEW MODAL
+     ──────────────────────────────────────────────────────────────────────── */
+  function build3DModal() {
+    const m = document.createElement('div');
+    m.className = 'saas-3d-modal';
+    m.id = 'saas-3d-modal';
+    m.innerHTML = `
+      <div class="saas-3d-head">
+        <button class="saas-3d-back" id="saas-3d-back">← Back to 2D</button>
+        <div>
+          <div class="saas-3d-title">Array preview · 3D</div>
+          <div class="saas-3d-sub" id="saas-3d-sub">isometric render with realistic tilt &amp; spacing</div>
+        </div>
+        <div class="saas-3d-spacer"></div>
+        <div class="saas-3d-stats" id="saas-3d-stats"></div>
+      </div>
+      <div class="saas-3d-body">
+        <div class="saas-3d-canvas-wrap" id="saas-3d-canvas-wrap">
+          <div class="saas-3d-loading" id="saas-3d-loading">
+            Loading 3D engine
+            <span class="saas-3d-loading-dot"></span>
+            <span class="saas-3d-loading-dot"></span>
+            <span class="saas-3d-loading-dot"></span>
+          </div>
+          <div class="saas-3d-hint">
+            <span>🖱 drag · orbit</span>
+            <span>⚙ scroll · zoom</span>
+            <span>⇧ + drag · pan</span>
+          </div>
+        </div>
+        <aside class="saas-3d-side">
+          <div class="saas-3d-section">
+            <div class="saas-3d-section-label">Date</div>
+            <div class="saas-3d-pills" id="saas-3d-date">
+              <button class="saas-3d-pill" data-date="summer">Jun 21</button>
+              <button class="saas-3d-pill active" data-date="equinox">Sep 21</button>
+              <button class="saas-3d-pill" data-date="winter">Dec 21</button>
+            </div>
+          </div>
+          <div class="saas-3d-section">
+            <div class="saas-3d-section-label">Time of day</div>
+            <div class="saas-3d-time">
+              <div class="saas-3d-time-display" id="saas-3d-time-display">12:00 PM</div>
+              <input type="range" min="6" max="18" step="0.25" value="12" class="saas-3d-time-slider" id="saas-3d-time-slider">
+            </div>
+            <div class="saas-3d-time-marks">
+              <span>6 AM</span><span>9</span><span>12</span><span>3</span><span>6 PM</span>
+            </div>
+          </div>
+          <div class="saas-3d-section">
+            <div class="saas-3d-section-label">Display</div>
+            <div class="saas-3d-toggle on" data-toggle="shadows">
+              <span>Show shadows</span>
+              <span class="saas-3d-toggle-switch"></span>
+            </div>
+            <div class="saas-3d-toggle on" data-toggle="sunarc">
+              <span>Show sun arc</span>
+              <span class="saas-3d-toggle-switch"></span>
+            </div>
+            <div class="saas-3d-toggle" data-toggle="grid">
+              <span>Show ground grid</span>
+              <span class="saas-3d-toggle-switch"></span>
+            </div>
+          </div>
+          <div class="saas-3d-section">
+            <div class="saas-3d-section-label">Sun position</div>
+            <div class="saas-sunpath">
+              <svg viewBox="0 0 280 160" id="saas-sunpath-svg"></svg>
+              <div class="saas-sunpath-leg">
+                <span><div class="saas-sunpath-leg-dot" style="background:rgba(245,158,11,0.7)"></div>Summer</span>
+                <span><div class="saas-sunpath-leg-dot" style="background:rgba(91,188,228,0.8)"></div>Equinox</span>
+                <span><div class="saas-sunpath-leg-dot" style="background:rgba(255,255,255,0.4)"></div>Winter</span>
+              </div>
+            </div>
+          </div>
+          <div class="saas-3d-section">
+            <div class="saas-3d-section-label">Site</div>
+            <div class="saas-3d-readout" id="saas-3d-readout"></div>
+          </div>
+        </aside>
+      </div>
+    `;
+    document.body.appendChild(m);
+
+    document.getElementById('saas-3d-back').addEventListener('click', () => SAAS.viz3d.close());
+
+    // ESC closes
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && m.classList.contains('show')) SAAS.viz3d.close();
+    });
+
+    // Date pills
+    m.querySelectorAll('[data-date]').forEach(b => {
+      b.addEventListener('click', () => {
+        m.querySelectorAll('[data-date]').forEach(x => x.classList.toggle('active', x === b));
+        SAAS.viz3d._date = b.dataset.date;
+        SAAS.viz3d._update();
+      });
+    });
+
+    // Time slider
+    const slider = document.getElementById('saas-3d-time-slider');
+    slider.addEventListener('input', e => {
+      SAAS.viz3d._hour = parseFloat(e.target.value);
+      SAAS.viz3d._update();
+    });
+
+    // Toggles
+    m.querySelectorAll('[data-toggle]').forEach(t => {
+      t.addEventListener('click', () => {
+        t.classList.toggle('on');
+        SAAS.viz3d['_' + t.dataset.toggle] = t.classList.contains('on');
+        SAAS.viz3d._update();
+      });
+    });
+
+    // Add to FAB stack & rail
+    const fabs = document.getElementById('saas-fabs');
+    if (fabs) {
+      const fab = document.createElement('button');
+      fab.className = 'saas-fab';
+      fab.id = 'saas-fab-3d';
+      fab.innerHTML = `⊡<span class="saas-fab-tooltip">3D preview</span>`;
+      fab.addEventListener('click', () => SAAS.viz3d.open());
+      fabs.insertBefore(fab, fabs.firstChild);
+    }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     THREE.JS LOADER (lazy, on demand)
+     ──────────────────────────────────────────────────────────────────────── */
+  function loadThree() {
+    return new Promise((resolve, reject) => {
+      if (window.THREE) return resolve(window.THREE);
+      const existing = document.querySelector('script[data-saas-three]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.THREE));
+        existing.addEventListener('error', reject);
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      s.dataset.saasThree = '1';
+      s.onload = () => resolve(window.THREE);
+      s.onerror = () => reject(new Error('Failed to load Three.js'));
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     3D SCENE BUILDER
+     Coordinate convention: +X = east, +Y = up, +Z = south
+     Units: 1 Three.js unit = 1 inch (we scale at render time for camera)
+     ──────────────────────────────────────────────────────────────────────── */
+  let scene, camera, renderer, sunLight, ambientLight, sunMesh, sunArcLine, gridHelper;
+  let frame = null, dirty = true;
+  let cameraTheta = 0.6, cameraPhi = 0.85, cameraDist = 1500;
+  let cameraTarget = { x: 0, y: 0, z: 0 };
+
+  function buildScene(THREE) {
+    const wrap = document.getElementById('saas-3d-canvas-wrap');
+    wrap.querySelector('canvas')?.remove();
+    wrap.querySelector('.saas-3d-empty')?.remove();
+
+    const layout = host_layout();
+    if (!layout.length || !layout.some(r => r.sections?.length)) {
+      const empty = document.createElement('div');
+      empty.className = 'saas-3d-empty';
+      empty.innerHTML = `<strong>No sections to render yet</strong>
+        Add sections to the 2D builder, then come back here.<br>
+        Tip: ⌘K → "Generate 250 kW system"`;
+      wrap.appendChild(empty);
+      document.getElementById('saas-3d-loading').style.display = 'none';
+      return false;
+    }
+
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x0a1828, 1500, 6000);
+
+    camera = new THREE.PerspectiveCamera(40, W / H, 1, 8000);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setClearColor(0x000000, 0);
+    wrap.appendChild(renderer.domElement);
+    document.getElementById('saas-3d-loading').style.display = 'none';
+
+    // Lighting
+    ambientLight = new THREE.AmbientLight(0x4a6b8a, 0.55);
+    scene.add(ambientLight);
+
+    sunLight = new THREE.DirectionalLight(0xfff2d4, 1.1);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.left = -2000;
+    sunLight.shadow.camera.right = 2000;
+    sunLight.shadow.camera.top = 2000;
+    sunLight.shadow.camera.bottom = -2000;
+    sunLight.shadow.camera.near = 1;
+    sunLight.shadow.camera.far = 5000;
+    sunLight.shadow.bias = -0.0008;
+    scene.add(sunLight);
+    scene.add(sunLight.target);
+
+    // Sun mesh (just visual)
+    const sunGeom = new THREE.SphereGeometry(40, 16, 16);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xFFD37A });
+    sunMesh = new THREE.Mesh(sunGeom, sunMat);
+    scene.add(sunMesh);
+
+    // Ground
+    const groundGeom = new THREE.PlaneGeometry(8000, 8000);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x3a4a5a,
+      roughness: 0.95,
+      metalness: 0
+    });
+    const ground = new THREE.Mesh(groundGeom, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Grid helper (toggleable)
+    gridHelper = new THREE.GridHelper(4000, 40, 0x5BBCE4, 0x2a4a6a);
+    gridHelper.position.y = 0.5;
+    gridHelper.material.opacity = 0.15;
+    gridHelper.material.transparent = true;
+    gridHelper.visible = false;
+    scene.add(gridHelper);
+
+    // Build the array
+    const panel = getPanel();
+    const sp = getSpacing();
+    const tilt = sp.tilt * Math.PI / 180;
+
+    const moduleW = panel.width;        // along the rail (X direction)
+    const moduleL = panel.length;       // across the rail (Z direction)
+    const gc = sp.groundClearance;
+    const sectionGap = sp.sectionSpacing;
+    const rowGap = sp.layoutRowGap;
+
+    // Materials (cached)
+    const panelMat = new THREE.MeshStandardMaterial({
+      color: 0x1B3A5C, metalness: 0.3, roughness: 0.4,
+    });
+    const panelEdgeMat = new THREE.LineBasicMaterial({ color: 0x5BBCE4, linewidth: 1 });
+    const postMat = new THREE.MeshStandardMaterial({
+      color: 0x9CA3B0, metalness: 0.6, roughness: 0.5
+    });
+    const railMat = new THREE.MeshStandardMaterial({
+      color: 0xD8DEE6, metalness: 0.7, roughness: 0.4
+    });
+
+    // Compute total bounding so we can center the array
+    let totalDepth = 0;
+    const rowDepths = [];
+    layout.forEach(row => {
+      const sections = row.sections || [];
+      let rowSpan = 0;
+      sections.forEach((sec, i) => {
+        const ppr = window.getSectionModuleCount(sec.type, panel.width).panelsPerRow;
+        const sectionWidth = ppr * moduleW;
+        rowSpan += sectionWidth;
+        if (i < sections.length - 1) rowSpan += sectionGap;
+      });
+      rowDepths.push(rowSpan);
+    });
+    const maxRowSpan = Math.max(...rowDepths, 1);
+    // Each row's depth (Z direction) = 2 modules + row spacing
+    const rowDepthSize = 2 * moduleL + sp.rowSpacing;
+    totalDepth = layout.length * rowDepthSize + (layout.length - 1) * rowGap;
+
+    // Center the whole array around origin
+    const offsetZ = -totalDepth / 2 + rowDepthSize / 2;
+
+    layout.forEach((row, ri) => {
+      const sections = row.sections || [];
+      const totalRowWidth = rowDepths[ri];
+      let xCursor = -totalRowWidth / 2;
+      const zCenter = offsetZ + ri * (rowDepthSize + rowGap);
+
+      sections.forEach((sec, si) => {
+        const c = window.getSectionModuleCount(sec.type, panel.width);
+        const ppr = c.panelsPerRow;
+        const sectionWidth = ppr * moduleW;
+
+        // Build one section: 2 rows of `ppr` panels, all tilted, on posts
+        for (let r = 0; r < 2; r++) {
+          for (let p = 0; p < ppr; p++) {
+            const panelGeom = new THREE.BoxGeometry(moduleW * 0.96, 1.5, moduleL * 0.96);
+            const m = new THREE.Mesh(panelGeom, panelMat);
+            m.castShadow = true;
+            m.receiveShadow = true;
+
+            // Position: this panel is at column p of row r in section si of layout row ri
+            const px = xCursor + p * moduleW + moduleW / 2;
+            const pzLocal = (r === 0 ? -1 : 1) * (moduleL / 2 + sp.rowSpacing / 2);
+            const pz = zCenter + pzLocal;
+
+            // Apply tilt around the X axis. Pivot is at the lower edge of the panel.
+            // South-facing tilt: lower edge faces south (+Z), top edge raised on north side.
+            // For row 0 (north row), it's still the same tilt direction.
+            const liftFromTilt = (moduleL / 2) * Math.sin(tilt);
+            const py = gc + liftFromTilt;
+            m.position.set(px, py, pz);
+            m.rotation.x = -tilt; // negative so high edge goes north (-Z), low edge south (+Z)
+            scene.add(m);
+
+            // Optional: outline for crisp look
+            const edges = new THREE.EdgesGeometry(panelGeom);
+            const line = new THREE.LineSegments(edges, panelEdgeMat);
+            line.position.copy(m.position);
+            line.rotation.copy(m.rotation);
+            scene.add(line);
+          }
+        }
+
+        // Posts at corners (4 per section)
+        const postH = gc;
+        const postR = 2.5; // 2.5 inch radius
+        const postPositions = [
+          [xCursor + 4, postH / 2, zCenter - moduleL - sp.rowSpacing / 2 + 4],
+          [xCursor + sectionWidth - 4, postH / 2, zCenter - moduleL - sp.rowSpacing / 2 + 4],
+          [xCursor + 4, postH / 2, zCenter + moduleL + sp.rowSpacing / 2 - 4],
+          [xCursor + sectionWidth - 4, postH / 2, zCenter + moduleL + sp.rowSpacing / 2 - 4]
+        ];
+        postPositions.forEach(([x, y, z]) => {
+          const post = new THREE.Mesh(
+            new THREE.CylinderGeometry(postR, postR, postH, 8),
+            postMat
+          );
+          post.position.set(x, y, z);
+          post.castShadow = true;
+          post.receiveShadow = true;
+          scene.add(post);
+        });
+
+        xCursor += sectionWidth + sectionGap;
+      });
+    });
+
+    // Sun arc placeholder (built dynamically)
+    sunArcLine = null;
+
+    // Set initial camera target to center of array
+    cameraTarget = { x: 0, y: gc + 30, z: 0 };
+    cameraDist = Math.max(800, totalDepth * 1.4 + maxRowSpan * 0.7);
+
+    bindOrbitControls(wrap);
+    return true;
+  }
+
+  function bindOrbitControls(wrap) {
+    const canvas = wrap.querySelector('canvas');
+    if (!canvas) return;
+    let dragging = false, panning = false, lx = 0, ly = 0;
+
+    canvas.addEventListener('mousedown', e => {
+      dragging = true;
+      panning = e.shiftKey;
+      lx = e.clientX; ly = e.clientY;
+    });
+    window.addEventListener('mouseup', () => { dragging = false; panning = false; });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const dx = e.clientX - lx;
+      const dy = e.clientY - ly;
+      lx = e.clientX; ly = e.clientY;
+      if (panning) {
+        cameraTarget.x -= dx * cameraDist * 0.0008;
+        cameraTarget.z -= dy * cameraDist * 0.0008;
+      } else {
+        cameraTheta -= dx * 0.008;
+        cameraPhi += dy * 0.008;
+        cameraPhi = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, cameraPhi));
+      }
+      dirty = true;
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      cameraDist *= (1 + Math.sign(e.deltaY) * 0.08);
+      cameraDist = Math.max(200, Math.min(8000, cameraDist));
+      dirty = true;
+    }, { passive: false });
+
+    // Touch support
+    let touchStart = null;
+    canvas.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, mode: 'orbit' };
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        touchStart = { dist: Math.sqrt(dx*dx + dy*dy), mode: 'pinch' };
+      }
+    });
+    canvas.addEventListener('touchmove', e => {
+      if (!touchStart) return;
+      e.preventDefault();
+      if (touchStart.mode === 'orbit' && e.touches.length === 1) {
+        const dx = e.touches[0].clientX - touchStart.x;
+        const dy = e.touches[0].clientY - touchStart.y;
+        cameraTheta -= dx * 0.008;
+        cameraPhi += dy * 0.008;
+        cameraPhi = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, cameraPhi));
+        touchStart.x = e.touches[0].clientX;
+        touchStart.y = e.touches[0].clientY;
+        dirty = true;
+      } else if (touchStart.mode === 'pinch' && e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const newDist = Math.sqrt(dx*dx + dy*dy);
+        cameraDist *= touchStart.dist / newDist;
+        cameraDist = Math.max(200, Math.min(8000, cameraDist));
+        touchStart.dist = newDist;
+        dirty = true;
+      }
+    }, { passive: false });
+  }
+
+  function updateCamera() {
+    const sinPhi = Math.sin(cameraPhi);
+    const cosPhi = Math.cos(cameraPhi);
+    camera.position.set(
+      cameraTarget.x + cameraDist * sinPhi * Math.cos(cameraTheta),
+      cameraTarget.y + cameraDist * cosPhi,
+      cameraTarget.z + cameraDist * sinPhi * Math.sin(cameraTheta)
+    );
+    camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
+  }
+
+  function updateSun() {
+    const v = SAAS.viz3d;
+    const loc = findLatLng();
+    // Determine date
+    const dateMap = {
+      summer:  new Date(new Date().getFullYear(), 5, 21), // Jun 21
+      equinox: new Date(new Date().getFullYear(), 8, 21), // Sep 21
+      winter:  new Date(new Date().getFullYear(), 11, 21) // Dec 21
+    };
+    const baseDate = dateMap[v._date || 'equinox'];
+    const hour = v._hour ?? 12;
+    const date = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(),
+                          Math.floor(hour), Math.round((hour - Math.floor(hour)) * 60));
+    const pos = getSunPosition(date, loc.lat, loc.lng);
+
+    // Convert to Three.js coords (+X east, +Y up, +Z south)
+    // SunCalc: azimuth 0=south, +π/2=west, ±π=north, -π/2=east
+    const az = pos.azimuth;
+    const alt = pos.altitude;
+    const distance = 3000;
+    const sx = -Math.sin(az) * Math.cos(alt) * distance; // east is +x; sin(az) for south=0, west=+1; west=-x
+    const sz = Math.cos(az) * Math.cos(alt) * distance;  // south=+z
+    const sy = Math.sin(alt) * distance;
+    sunLight.position.set(sx, Math.max(50, sy), sz); // never put below ground for shadow camera
+    sunLight.target.position.set(0, 0, 0);
+    sunMesh.position.set(sx, sy, sz);
+    sunMesh.visible = sy > 0;
+
+    // Adjust ambient based on altitude (dim at sunset / sunrise)
+    if (sy > 0) {
+      const intensity = Math.min(1.1, 0.4 + alt * 0.9);
+      sunLight.intensity = intensity;
+      ambientLight.intensity = 0.35 + alt * 0.3;
+    } else {
+      sunLight.intensity = 0.05;
+      ambientLight.intensity = 0.25;
+    }
+    renderer.shadowMap.enabled = !!v._shadows;
+
+    // Sun arc visualization
+    if (sunArcLine) { scene.remove(sunArcLine); sunArcLine = null; }
+    if (v._sunarc) {
+      const points = [];
+      for (let h = 5; h <= 19; h += 0.25) {
+        const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(),
+                           Math.floor(h), Math.round((h - Math.floor(h)) * 60));
+        const sp = getSunPosition(d, loc.lat, loc.lng);
+        if (sp.altitude > 0) {
+          const ax = -Math.sin(sp.azimuth) * Math.cos(sp.altitude) * distance;
+          const az_ = Math.cos(sp.azimuth) * Math.cos(sp.altitude) * distance;
+          const ay = Math.sin(sp.altitude) * distance;
+          points.push(new THREE.Vector3(ax, ay, az_));
+        }
+      }
+      if (points.length > 1) {
+        const g = new THREE.BufferGeometry().setFromPoints(points);
+        const mat = new THREE.LineBasicMaterial({
+          color: v._date === 'summer' ? 0xf59e0b : (v._date === 'winter' ? 0xffffff : 0x5BBCE4),
+          transparent: true, opacity: 0.55
+        });
+        sunArcLine = new THREE.Line(g, mat);
+        scene.add(sunArcLine);
+      }
+    }
+
+    if (gridHelper) gridHelper.visible = !!v._grid;
+
+    // Update side panel readout
+    const readout = document.getElementById('saas-3d-readout');
+    if (readout) {
+      readout.innerHTML = `
+        <div class="saas-3d-readout-row"><span class="saas-3d-readout-label">Location</span><span class="saas-3d-readout-val">${loc.source}${loc.zip ? ' · ' + loc.zip : ''}</span></div>
+        <div class="saas-3d-readout-row"><span class="saas-3d-readout-label">Latitude</span><span class="saas-3d-readout-val">${loc.lat.toFixed(2)}°</span></div>
+        <div class="saas-3d-readout-row"><span class="saas-3d-readout-label">Longitude</span><span class="saas-3d-readout-val">${loc.lng.toFixed(2)}°</span></div>
+        <div class="saas-3d-readout-row"><span class="saas-3d-readout-label">Sun azimuth</span><span class="saas-3d-readout-val">${(az * 180 / Math.PI + 180).toFixed(0)}°</span></div>
+        <div class="saas-3d-readout-row"><span class="saas-3d-readout-label">Sun altitude</span><span class="saas-3d-readout-val">${(alt * 180 / Math.PI).toFixed(0)}°</span></div>
+      `;
+    }
+
+    // Update time display
+    const timeDisp = document.getElementById('saas-3d-time-display');
+    if (timeDisp) {
+      const h = Math.floor(hour);
+      const m = Math.round((hour - h) * 60);
+      const period = h < 12 ? 'AM' : 'PM';
+      const h12 = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+      timeDisp.textContent = `${h12}:${String(m).padStart(2, '0')} ${period}`;
+    }
+
+    // Update sun-path SVG
+    drawSunPathSVG(loc, v._date || 'equinox', hour, az, alt);
+
+    // Update header stats
+    const stats = document.getElementById('saas-3d-stats');
+    if (stats) {
+      const m = getSectionMetrics();
+      stats.innerHTML = `
+        <span class="saas-3d-stat">${m.sections.length} <strong>sections</strong></span>
+        <span class="saas-3d-stat">${m.totalKw.toFixed(1)} <strong>kW DC</strong></span>
+        <span class="saas-3d-stat">tilt <strong>${getSpacing().tilt}°</strong></span>
+      `;
+    }
+  }
+
+  function drawSunPathSVG(loc, season, hour, currentAz, currentAlt) {
+    const svg = document.getElementById('saas-sunpath-svg');
+    if (!svg) return;
+    const W = 280, H = 160;
+    // Polar projection: horizon = circle, zenith = center
+    const cx = W / 2, cy = H - 12, r = Math.min(W * 0.42, H - 30);
+
+    // Draw horizon arc + cardinal points
+    let html = `
+      <g class="saas-sunpath-grid">
+        <path d="M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}" fill="none" class="saas-sunpath-horizon"/>
+        <line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" />
+        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - r}" />
+      </g>
+      <text x="${cx - r - 4}" y="${cy + 4}" text-anchor="end" class="saas-sunpath-label">E</text>
+      <text x="${cx + r + 4}" y="${cy + 4}" text-anchor="start" class="saas-sunpath-label">W</text>
+      <text x="${cx}" y="${cy - r - 3}" text-anchor="middle" class="saas-sunpath-label">N</text>
+      <text x="${cx}" y="${cy + 12}" text-anchor="middle" class="saas-sunpath-label">S</text>
+    `;
+
+    function project(az, alt) {
+      // SunCalc: az 0=south, π/2=west, -π/2=east, ±π=north
+      // Polar: x = -sin(az)*r*(1-alt/half) … no let's do: dist from center = r*(1 - alt/(π/2))
+      const distFromCenter = r * (1 - alt / (PI / 2));
+      // azimuth: north = up (-y), east = -x, south = +y (but we put south at bottom of SVG, so cy + something)
+      // We want: south=down, north=up, east=left, west=right
+      const x = cx - distFromCenter * Math.sin(az);
+      const y = cy - distFromCenter * Math.cos(az);
+      return { x, y };
+    }
+
+    // Three arcs
+    const year = new Date().getFullYear();
+    const dates = {
+      summer:  new Date(year, 5, 21),
+      equinox: new Date(year, 8, 21),
+      winter:  new Date(year, 11, 21)
+    };
+    Object.entries(dates).forEach(([key, date]) => {
+      const points = [];
+      for (let h = 4; h <= 20; h += 0.25) {
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(),
+                           Math.floor(h), Math.round((h - Math.floor(h)) * 60));
+        const sp = getSunPosition(d, loc.lat, loc.lng);
+        if (sp.altitude > 0) {
+          const p = project(sp.azimuth, sp.altitude);
+          points.push(p);
+        }
+      }
+      if (points.length < 2) return;
+      const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+      html += `<path d="${path}" class="saas-sunpath-arc-${key}"/>`;
+    });
+
+    // Current sun position (only if above horizon)
+    if (currentAlt > 0) {
+      const p = project(currentAz, currentAlt);
+      html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" class="saas-sunpath-sun"/>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  function renderLoop() {
+    if (dirty || true) {  // re-render on every frame (smoother during interactions; layout is small)
+      updateCamera();
+      renderer.render(scene, camera);
+      dirty = false;
+    }
+    frame = requestAnimationFrame(renderLoop);
+  }
+
+  function disposeScene() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = null;
+    if (renderer) {
+      renderer.dispose();
+      renderer.domElement?.remove();
+    }
+    scene = camera = renderer = sunLight = ambientLight = sunMesh = sunArcLine = gridHelper = null;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     SAAS.viz3d API
+     ──────────────────────────────────────────────────────────────────────── */
+  SAAS.viz3d = {
+    _date: 'equinox',
+    _hour: 12,
+    _shadows: true,
+    _sunarc: true,
+    _grid: false,
+    async open() {
+      const m = document.getElementById('saas-3d-modal');
+      m.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      try {
+        const THREE = await loadThree();
+        const ok = buildScene(THREE);
+        if (ok) {
+          updateSun();
+          renderLoop();
+          window.addEventListener('resize', this._onResize);
+        }
+      } catch (e) {
+        console.error('[SAAS Phase 4] 3D load failed', e);
+        document.getElementById('saas-3d-loading').innerHTML = '<span style="color:#ef4444">Could not load Three.js. Check your internet connection.</span>';
+      }
+    },
+    close() {
+      const m = document.getElementById('saas-3d-modal');
+      m.classList.remove('show');
+      document.body.style.overflow = '';
+      window.removeEventListener('resize', this._onResize);
+      disposeScene();
+    },
+    _update() { if (renderer) updateSun(); },
+    _onResize() {
+      if (!renderer || !camera) return;
+      const wrap = document.getElementById('saas-3d-canvas-wrap');
+      const W = wrap.clientWidth, H = wrap.clientHeight;
+      camera.aspect = W / H;
+      camera.updateProjectionMatrix();
+      renderer.setSize(W, H);
+    }
+  };
+
+  /* ────────────────────────────────────────────────────────────────────────
+     INIT
+     ──────────────────────────────────────────────────────────────────────── */
+  function init() {
+    buildHeatToolbar();
+    build3DModal();
+
+    // Re-apply heatmap whenever canvas re-renders
+    if (typeof window.renderCanvas === 'function') {
+      const orig = window.renderCanvas;
+      window.renderCanvas = function () {
+        const r = orig.apply(this, arguments);
+        if (currentHeatMode !== 'none') setTimeout(applyHeatmap, 10);
+        return r;
+      };
+    }
+
+    console.log('[SEMS SaaS Layer] Phase 4 (Visualization) ready.');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 180));
+  } else {
+    setTimeout(init, 180);
+  }
+})();
+</script>
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  END SEMS SAAS LAYER · Phase 4 (Visualization)
   ════════════════════════════════════════════════════════════════════════════
 -->
 
