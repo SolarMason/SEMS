@@ -1,0 +1,4176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>SAAS Layer Test Harness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+:root {
+  --blue-900: #1B3A5C; --blue-700: #2660A4; --blue-600: #2D78C4; --blue-500: #3B8FDB;
+  --blue-400: #5BBCE4; --blue-300: #7EC8E8; --blue-200: #A0CCDF; --blue-100: #CCDDEA;
+  --blue-50: #DFE7EE;
+  --gray-900: #1A1E24; --gray-700: #353B44; --gray-600: #424A56; --gray-500: #5A6578;
+  --gray-400: #8892A4; --gray-300: #B0B9C9; --gray-200: #C8D0DC; --gray-100: #DDE2EA;
+  --gray-50: #E5E9EF;
+  --white: #EBEEF2; --pure-white: #F5F6F8;
+  --nav-h: 80px;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --radius: 12px; --radius-lg: 20px;
+  --shadow-sm: 0 1px 4px rgba(27,58,92,0.1);
+  --shadow-md: 0 4px 20px rgba(27,58,92,0.12);
+  --shadow-lg: 0 12px 40px rgba(27,58,92,0.14);
+  --shadow-xl: 0 24px 60px rgba(27,58,92,0.16);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--white); color: var(--gray-700); padding-top: 0; }
+.nav { position: sticky; top: 0; z-index: 1000; background: var(--pure-white); height: var(--nav-h); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; padding: 0 32px; font-weight: 800; font-size: 18px; color: var(--blue-900); }
+.config-container { max-width: 1280px; margin: 24px auto; padding: 0 24px; display: flex; flex-direction: column; gap: 16px; }
+.cfg-card { background: var(--pure-white); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+.cfg-card-head { padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--gray-100); }
+.cfg-card-head h2 { font-size: 16px; font-weight: 800; color: var(--gray-900); }
+.cfg-card-body { padding: 22px; }
+.fg { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.fi { display: flex; flex-direction: column; gap: 4px; }
+.fi label { font-size: 11px; font-weight: 700; color: var(--gray-700); }
+.fi input, .fi select { padding: 8px 10px; border: 1px solid var(--gray-200); border-radius: 8px; background: var(--white); font: inherit; }
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--gray-900); color: white; padding: 10px 18px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity 0.2s ease; z-index: 9999; }
+.toast.show { opacity: 1; }
+.tag { font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: var(--blue-50); color: var(--blue-700); text-transform: uppercase; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<div class="nav">SEMS · Test Harness</div>
+
+<div class="config-container">
+
+  <div class="cfg-card" id="card-project">
+    <div class="cfg-card-head"><h2>◫ Project Information</h2><span class="tag">Project</span></div>
+    <div class="cfg-card-body">
+      <div class="fg">
+        <div class="fi"><label>Project Name</label><input type="text" id="projectName" value=""></div>
+        <div class="fi"><label>Customer</label><input type="text" id="customerName" value=""></div>
+        <div class="fi"><label>Site Name</label><input type="text" id="siteName" value=""></div>
+        <div class="fi"><label>Site Address</label><input type="text" id="siteAddress" value=""></div>
+        <div class="fi"><label>Job #</label><input type="text" id="jobNumber" value=""></div>
+        <div class="fi"><label>Prepared By</label><input type="text" id="preparedBy" value=""></div>
+        <div class="fi"><label>Date</label><input type="date" id="projectDate" value=""></div>
+        <div class="fi"><label>Notes</label><textarea id="projectNotes"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cfg-card" id="card-builder">
+    <div class="cfg-card-head"><h2>▦ Array Layout Builder</h2><span class="tag">Visual Builder</span></div>
+    <div class="cfg-card-body">
+      <div id="canvas" style="min-height:120px;background:var(--white);border-radius:8px;padding:12px;font-size:12px;color:var(--gray-500)">
+        Canvas placeholder
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="addRow()">+ Add Row</button>
+        <button onclick="quickAdd('8')">+ 8.0</button>
+        <button onclick="quickAdd('10')">+ 10.0</button>
+        <button onclick="generateSystem(250)">⚡ 250 kW</button>
+        <button onclick="generateSystem(500)">⚡ 500 kW</button>
+        <button onclick="clearLayout()">✕ Clear</button>
+      </div>
+      <div id="layoutTotals" style="margin-top:12px;font-size:13px;color:var(--gray-700);font-weight:700">No sections yet.</div>
+    </div>
+  </div>
+
+  <div class="cfg-card" id="card-config">
+    <div class="cfg-card-head"><h2>⚙ Configuration & Engineering Inputs</h2><span class="tag">Config</span></div>
+    <div class="cfg-card-body">
+      <div class="fg">
+        <div class="fi"><label>Panel Model</label><select id="panelModel"></select></div>
+        <div class="fi"><label>Panel Wattage</label><input type="number" id="panelWattage" value="430"></div>
+        <div class="fi"><label>Panel Length</label><input type="number" id="panelLength" value="74.8"></div>
+        <div class="fi"><label>Panel Width</label><input type="number" id="panelWidth" value="41.3"></div>
+        <input type="hidden" id="orientation" value="portrait">
+        <div class="fi"><label>Tilt</label><input type="number" id="tiltAngle" value="25"></div>
+        <div class="fi"><label>Ground Clearance</label><input type="number" id="groundClearance" value="24"></div>
+        <div class="fi"><label>Row Spacing</label><input type="number" id="rowSpacing" value="6"></div>
+        <div class="fi"><label>Section Spacing</label><input type="number" id="sectionSpacing" value="60"></div>
+        <div class="fi"><label>Layout Row Gap</label><input type="number" id="layoutRowGap" value="120"></div>
+        <div class="fi"><label>Foundation</label><select id="foundationType"><option>driven-pile</option></select></div>
+        <div class="fi"><label>Post</label><select id="postType"><option>w6x9</option></select></div>
+        <div class="fi"><label>Beam</label><select id="beamType"><option>w-beam</option></select></div>
+        <div class="fi"><label>Inverter</label><select id="inverterModel"></select></div>
+        <div class="fi"><label><input type="checkbox" id="optimizerEnabled" checked> Optimizers</label></div>
+        <div class="fi"><label>Waste %</label><input type="number" id="wasteFactor" value="3"></div>
+        <div class="fi"><label><input type="checkbox" id="extraHardware"> Extra Hardware</label></div>
+        <div class="fi"><label><input type="checkbox" id="miscAdders"> Misc Adders</label></div>
+        <div class="fi"><label>Engineering Notes</label><textarea id="engNotes"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cfg-card" id="card-site">
+    <div class="cfg-card-head"><h2>⏚ Site Conditions & Environmental Engineering</h2><span class="tag">ASCE 7-22</span></div>
+    <div class="cfg-card-body">
+      <div class="fg">
+        <div class="fi"><label>Wind Speed</label>
+          <select id="windSpeed">
+            <option value="100">100</option>
+            <option value="110" selected>110</option>
+            <option value="120">120</option>
+            <option value="130">130</option>
+            <option value="140">140</option>
+            <option value="150">150</option>
+            <option value="170">170</option>
+          </select>
+        </div>
+        <div class="fi"><label>Exposure</label>
+          <select id="exposureCat"><option>B</option><option>C</option><option>D</option></select>
+        </div>
+        <div class="fi"><label>Risk</label>
+          <select id="riskCategory"><option>I</option><option selected>II</option><option>III</option><option>IV</option></select>
+        </div>
+        <div class="fi"><label>Kzt</label><input type="number" id="kzt" value="1.0"></div>
+        <div class="fi"><label>Ke</label><input type="number" id="ke" value="1.0"></div>
+        <div class="fi"><label>Soil Class</label>
+          <select id="soilClass"><option>GW</option><option selected>SM</option><option>CL</option></select>
+        </div>
+        <div class="fi"><label>Bearing Pressure</label><input type="number" id="bearingPressure" value="1500"></div>
+        <div class="fi"><label>Lateral Pressure</label><input type="number" id="lateralSoilPressure" value="200"></div>
+        <div class="fi"><label>Soil Unit Weight</label><input type="number" id="soilUnitWeight" value="110"></div>
+        <div class="fi"><label>Water Table</label><input type="number" id="waterTableDepth" value="20"></div>
+        <div class="fi"><label>Seismic Cat</label>
+          <select id="seismicCat"><option selected>A</option><option>B</option><option>C</option><option>D</option></select>
+        </div>
+        <div class="fi"><label>SDS</label><input type="number" id="sds" value="0.15"></div>
+        <div class="fi"><label>Snow Load</label><input type="number" id="snowLoad" value="15"></div>
+        <div class="fi"><label>Frost Depth</label><input type="number" id="frostDepth" value="36"></div>
+        <div class="fi"><label>Design Code</label><select id="designCode"><option>ASCE7-22</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cfg-card" id="card-foundation">
+    <div class="cfg-card-head"><h2>⚓ Foundation Engineering</h2><span class="tag">Structural</span></div>
+    <div class="cfg-card-body"><div id="foundationResults">Configure site to see results.</div></div>
+  </div>
+
+  <div class="cfg-card" id="card-summary">
+    <div class="cfg-card-head"><h2>⚡ Live Project Summary</h2><span class="tag">Auto</span></div>
+    <div class="cfg-card-body"><div id="summaryGrid"></div></div>
+  </div>
+
+  <div class="cfg-card" id="card-bom">
+    <div class="cfg-card-head"><h2>⊞ Bill of Materials</h2><span class="tag">Procurement</span></div>
+    <div class="cfg-card-body"><div id="bomBody">No BOM yet.</div></div>
+  </div>
+
+  <div class="cfg-card" id="card-export">
+    <div class="cfg-card-head"><h2>↓ Export, Print & Utilities</h2></div>
+    <div class="cfg-card-body">
+      <button onclick="saveProject()">Save</button>
+      <button onclick="restoreProject()">Restore</button>
+      <button onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* Mock the configurator's global API surface */
+const $ = id => document.getElementById(id);
+const numVal = (id, fb) => { const v = parseFloat($(id)?.value); return isNaN(v) ? (fb||0) : v; };
+function toast(msg, dur) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), dur || 2500);
+}
+const PANELS = [
+  { id: 'canadian-430', manufacturer: 'Canadian Solar', model: 'BiHiKu7 430W', wattage: 430, lengthIn: 74.8, widthIn: 41.3 },
+  { id: 'jinko-545', manufacturer: 'Jinko Solar', model: 'Tiger Neo 545W', wattage: 545, lengthIn: 89.6, widthIn: 44.6 },
+  { id: 'qcells-400', manufacturer: 'Q CELLS', model: 'Q.PEAK 400W', wattage: 400, lengthIn: 74.0, widthIn: 41.1 }
+];
+const INVERTERS = [
+  { id: 'se11400h', manufacturer: 'SolarEdge', model: 'SE11400H-US', acKw: 11.4, dcMaxKw: 17.1 },
+  { id: 'fronius-15', manufacturer: 'Fronius', model: 'Symo 15.0-3', acKw: 15.0, dcMaxKw: 22.5 }
+];
+const APP_DEFAULTS = {
+  projectName: 'SEMS Demo Project', customerName: '', siteName: '', siteAddress: '', jobNumber: '',
+  preparedBy: '', projectDate: new Date().toISOString().split('T')[0], projectNotes: '',
+  panelModel: 'canadian-430', panelWattage: 430, panelLength: 74.8, panelWidth: 41.3,
+  orientation: 'portrait', tiltAngle: 25, groundClearance: 24, rowSpacing: 6, sectionSpacing: 60,
+  layoutRowGap: 120, foundationType: 'driven-pile', postType: 'w6x9', beamType: 'w-beam',
+  inverterModel: 'se11400h', optimizerEnabled: true, wasteFactor: 3, extraHardware: false,
+  miscAdders: false, engNotes: ''
+};
+
+/* Populate panel & inverter dropdowns */
+PANELS.forEach(p => {
+  const o = document.createElement('option');
+  o.value = p.id; o.textContent = p.manufacturer + ' ' + p.model;
+  $('panelModel').appendChild(o);
+});
+INVERTERS.forEach(p => {
+  const o = document.createElement('option');
+  o.value = p.id; o.textContent = p.manufacturer + ' ' + p.model;
+  $('inverterModel').appendChild(o);
+});
+
+let layoutState = [];
+let _nextSectionId = 1, _nextRowId = 1;
+function newSecId() { return 's' + (_nextSectionId++); }
+function newRowId() { return _nextRowId++; }
+
+function getSectionModuleCount(type, panelW) {
+  // Simplified: 8 panels for type '8', 10 panels for type '10'
+  const ppr = type === '8' ? 4 : 5;
+  return { panelsPerRow: ppr, rows: 2, modules: ppr * 2 };
+}
+
+function getFormState() {
+  return {
+    projectName: $('projectName').value, customerName: $('customerName').value,
+    siteName: $('siteName').value, siteAddress: $('siteAddress').value,
+    jobNumber: $('jobNumber').value, preparedBy: $('preparedBy').value,
+    projectDate: $('projectDate').value, projectNotes: $('projectNotes').value,
+    panelModel: $('panelModel').value, panelWattage: numVal('panelWattage', 430),
+    panelLength: numVal('panelLength', 74.8), panelWidth: numVal('panelWidth', 41.3),
+    orientation: $('orientation').value, tiltAngle: numVal('tiltAngle', 25),
+    groundClearance: numVal('groundClearance', 24), rowSpacing: numVal('rowSpacing', 6),
+    sectionSpacing: numVal('sectionSpacing', 60), layoutRowGap: numVal('layoutRowGap', 120),
+    foundationType: $('foundationType').value, postType: $('postType').value,
+    beamType: $('beamType').value, inverterModel: $('inverterModel').value,
+    optimizerEnabled: $('optimizerEnabled').checked, wasteFactor: numVal('wasteFactor', 3),
+    extraHardware: $('extraHardware').checked, miscAdders: $('miscAdders').checked,
+    engNotes: $('engNotes').value
+  };
+}
+function setFormState(s) {
+  Object.keys(s).forEach(k => {
+    const el = $(k);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!s[k];
+    else el.value = s[k] ?? '';
+  });
+}
+
+function renderCanvas() {
+  const c = $('canvas');
+  if (layoutState.length === 0) layoutState.push({ rowId: newRowId(), sections: [] });
+  let html = '';
+  layoutState.forEach((row, ri) => {
+    html += `<div style="margin:6px 0;padding:8px;background:var(--blue-50);border-radius:6px"><strong>Row ${ri+1}</strong> · ${row.sections.length} sections: `;
+    html += row.sections.map(s => `<span style="background:var(--blue-700);color:#fff;padding:2px 8px;border-radius:4px;margin-right:4px">${s.type}.0</span>`).join('');
+    html += '</div>';
+  });
+  if (html === '') html = '<em>Empty</em>';
+  c.innerHTML = html;
+}
+function recalcAll() {
+  const totalSecs = layoutState.reduce((a, r) => a + r.sections.length, 0);
+  const pw = numVal('panelWidth', 41.3);
+  let totalMods = 0;
+  layoutState.forEach(r => r.sections.forEach(s => totalMods += getSectionModuleCount(s.type, pw).modules));
+  const watt = numVal('panelWattage', 430);
+  const kw = (totalMods * watt) / 1000;
+  $('layoutTotals').textContent = `${totalSecs} sections · ${totalMods} panels · ${kw.toFixed(1)} kW DC`;
+  $('summaryGrid').innerHTML = `<div>kW DC: <strong>${kw.toFixed(1)}</strong></div><div>Panels: <strong>${totalMods}</strong></div>`;
+  $('bomBody').innerHTML = totalSecs ? `<div>Modules: ${totalMods} ea</div><div>Posts: ${totalSecs * 4} ea</div>` : 'No BOM yet.';
+}
+
+const MAX_SECTIONS_PER_ROW = 10;
+function addRow() { layoutState.push({ rowId: newRowId(), sections: [] }); renderCanvas(); recalcAll(); }
+function removeRow(id) { layoutState = layoutState.filter(r => r.rowId !== id); renderCanvas(); recalcAll(); }
+function addSectionToRow(rowId, type) { const r = layoutState.find(r=>r.rowId===rowId); if (r) { r.sections.push({id:newSecId(),type}); renderCanvas(); recalcAll(); } }
+function removeSectionById(id) { layoutState.forEach(r => r.sections = r.sections.filter(s => s.id !== id)); renderCanvas(); recalcAll(); }
+function duplicateSection(id) {
+  for (const row of layoutState) {
+    const idx = row.sections.findIndex(s => s.id === id);
+    if (idx >= 0) { row.sections.splice(idx+1, 0, {id:newSecId(), type:row.sections[idx].type}); break; }
+  }
+  renderCanvas(); recalcAll();
+}
+function quickAdd(type) {
+  if (!layoutState.length) layoutState.push({ rowId: newRowId(), sections: [] });
+  const last = layoutState[layoutState.length - 1];
+  if (last.sections.length >= MAX_SECTIONS_PER_ROW) layoutState.push({ rowId: newRowId(), sections: [] });
+  layoutState[layoutState.length - 1].sections.push({ id: newSecId(), type });
+  renderCanvas(); recalcAll();
+}
+function clearLayout() {
+  if (!confirm('Clear layout?')) return;
+  layoutState = [{ rowId: newRowId(), sections: [] }];
+  renderCanvas(); recalcAll();
+}
+function autoBalance() {
+  const all = []; layoutState.forEach(r => r.sections.forEach(s => all.push({...s})));
+  if (!all.length) return toast('Nothing to balance');
+  const rows = layoutState.length || 1;
+  const per = Math.ceil(all.length / rows);
+  layoutState = [];
+  for (let i = 0; i < all.length; i += per) layoutState.push({ rowId: newRowId(), sections: all.slice(i, i+per) });
+  renderCanvas(); recalcAll();
+}
+function convertAll(type) {
+  layoutState.forEach(r => r.sections.forEach(s => s.type = type));
+  renderCanvas(); recalcAll(); toast('Converted to ' + type + '.0');
+}
+function generateSystem(targetKw) {
+  const watt = numVal('panelWattage', 430);
+  const pw = numVal('panelWidth', 41.3);
+  const mc = getSectionModuleCount('10', pw);
+  const kwPer = (mc.modules * watt) / 1000;
+  const total = Math.ceil(targetKw / kwPer);
+  const rowCount = Math.ceil(total / MAX_SECTIONS_PER_ROW);
+  layoutState = [];
+  let placed = 0;
+  for (let r = 0; r < rowCount; r++) {
+    const n = Math.min(MAX_SECTIONS_PER_ROW, total - placed);
+    const secs = [];
+    for (let s = 0; s < n; s++) secs.push({ id: newSecId(), type: '10' });
+    layoutState.push({ rowId: newRowId(), sections: secs });
+    placed += n;
+  }
+  renderCanvas(); recalcAll();
+  toast(`Generated ${total} sections (${(total*mc.modules*watt/1000).toFixed(1)} kW DC)`);
+}
+const STORAGE_KEY = 'sems_test_save';
+function autoSave() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ form: getFormState(), layout: layoutState, nextSec: _nextSectionId, nextRow: _nextRowId })); } catch(e){} }
+function autoRestore() { try { const r = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); if (!r) return false; setFormState(r.form); layoutState = r.layout || []; _nextSectionId = r.nextSec || 1; _nextRowId = r.nextRow || 1; return true; } catch(e) { return false; } }
+function saveProject() { autoSave(); toast('Saved'); }
+function restoreProject() { if (autoRestore()) { renderCanvas(); recalcAll(); toast('Restored'); } else toast('No save'); }
+function resetAll() { if (!confirm('Reset?')) return; setFormState(APP_DEFAULTS); layoutState = []; _nextSectionId = 1; _nextRowId = 1; renderCanvas(); recalcAll(); toast('Reset'); }
+function syncPanelFields() { /* noop in test */ }
+function printFull() { toast('Print full (mock)'); }
+function printBom() { toast('Print BOM (mock)'); }
+function exportBomCsv() { toast('Export CSV (mock)'); }
+function exportSummaryCsv() { toast('Export Summary (mock)'); }
+function copyBom() { toast('Copy BOM (mock)'); }
+
+setFormState(APP_DEFAULTS);
+renderCanvas();
+recalcAll();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SAAS LAYER PHASE 1 + 2 INJECTED HERE
+     ════════════════════════════════════════════════════════════════════════ -->
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  SEMS SAAS LAYER · Phase 1 + 2
+  ════════════════════════════════════════════════════════════════════════════
+  Drop-in module for configurator.html. Paste this entire block immediately
+  before the closing </body> tag. The module self-attaches to existing
+  card-* sections and wraps existing global functions. No edits required to
+  the rest of your configurator.
+
+  WHAT YOU GET
+  ────────────
+  Phase 1 — Foundation
+    1. Section nav rail (left side, sticky)
+    2. Progress bar (sticky under main nav)
+    3. Validation badges on every card head
+    4. Command palette (⌘K / Ctrl+K)
+    5. Undo / Redo (⌘Z / ⌘⇧Z, 30-deep stack)
+    6. Multi-project workspace (right drawer)
+
+  Phase 2 — Walkthrough
+    7. First-run guided tour (6 steps, replayable)
+    8. Wizard mode (5-step Quick Start)
+    9. Templates gallery (5 starter projects)
+
+  COMPATIBILITY
+    Reads:   layoutState, getFormState(), setFormState(), APP_DEFAULTS,
+             PANELS, INVERTERS, _nextSectionId, _nextRowId, toast()
+    Wraps:   addRow, addSectionToRow, removeSectionById, duplicateSection,
+             quickAdd, clearLayout, autoBalance, convertAll, generateSystem,
+             setFormState (for undo capture)
+    Storage: keys prefixed with `sems_saas_*` (your existing sems_array_builder_v2 untouched)
+
+  © 2014–2026 Sustainable Energy Management Systems LLC
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   SAAS LAYER · uses existing CSS variables from the host configurator
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Reserve space for the left nav rail on the body */
+body.saas-on { padding-left: 64px; }
+@media (max-width: 980px) { body.saas-on { padding-left: 0; } }
+
+/* ══════════ NAV RAIL ══════════ */
+.saas-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  background: var(--pure-white, #F5F6F8);
+  border-right: 1px solid var(--gray-200, #C8D0DC);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 12px;
+  gap: 6px;
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(27,58,92,0.1));
+}
+.saas-rail-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue-700, #2660A4), var(--blue-500, #3B8FDB));
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(27,58,92,0.12));
+}
+.saas-rail-divider {
+  width: 32px;
+  height: 1px;
+  background: var(--gray-200, #C8D0DC);
+  margin: 4px 0;
+}
+.saas-rail-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.18s ease;
+  color: var(--gray-500, #5A6578);
+  font-size: 18px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-rail-item:hover {
+  background: var(--blue-50, #DFE7EE);
+  color: var(--blue-700, #2660A4);
+  transform: translateX(2px);
+}
+.saas-rail-item.active {
+  background: var(--blue-700, #2660A4);
+  color: white;
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(27,58,92,0.12));
+}
+.saas-rail-item.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--blue-500, #3B8FDB);
+}
+.saas-rail-item .badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--blue-500, #3B8FDB);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  border: 2px solid var(--pure-white, #F5F6F8);
+}
+.saas-rail-item .badge.warn { background: #f59e0b; }
+.saas-rail-item .badge.ok   { background: #10b981; }
+.saas-rail-item .badge.err  { background: #ef4444; }
+.saas-rail-item .check {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #10b981;
+  color: white;
+  font-size: 8px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--pure-white, #F5F6F8);
+}
+.saas-rail-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--gray-900, #1A1E24);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.18s ease;
+  z-index: 1001;
+  letter-spacing: 0.01em;
+}
+.saas-rail-tooltip::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--gray-900, #1A1E24);
+}
+.saas-rail-item:hover .saas-rail-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
+.saas-rail-spacer { flex: 1; }
+
+@media (max-width: 980px) {
+  .saas-rail { display: none; }
+}
+
+/* ══════════ PROGRESS BAR ══════════ */
+.saas-progress {
+  position: sticky;
+  top: var(--nav-h, 80px);
+  z-index: 998;
+  background: rgba(244, 247, 251, 0.96);
+  backdrop-filter: blur(12px) saturate(1.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  border-bottom: 1px solid var(--gray-200, #C8D0DC);
+  padding: 10px clamp(20px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--gray-100, #DDE2EA);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  max-width: 340px;
+}
+.saas-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-700, #2660A4), var(--blue-500, #3B8FDB));
+  width: 0%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(59, 143, 219, 0.4);
+}
+.saas-progress-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-700, #353B44);
+  letter-spacing: 0.02em;
+}
+.saas-progress-stat {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500, #5A6578);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  background: var(--white, #EBEEF2);
+  border-radius: 999px;
+}
+.saas-progress-stat.warn { color: #b45309; background: rgba(245, 158, 11, 0.12); }
+.saas-progress-stat.ok   { color: #047857; background: rgba(16, 185, 129, 0.12); }
+.saas-progress-spacer { flex: 1; }
+.saas-progress-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.saas-pbtn {
+  background: var(--white, #EBEEF2);
+  border: 1px solid var(--gray-200, #C8D0DC);
+  color: var(--gray-700, #353B44);
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  letter-spacing: 0.02em;
+  font-family: inherit;
+}
+.saas-pbtn:hover { background: var(--blue-50, #DFE7EE); border-color: var(--blue-200, #A0CCDF); color: var(--blue-700, #2660A4); }
+.saas-pbtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.saas-pbtn .kbd {
+  background: var(--gray-100, #DDE2EA);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-700, #353B44);
+}
+
+@media (max-width: 720px) {
+  .saas-progress-stat { display: none; }
+  .saas-progress { gap: 10px; padding: 8px 14px; }
+}
+
+/* ══════════ CARD STATUS PILLS (injected into existing cfg-card-head) ══════════ */
+.saas-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-left: 8px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.saas-card-status.empty { background: var(--gray-100, #DDE2EA); color: var(--gray-500, #5A6578); }
+.saas-card-status.partial { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+.saas-card-status.complete { background: rgba(16, 185, 129, 0.14); color: #047857; }
+.saas-card-status.warning { background: rgba(239, 68, 68, 0.14); color: #b91c1c; }
+.saas-card-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.saas-card-status.complete .dot { animation: saas-pulse 2.4s ease-in-out infinite; }
+@keyframes saas-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ══════════ COMMAND PALETTE ══════════ */
+.saas-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 58, 92, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 14vh;
+  animation: saas-fade-in 0.18s ease;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-overlay.show { display: flex; }
+@keyframes saas-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.saas-palette {
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 16px;
+  width: 92%;
+  max-width: 640px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl, 0 24px 60px rgba(27,58,92,0.16));
+  overflow: hidden;
+  animation: saas-slide-up 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes saas-slide-up {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.saas-palette-input-wrap {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--gray-100, #DDE2EA);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.saas-palette-input-wrap svg {
+  flex-shrink: 0;
+  color: var(--gray-400, #8892A4);
+}
+.saas-palette-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--gray-700, #353B44);
+  font-family: inherit;
+}
+.saas-palette-input::placeholder { color: var(--gray-400, #8892A4); }
+.saas-palette-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+.saas-palette-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--gray-400, #8892A4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 12px 4px;
+}
+.saas-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.saas-palette-item:hover, .saas-palette-item.focused {
+  background: var(--blue-50, #DFE7EE);
+}
+.saas-palette-item-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--blue-50, #DFE7EE);
+  color: var(--blue-700, #2660A4);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.saas-palette-item.focused .saas-palette-item-icon {
+  background: var(--blue-700, #2660A4);
+  color: white;
+}
+.saas-palette-item-body { flex: 1; min-width: 0; }
+.saas-palette-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-700, #353B44);
+}
+.saas-palette-item-sub {
+  font-size: 12px;
+  color: var(--gray-500, #5A6578);
+}
+.saas-palette-shortcut {
+  display: flex;
+  gap: 3px;
+}
+.saas-kbd {
+  background: var(--white, #EBEEF2);
+  border: 1px solid var(--gray-200, #C8D0DC);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-600, #424A56);
+  letter-spacing: 0.04em;
+  font-family: inherit;
+}
+.saas-palette-empty {
+  padding: 38px 20px;
+  text-align: center;
+  color: var(--gray-400, #8892A4);
+  font-size: 13px;
+}
+
+/* ══════════ TOUR ══════════ */
+.saas-tour-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  display: none;
+}
+.saas-tour-overlay.show { display: block; }
+.saas-tour-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 58, 92, 0.55);
+  -webkit-mask: var(--mask, none);
+  mask: var(--mask, none);
+  pointer-events: auto;
+  transition: -webkit-mask 0.3s ease, mask 0.3s ease;
+}
+.saas-tour-popover {
+  position: fixed;
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 14px;
+  padding: 20px 22px;
+  width: 360px;
+  max-width: 92vw;
+  box-shadow: var(--shadow-xl, 0 24px 60px rgba(27,58,92,0.16));
+  z-index: 9999;
+  pointer-events: auto;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  animation: saas-pop-in 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes saas-pop-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.saas-tour-step {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--blue-700, #2660A4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.saas-tour-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.saas-tour-body {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray-600, #424A56);
+  margin-bottom: 16px;
+}
+.saas-tour-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.saas-tour-progress {
+  display: flex;
+  gap: 4px;
+}
+.saas-tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gray-200, #C8D0DC);
+  transition: all 0.2s ease;
+}
+.saas-tour-dot.active { background: var(--blue-500, #3B8FDB); width: 18px; border-radius: 3px; }
+.saas-tour-dot.done { background: var(--blue-700, #2660A4); }
+.saas-tour-buttons { display: flex; gap: 8px; }
+
+.saas-btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+.saas-btn-pri {
+  background: var(--blue-700, #2660A4);
+  color: white;
+}
+.saas-btn-pri:hover { background: var(--blue-900, #1B3A5C); transform: translateY(-1px); }
+.saas-btn-ghost {
+  background: transparent;
+  color: var(--gray-500, #5A6578);
+}
+.saas-btn-ghost:hover { background: var(--gray-100, #DDE2EA); color: var(--gray-700, #353B44); }
+.saas-btn-out {
+  background: transparent;
+  color: var(--blue-700, #2660A4);
+  border: 1px solid var(--blue-200, #A0CCDF);
+}
+.saas-btn-out:hover { background: var(--blue-50, #DFE7EE); }
+
+/* ══════════ WIZARD ══════════ */
+.saas-wizard {
+  position: fixed;
+  inset: 0;
+  background: var(--white, #EBEEF2);
+  z-index: 9990;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-wizard.show { display: flex; }
+.saas-wizard-header {
+  position: sticky;
+  top: 0;
+  background: rgba(244, 247, 251, 0.94);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border-bottom: 1px solid var(--gray-200, #C8D0DC);
+  padding: 16px clamp(20px, 4vw, 48px);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  z-index: 1;
+}
+.saas-wizard-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--blue-900, #1B3A5C);
+  letter-spacing: -0.01em;
+}
+.saas-wizard-brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue-700, #2660A4), var(--blue-500, #3B8FDB));
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+.saas-wizard-stepper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  max-width: 580px;
+  margin: 0 auto;
+}
+.saas-wizard-stepnum {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gray-200, #C8D0DC);
+  color: var(--gray-500, #5A6578);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+.saas-wizard-stepnum.done { background: var(--blue-700, #2660A4); color: white; }
+.saas-wizard-stepnum.active {
+  background: var(--blue-500, #3B8FDB);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(59, 143, 219, 0.25);
+}
+.saas-wizard-stepline {
+  flex: 1;
+  height: 2px;
+  background: var(--gray-200, #C8D0DC);
+  margin: 0 4px;
+}
+.saas-wizard-stepline.done { background: var(--blue-700, #2660A4); }
+
+.saas-wizard-body {
+  flex: 1;
+  padding: clamp(24px, 5vw, 64px) clamp(20px, 5vw, 48px);
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+}
+.saas-wizard-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--blue-500, #3B8FDB);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.saas-wizard-h1 {
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.saas-wizard-lead {
+  font-size: 15px;
+  color: var(--gray-600, #424A56);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.saas-wizard-card {
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(27,58,92,0.12));
+  margin-bottom: 16px;
+}
+.saas-wizard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.saas-wizard-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.saas-wizard-input label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-700, #353B44);
+  letter-spacing: 0.02em;
+}
+.saas-wizard-input input,
+.saas-wizard-input select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-200, #C8D0DC);
+  background: var(--white, #EBEEF2);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--gray-700, #353B44);
+  transition: all 0.15s ease;
+}
+.saas-wizard-input input:focus,
+.saas-wizard-input select:focus {
+  outline: none;
+  border-color: var(--blue-500, #3B8FDB);
+  background: var(--pure-white, #F5F6F8);
+  box-shadow: 0 0 0 3px rgba(59, 143, 219, 0.15);
+}
+.saas-wizard-pickgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.saas-wizard-pick {
+  border: 2px solid var(--gray-200, #C8D0DC);
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+.saas-wizard-pick:hover { border-color: var(--blue-300, #7EC8E8); transform: translateY(-1px); }
+.saas-wizard-pick.selected {
+  border-color: var(--blue-700, #2660A4);
+  background: var(--blue-50, #DFE7EE);
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(27,58,92,0.12));
+}
+.saas-wizard-pick-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  margin-bottom: 4px;
+}
+.saas-wizard-pick-sub {
+  font-size: 12px;
+  color: var(--gray-500, #5A6578);
+  line-height: 1.5;
+}
+.saas-wizard-slider {
+  width: 100%;
+  margin-top: 8px;
+  accent-color: var(--blue-700, #2660A4);
+}
+.saas-wizard-bignum {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--blue-900, #1B3A5C);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-align: center;
+  margin: 14px 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+.saas-wizard-bigsub {
+  font-size: 14px;
+  color: var(--gray-500, #5A6578);
+  text-align: center;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+.saas-wizard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+.saas-wizard-summary-item {
+  background: var(--white, #EBEEF2);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.saas-wizard-summary-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--gray-400, #8892A4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.saas-wizard-summary-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  letter-spacing: -0.01em;
+}
+
+.saas-wizard-footer {
+  position: sticky;
+  bottom: 0;
+  background: rgba(244, 247, 251, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--gray-200, #C8D0DC);
+  padding: 14px clamp(20px, 4vw, 48px);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.saas-wizard-footer .saas-btn { padding: 10px 20px; font-size: 13px; }
+.saas-wizard-spacer { flex: 1; }
+
+/* ══════════ TEMPLATES MODAL ══════════ */
+.saas-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 58, 92, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-modal.show { display: flex; animation: saas-fade-in 0.18s ease; }
+.saas-modal-box {
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 880px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl, 0 24px 60px rgba(27,58,92,0.16));
+  animation: saas-slide-up 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.saas-modal-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--gray-100, #DDE2EA);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.saas-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  letter-spacing: -0.01em;
+}
+.saas-modal-sub {
+  font-size: 12px;
+  color: var(--gray-500, #5A6578);
+  margin-top: 2px;
+}
+.saas-modal-close {
+  background: var(--white, #EBEEF2);
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--gray-500, #5A6578);
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  font-family: inherit;
+}
+.saas-modal-close:hover { background: var(--gray-100, #DDE2EA); color: var(--gray-700, #353B44); }
+.saas-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.saas-tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+.saas-tpl-card {
+  background: var(--white, #EBEEF2);
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: inherit;
+  text-align: left;
+}
+.saas-tpl-card:hover {
+  border-color: var(--blue-300, #7EC8E8);
+  background: var(--pure-white, #F5F6F8);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(27,58,92,0.12));
+}
+.saas-tpl-hero {
+  height: 72px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--tpl-c1, #2660A4), var(--tpl-c2, #3B8FDB));
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 30px;
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.saas-tpl-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 14px 14px;
+  pointer-events: none;
+}
+.saas-tpl-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  letter-spacing: -0.01em;
+}
+.saas-tpl-desc {
+  font-size: 12px;
+  color: var(--gray-500, #5A6578);
+  line-height: 1.5;
+  flex: 1;
+}
+.saas-tpl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.saas-tpl-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--blue-50, #DFE7EE);
+  color: var(--blue-700, #2660A4);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ══════════ PROJECTS DRAWER ══════════ */
+.saas-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  max-width: 90vw;
+  background: var(--pure-white, #F5F6F8);
+  z-index: 10000;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 30px rgba(27, 58, 92, 0.18);
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-drawer.show { transform: translateX(0); }
+.saas-drawer-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--gray-100, #DDE2EA);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.saas-drawer-body { flex: 1; overflow-y: auto; padding: 14px; }
+.saas-proj-item {
+  background: var(--white, #EBEEF2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 2px solid transparent;
+}
+.saas-proj-item:hover { background: var(--blue-50, #DFE7EE); }
+.saas-proj-item.active {
+  border-color: var(--blue-500, #3B8FDB);
+  background: var(--blue-50, #DFE7EE);
+}
+.saas-proj-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--blue-700, #2660A4), var(--blue-500, #3B8FDB));
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.saas-proj-info { flex: 1; min-width: 0; }
+.saas-proj-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-900, #1A1E24);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saas-proj-meta {
+  font-size: 11px;
+  color: var(--gray-500, #5A6578);
+}
+.saas-proj-actions { display: flex; gap: 4px; }
+.saas-proj-iconbtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--gray-500, #5A6578);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-family: inherit;
+}
+.saas-proj-iconbtn:hover { background: var(--gray-200, #C8D0DC); color: var(--gray-700, #353B44); }
+.saas-proj-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--gray-400, #8892A4);
+  font-size: 13px;
+}
+.saas-drawer-foot {
+  padding: 14px 18px;
+  border-top: 1px solid var(--gray-100, #DDE2EA);
+  display: flex;
+  gap: 8px;
+}
+.saas-drawer-foot .saas-btn { flex: 1; }
+
+/* ══════════ FAB STACK (bottom right) ══════════ */
+.saas-fabs {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 1499;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+.saas-fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--pure-white, #F5F6F8);
+  border: 1px solid var(--gray-200, #C8D0DC);
+  color: var(--blue-700, #2660A4);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(27,58,92,0.12));
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.saas-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, 0 12px 40px rgba(27,58,92,0.14));
+  background: var(--blue-50, #DFE7EE);
+}
+.saas-fab.primary {
+  background: var(--blue-700, #2660A4);
+  color: white;
+  border-color: var(--blue-700, #2660A4);
+}
+.saas-fab.primary:hover { background: var(--blue-900, #1B3A5C); }
+.saas-fab-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--gray-900, #1A1E24);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.18s ease;
+}
+.saas-fab:hover .saas-fab-tooltip { opacity: 1; visibility: visible; }
+
+/* ══════════ HIGHLIGHT (target during tour) ══════════ */
+.saas-tour-target {
+  position: relative;
+  z-index: 9997;
+  box-shadow: 0 0 0 4px var(--blue-500, #3B8FDB), 0 0 0 8px rgba(59, 143, 219, 0.3) !important;
+  border-radius: 14px;
+  transition: box-shadow 0.3s ease;
+}
+
+/* ══════════ UTILITIES ══════════ */
+.saas-hide { display: none !important; }
+.saas-fade-mask {
+  -webkit-mask: linear-gradient(180deg, black 80%, transparent 100%);
+  mask: linear-gradient(180deg, black 80%, transparent 100%);
+}
+
+/* Print: hide all SAAS layer */
+@media print {
+  .saas-rail, .saas-progress, .saas-overlay, .saas-modal,
+  .saas-drawer, .saas-fabs, .saas-tour-overlay, .saas-tour-popover, .saas-wizard {
+    display: none !important;
+  }
+  body.saas-on { padding-left: 0 !important; }
+}
+</style>
+
+
+<!-- ══════════ MARKUP (injected JS-side, but defining shells here is fine) ══════════ -->
+<div id="saas-root"></div>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SAAS LAYER · Phase 1 + 2 ENGINE
+   Self-attaches on window load. No edits required to existing configurator.
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  // Wait for the host configurator to initialize before attaching.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  function boot() {
+    // Give host scripts a moment to finish their initial render.
+    setTimeout(init, 60);
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     HOST GLOBAL ACCESSORS · the configurator declares its state via `let`,
+     which is NOT exposed on window. `new Function(...)` runs in global
+     scope so these helpers can read & write those bindings reliably.
+     ──────────────────────────────────────────────────────────────────────── */
+  const _getLayout = new Function('return typeof layoutState!=="undefined"?layoutState:null;');
+  const _setLayoutContents = new Function('a', 'if(typeof layoutState!=="undefined"){layoutState.length=0;for(var i=0;i<a.length;i++)layoutState.push(a[i]);}');
+  const _getNextSec = new Function('return typeof _nextSectionId!=="undefined"?_nextSectionId:1;');
+  const _setNextSec = new Function('v', 'if(typeof _nextSectionId!=="undefined")_nextSectionId=v;');
+  const _getNextRow = new Function('return typeof _nextRowId!=="undefined"?_nextRowId:1;');
+  const _setNextRow = new Function('v', 'if(typeof _nextRowId!=="undefined")_nextRowId=v;');
+
+  function host_layout()        { return _getLayout() || []; }
+  function host_setLayout(arr)  { _setLayoutContents(arr || []); }
+  function host_nextSec()       { return _getNextSec(); }
+  function host_setNextSec(v)   { _setNextSec(v); }
+  function host_nextRow()       { return _getNextRow(); }
+  function host_setNextRow(v)   { _setNextRow(v); }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     STATE & STORAGE
+     ──────────────────────────────────────────────────────────────────────── */
+  const SK = {
+    layer: 'sems_saas_v1',         // tour state, current project pointer
+    projects: 'sems_saas_projects' // array of saved projects
+  };
+
+  const SAAS = {
+    state: {
+      tourCompleted: false,
+      currentProjectId: null,
+      undo: [],
+      redo: [],
+      maxStack: 30,
+      capturing: true
+    },
+    sections: [
+      { id: 'card-project',   label: 'Project',    icon: '◫',  required: ['projectName'] },
+      { id: 'card-builder',   label: 'Builder',    icon: '▦',  required: ['_layout'] },
+      { id: 'card-config',    label: 'Config',     icon: '⚙',  required: ['panelModel','inverterModel'] },
+      { id: 'card-site',      label: 'Site',       icon: '⏚',  required: ['windSpeed','soilClass'] },
+      { id: 'card-foundation',label: 'Foundation', icon: '⚓',  required: [] },
+      { id: 'card-summary',   label: 'Summary',    icon: '⚡',  required: [] },
+      { id: 'card-bom',       label: 'BOM',        icon: '⊞',  required: ['_layout'] },
+      { id: 'card-export',    label: 'Export',     icon: '↓',  required: [] }
+    ]
+  };
+
+  function loadLayer() {
+    try { return JSON.parse(localStorage.getItem(SK.layer) || '{}'); }
+    catch { return {}; }
+  }
+  function saveLayer(data) {
+    try { localStorage.setItem(SK.layer, JSON.stringify(data)); } catch {}
+  }
+  function loadProjects() {
+    try { return JSON.parse(localStorage.getItem(SK.projects) || '[]'); }
+    catch { return []; }
+  }
+  function saveProjects(list) {
+    try { localStorage.setItem(SK.projects, JSON.stringify(list)); } catch {}
+  }
+
+  function safeToast(msg) {
+    if (typeof window.toast === 'function') return window.toast(msg);
+    console.log('[SAAS]', msg);
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     BOOT
+     ──────────────────────────────────────────────────────────────────────── */
+  function init() {
+    document.body.classList.add('saas-on');
+
+    // Hydrate state.
+    const layer = loadLayer();
+    SAAS.state.tourCompleted = !!layer.tourCompleted;
+    SAAS.state.currentProjectId = layer.currentProjectId || null;
+
+    // Build UI.
+    buildRail();
+    buildProgress();
+    buildPalette();
+    buildModal();
+    buildDrawer();
+    buildWizard();
+    buildTour();
+    buildFabs();
+    injectStatusPills();
+
+    // Wire everything up.
+    wrapMutators();
+    bindShortcuts();
+    bindScrollSpy();
+    setupChangeWatchers();
+
+    // First refresh.
+    refreshAll();
+
+    // First-run · only auto-show if user has no SaaS history AND no existing layout/projects.
+    if (!SAAS.state.tourCompleted) {
+      const hasLayoutData = host_layout().some(r => (r.sections || []).length > 0);
+      const hasSavedProjects = loadProjects().length > 0;
+      const hasHostSave = !!localStorage.getItem('sems_array_builder_v2');
+      const isReturningUser = hasLayoutData || hasSavedProjects || hasHostSave;
+      if (!isReturningUser) {
+        setTimeout(() => SAAS.tour.start(), 500);
+      } else {
+        // Mark complete silently so we don't keep checking.
+        const layer = loadLayer(); layer.tourCompleted = true; saveLayer(layer);
+        SAAS.state.tourCompleted = true;
+      }
+    }
+
+    console.log('[SEMS SaaS Layer] Phase 1+2 ready.');
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     1. NAV RAIL
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildRail() {
+    const rail = document.createElement('aside');
+    rail.className = 'saas-rail';
+    rail.id = 'saas-rail';
+    rail.innerHTML = `
+      <div class="saas-rail-logo" title="SEMS Configurator">S</div>
+      <div class="saas-rail-divider"></div>
+      ${SAAS.sections.map((s, i) => `
+        <button class="saas-rail-item" data-target="${s.id}" data-section-id="${s.id}">
+          <span class="saas-rail-ico">${s.icon}</span>
+          <span class="saas-rail-tooltip">${s.label}</span>
+        </button>
+      `).join('')}
+      <div class="saas-rail-spacer"></div>
+      <button class="saas-rail-item" data-action="palette">
+        <span>⌘</span>
+        <span class="saas-rail-tooltip">Command palette · ⌘K</span>
+      </button>
+      <button class="saas-rail-item" data-action="projects">
+        <span>≡</span>
+        <span class="saas-rail-tooltip">Projects</span>
+      </button>
+    `;
+    document.body.appendChild(rail);
+
+    // Click handlers
+    rail.querySelectorAll('[data-target]').forEach(el => {
+      el.addEventListener('click', () => scrollToCard(el.dataset.target));
+    });
+    rail.querySelector('[data-action="palette"]').addEventListener('click', () => SAAS.palette.open());
+    rail.querySelector('[data-action="projects"]').addEventListener('click', () => SAAS.drawer.open());
+  }
+
+  function scrollToCard(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const offset = 140; // account for sticky nav + progress
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     2. PROGRESS BAR
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildProgress() {
+    const bar = document.createElement('div');
+    bar.className = 'saas-progress';
+    bar.id = 'saas-progress';
+    bar.innerHTML = `
+      <div class="saas-progress-label" id="saas-progress-pct">0%</div>
+      <div class="saas-progress-track"><div class="saas-progress-fill" id="saas-progress-fill"></div></div>
+      <span class="saas-progress-stat ok" id="saas-progress-sections">0 sections</span>
+      <span class="saas-progress-stat" id="saas-progress-kw">0 kW DC</span>
+      <span class="saas-progress-stat warn saas-hide" id="saas-progress-warnings">0 warnings</span>
+      <div class="saas-progress-spacer"></div>
+      <div class="saas-progress-actions">
+        <button class="saas-pbtn" id="saas-undo" title="Undo">↶<span class="kbd">⌘Z</span></button>
+        <button class="saas-pbtn" id="saas-redo" title="Redo">↷<span class="kbd">⌘⇧Z</span></button>
+        <button class="saas-pbtn" id="saas-cmd" title="Command palette">⌘<span class="kbd">⌘K</span></button>
+      </div>
+    `;
+
+    // Insert directly under the existing nav for the host page.
+    const hostNav = document.querySelector('.nav');
+    if (hostNav && hostNav.parentNode) {
+      hostNav.parentNode.insertBefore(bar, hostNav.nextSibling);
+    } else {
+      document.body.insertBefore(bar, document.body.firstChild);
+    }
+
+    document.getElementById('saas-undo').addEventListener('click', () => SAAS.undo.undo());
+    document.getElementById('saas-redo').addEventListener('click', () => SAAS.undo.redo());
+    document.getElementById('saas-cmd').addEventListener('click', () => SAAS.palette.open());
+  }
+
+  function refreshProgress() {
+    const status = computeStatuses();
+    const completedCount = status.filter(s => s.state === 'complete').length;
+    const totalCount = SAAS.sections.length;
+    const pct = Math.round((completedCount / totalCount) * 100);
+
+    document.getElementById('saas-progress-fill').style.width = pct + '%';
+    document.getElementById('saas-progress-pct').textContent = pct + '% complete';
+
+    // Section / kW stats.
+    const layout = host_layout();
+    const totalSecs = layout.reduce((acc, r) => acc + (r.sections?.length || 0), 0);
+    const panelW = parseFloat(document.getElementById('panelWidth')?.value) || 41.3;
+    const panelWatt = parseFloat(document.getElementById('panelWattage')?.value) || 430;
+    let totalMods = 0;
+    layout.forEach(r => (r.sections || []).forEach(s => {
+      try {
+        const c = window.getSectionModuleCount(s.type, panelW);
+        totalMods += c.modules || 0;
+      } catch {}
+    }));
+    const kw = (totalMods * panelWatt) / 1000;
+
+    document.getElementById('saas-progress-sections').textContent =
+      totalSecs + ' section' + (totalSecs !== 1 ? 's' : '');
+    document.getElementById('saas-progress-kw').textContent =
+      kw >= 1000 ? (kw / 1000).toFixed(2) + ' MW DC' : kw.toFixed(1) + ' kW DC';
+
+    // Update undo/redo buttons.
+    document.getElementById('saas-undo').disabled = SAAS.state.undo.length === 0;
+    document.getElementById('saas-redo').disabled = SAAS.state.redo.length === 0;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     3. VALIDATION BADGES
+     ──────────────────────────────────────────────────────────────────────── */
+  function injectStatusPills() {
+    SAAS.sections.forEach(s => {
+      const card = document.getElementById(s.id);
+      if (!card) return;
+      const head = card.querySelector('.cfg-card-head');
+      if (!head) return;
+      if (head.querySelector('.saas-card-status')) return;
+
+      const pill = document.createElement('span');
+      pill.className = 'saas-card-status empty';
+      pill.dataset.sectionId = s.id;
+      pill.innerHTML = `<span class="dot"></span><span class="label">Empty</span>`;
+      head.appendChild(pill);
+    });
+  }
+
+  function computeStatuses() {
+    const form = (typeof window.getFormState === 'function') ? window.getFormState() : {};
+    const layout = host_layout();
+    const hasLayout = layout.some(r => (r.sections || []).length > 0);
+
+    return SAAS.sections.map(s => {
+      // Special cases
+      if (s.id === 'card-builder' || s.id === 'card-bom') {
+        return { id: s.id, state: hasLayout ? 'complete' : 'empty', label: hasLayout ? 'Ready' : 'Empty' };
+      }
+      if (s.id === 'card-foundation') {
+        const ws = parseFloat(document.getElementById('windSpeed')?.value);
+        const sc = document.getElementById('soilClass')?.value;
+        if (ws && sc && hasLayout) return { id: s.id, state: 'complete', label: 'Ready' };
+        return { id: s.id, state: 'empty', label: 'Pending inputs' };
+      }
+      if (s.id === 'card-summary') {
+        return { id: s.id, state: hasLayout ? 'complete' : 'empty', label: hasLayout ? 'Live' : 'No data' };
+      }
+      if (s.id === 'card-export') {
+        return { id: s.id, state: hasLayout ? 'complete' : 'empty', label: hasLayout ? 'Ready' : 'No data' };
+      }
+      // Generic: required form keys
+      const filled = (s.required || []).every(k => {
+        const v = form[k];
+        return v !== '' && v !== null && v !== undefined;
+      });
+      const total = (s.required || []).length;
+      const filledCount = (s.required || []).filter(k => {
+        const v = form[k];
+        return v !== '' && v !== null && v !== undefined;
+      }).length;
+      if (total === 0) return { id: s.id, state: 'complete', label: 'OK' };
+      if (filled) return { id: s.id, state: 'complete', label: 'Complete' };
+      if (filledCount > 0) return { id: s.id, state: 'partial', label: `${filledCount}/${total}` };
+      return { id: s.id, state: 'empty', label: 'Empty' };
+    });
+  }
+
+  function refreshStatuses() {
+    const statuses = computeStatuses();
+    statuses.forEach(s => {
+      const pill = document.querySelector(`.saas-card-status[data-section-id="${s.id}"]`);
+      if (pill) {
+        pill.className = 'saas-card-status ' + s.state;
+        pill.querySelector('.label').textContent = s.label;
+      }
+      // Rail badge
+      const rail = document.querySelector(`.saas-rail-item[data-section-id="${s.id}"]`);
+      if (rail) {
+        const old = rail.querySelector('.check, .badge');
+        if (old) old.remove();
+        if (s.state === 'complete') {
+          const check = document.createElement('span');
+          check.className = 'check';
+          check.textContent = '✓';
+          rail.appendChild(check);
+        } else if (s.state === 'partial') {
+          const badge = document.createElement('span');
+          badge.className = 'badge warn';
+          badge.textContent = '!';
+          rail.appendChild(badge);
+        }
+      }
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     4. COMMAND PALETTE
+     ──────────────────────────────────────────────────────────────────────── */
+  const PALETTE_ACTIONS = [
+    // Layout
+    { id: 'add-row', label: 'Add row', sub: 'Append a new row to the layout', icon: '+', group: 'Layout', run: () => safe('addRow') },
+    { id: 'add-8', label: 'Add 8.0 Series section to last row', sub: '8 panels per section', icon: '▣', group: 'Layout', run: () => safe('quickAdd', '8') },
+    { id: 'add-10', label: 'Add 10.0 Series section to last row', sub: '10 panels per section', icon: '▣', group: 'Layout', run: () => safe('quickAdd', '10') },
+    { id: 'auto-bal', label: 'Auto-balance rows', sub: 'Distribute sections evenly', icon: '⇌', group: 'Layout', run: () => safe('autoBalance') },
+    { id: 'all-8', label: 'Convert all sections to 8.0 Series', icon: '⇄', group: 'Layout', run: () => safe('convertAll', '8') },
+    { id: 'all-10', label: 'Convert all sections to 10.0 Series', icon: '⇄', group: 'Layout', run: () => safe('convertAll', '10') },
+    { id: 'gen-250', label: 'Generate 250 kW system', sub: '~250 kW DC across 10.0 Series', icon: '⚡', group: 'Layout', run: () => safe('generateSystem', 250) },
+    { id: 'gen-500', label: 'Generate 500 kW system', icon: '⚡', group: 'Layout', run: () => safe('generateSystem', 500) },
+    { id: 'gen-750', label: 'Generate 750 kW system', icon: '⚡', group: 'Layout', run: () => safe('generateSystem', 750) },
+    { id: 'gen-1mw', label: 'Generate 1 MW system', icon: '⚡', group: 'Layout', run: () => safe('generateSystem', 1000) },
+    { id: 'clear', label: 'Clear layout', sub: 'Remove all sections (with confirm)', icon: '✕', group: 'Layout', run: () => safe('clearLayout') },
+
+    // Navigation
+    ...SAAS.sections.map(s => ({
+      id: 'jump-' + s.id, label: 'Jump to ' + s.label, icon: '→', group: 'Navigation',
+      run: () => scrollToCard(s.id)
+    })),
+
+    // Project
+    { id: 'new', label: 'New project from template…', icon: '✦', group: 'Project', run: () => SAAS.modal.openTemplates() },
+    { id: 'wizard', label: 'Open Quick Start wizard', sub: '5-step guided flow', icon: '⇆', group: 'Project', run: () => SAAS.wizard.open() },
+    { id: 'projects', label: 'Show projects drawer', icon: '≡', group: 'Project', run: () => SAAS.drawer.open() },
+    { id: 'save', label: 'Save current project', icon: '↓', group: 'Project', run: () => safe('saveProject') },
+    { id: 'restore', label: 'Restore last save', icon: '↺', group: 'Project', run: () => safe('restoreProject') },
+    { id: 'reset', label: 'Reset all (with confirm)', icon: '⌫', group: 'Project', run: () => safe('resetAll') },
+
+    // Export
+    { id: 'print-full', label: 'Print full report', icon: '🖶', group: 'Export', run: () => safe('printFull') },
+    { id: 'print-bom', label: 'Print BOM only', icon: '🖶', group: 'Export', run: () => safe('printBom') },
+    { id: 'export-bom', label: 'Export BOM as CSV', icon: '↓', group: 'Export', run: () => safe('exportBomCsv') },
+    { id: 'export-sum', label: 'Export summary as CSV', icon: '↓', group: 'Export', run: () => safe('exportSummaryCsv') },
+    { id: 'copy-bom', label: 'Copy BOM to clipboard', icon: '⎘', group: 'Export', run: () => safe('copyBom') },
+
+    // Help / SaaS
+    { id: 'tour', label: 'Replay onboarding tour', icon: '?', group: 'Help', run: () => SAAS.tour.start(true) },
+    { id: 'undo', label: 'Undo last change', icon: '↶', group: 'Edit', run: () => SAAS.undo.undo() },
+    { id: 'redo', label: 'Redo', icon: '↷', group: 'Edit', run: () => SAAS.undo.redo() }
+  ];
+
+  function safe(fnName, ...args) {
+    if (typeof window[fnName] === 'function') {
+      try { window[fnName](...args); }
+      catch (e) { safeToast('Error: ' + e.message); console.error(e); }
+    } else {
+      safeToast('Function not available: ' + fnName);
+    }
+  }
+
+  function buildPalette() {
+    const overlay = document.createElement('div');
+    overlay.className = 'saas-overlay';
+    overlay.id = 'saas-palette-overlay';
+    overlay.innerHTML = `
+      <div class="saas-palette" role="dialog" aria-label="Command palette">
+        <div class="saas-palette-input-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" class="saas-palette-input" id="saas-palette-input"
+                 placeholder="Search actions, sections, or type a command…" autocomplete="off">
+          <span class="saas-kbd">ESC</span>
+        </div>
+        <div class="saas-palette-results" id="saas-palette-results"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const input = document.getElementById('saas-palette-input');
+    const results = document.getElementById('saas-palette-results');
+    let focusedIdx = 0;
+    let visible = [];
+
+    function render(query) {
+      const q = (query || '').trim().toLowerCase();
+      const filtered = q
+        ? PALETTE_ACTIONS.filter(a =>
+            a.label.toLowerCase().includes(q) ||
+            (a.sub || '').toLowerCase().includes(q) ||
+            (a.group || '').toLowerCase().includes(q))
+        : PALETTE_ACTIONS;
+
+      visible = filtered;
+      focusedIdx = 0;
+
+      if (!filtered.length) {
+        results.innerHTML = '<div class="saas-palette-empty">No matching actions. Try “add”, “export”, or “jump”.</div>';
+        return;
+      }
+
+      const groups = {};
+      filtered.forEach(a => {
+        groups[a.group || 'Other'] = groups[a.group || 'Other'] || [];
+        groups[a.group || 'Other'].push(a);
+      });
+
+      let html = '';
+      let idx = 0;
+      Object.keys(groups).forEach(g => {
+        html += `<div class="saas-palette-group-label">${g}</div>`;
+        groups[g].forEach(a => {
+          html += `
+            <div class="saas-palette-item ${idx === 0 ? 'focused' : ''}" data-idx="${idx}" data-action-id="${a.id}">
+              <div class="saas-palette-item-icon">${a.icon || '•'}</div>
+              <div class="saas-palette-item-body">
+                <div class="saas-palette-item-title">${a.label}</div>
+                ${a.sub ? `<div class="saas-palette-item-sub">${a.sub}</div>` : ''}
+              </div>
+            </div>
+          `;
+          idx++;
+        });
+      });
+      results.innerHTML = html;
+
+      results.querySelectorAll('.saas-palette-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const id = item.dataset.actionId;
+          const action = PALETTE_ACTIONS.find(a => a.id === id);
+          close();
+          setTimeout(() => action && action.run(), 50);
+        });
+        item.addEventListener('mousemove', () => {
+          results.querySelectorAll('.saas-palette-item').forEach(i => i.classList.remove('focused'));
+          item.classList.add('focused');
+          focusedIdx = parseInt(item.dataset.idx, 10);
+        });
+      });
+    }
+
+    function moveFocus(delta) {
+      if (!visible.length) return;
+      focusedIdx = (focusedIdx + delta + visible.length) % visible.length;
+      results.querySelectorAll('.saas-palette-item').forEach(i => i.classList.remove('focused'));
+      const target = results.querySelector(`.saas-palette-item[data-idx="${focusedIdx}"]`);
+      if (target) {
+        target.classList.add('focused');
+        target.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    input.addEventListener('input', e => render(e.target.value));
+    input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1); }
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        const a = visible[focusedIdx];
+        if (a) { close(); setTimeout(() => a.run(), 50); }
+      } else if (e.key === 'Escape') { close(); }
+    });
+
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+    function open() {
+      overlay.classList.add('show');
+      input.value = '';
+      render('');
+      setTimeout(() => input.focus(), 30);
+    }
+    function close() { overlay.classList.remove('show'); }
+
+    SAAS.palette = { open, close };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     5. UNDO / REDO
+     ──────────────────────────────────────────────────────────────────────── */
+  function snapshot() {
+    return {
+      form: (typeof window.getFormState === 'function') ? JSON.parse(JSON.stringify(window.getFormState())) : {},
+      layout: JSON.parse(JSON.stringify(host_layout())),
+      nextSec: host_nextSec(),
+      nextRow: host_nextRow(),
+      ts: Date.now()
+    };
+  }
+  function applySnapshot(snap) {
+    if (!snap) return;
+    SAAS.state.capturing = false;
+    if (snap.form && typeof window.setFormState === 'function') window.setFormState(snap.form);
+    if (typeof window.syncPanelFields === 'function') window.syncPanelFields();
+    host_setLayout(JSON.parse(JSON.stringify(snap.layout || [])));
+    if (typeof snap.nextSec === 'number') host_setNextSec(snap.nextSec);
+    if (typeof snap.nextRow === 'number') host_setNextRow(snap.nextRow);
+    if (typeof window.renderCanvas === 'function') window.renderCanvas();
+    if (typeof window.recalcAll === 'function') window.recalcAll();
+    SAAS.state.capturing = true;
+    refreshAll();
+  }
+  function captureUndo() {
+    if (!SAAS.state.capturing) return;
+    SAAS.state.undo.push(snapshot());
+    if (SAAS.state.undo.length > SAAS.state.maxStack) SAAS.state.undo.shift();
+    SAAS.state.redo = [];
+  }
+  function withoutCapture(fn) {
+    const prev = SAAS.state.capturing;
+    SAAS.state.capturing = false;
+    try { fn(); } finally { SAAS.state.capturing = prev; }
+  }
+  SAAS.undo = {
+    undo() {
+      if (SAAS.state.undo.length === 0) { safeToast('Nothing to undo'); return; }
+      const current = snapshot();
+      const prev = SAAS.state.undo.pop();
+      SAAS.state.redo.push(current);
+      applySnapshot(prev);
+      safeToast('Undo');
+    },
+    redo() {
+      if (SAAS.state.redo.length === 0) { safeToast('Nothing to redo'); return; }
+      const current = snapshot();
+      const next = SAAS.state.redo.pop();
+      SAAS.state.undo.push(current);
+      applySnapshot(next);
+      safeToast('Redo');
+    }
+  };
+
+  function wrapMutators() {
+    const wrap = ['addRow','addSectionToRow','removeRow','removeSectionById','duplicateSection',
+                  'quickAdd','clearLayout','autoBalance','convertAll','generateSystem','setFormState','resetAll'];
+    wrap.forEach(name => {
+      const orig = window[name];
+      if (typeof orig !== 'function') return;
+      window[name] = function () {
+        captureUndo();
+        const result = orig.apply(this, arguments);
+        // Defer refresh so DOM has settled.
+        setTimeout(refreshAll, 30);
+        return result;
+      };
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     6. PROJECTS DRAWER (multi-project workspace)
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildDrawer() {
+    const d = document.createElement('aside');
+    d.className = 'saas-drawer';
+    d.id = 'saas-drawer';
+    d.innerHTML = `
+      <div class="saas-drawer-head">
+        <div>
+          <div class="saas-modal-title">Projects</div>
+          <div class="saas-modal-sub">All saved on this device</div>
+        </div>
+        <button class="saas-modal-close" id="saas-drawer-close">×</button>
+      </div>
+      <div class="saas-drawer-body" id="saas-drawer-body"></div>
+      <div class="saas-drawer-foot">
+        <button class="saas-btn saas-btn-out" id="saas-drawer-new">+ New project</button>
+        <button class="saas-btn saas-btn-pri" id="saas-drawer-save">Save current</button>
+      </div>
+    `;
+    document.body.appendChild(d);
+
+    document.getElementById('saas-drawer-close').addEventListener('click', () => SAAS.drawer.close());
+    document.getElementById('saas-drawer-new').addEventListener('click', () => {
+      SAAS.drawer.close();
+      SAAS.modal.openTemplates();
+    });
+    document.getElementById('saas-drawer-save').addEventListener('click', () => SAAS.drawer.saveCurrent());
+
+    // Click outside drawer (on backdrop) to close.
+    d.addEventListener('click', e => { if (e.target === d) SAAS.drawer.close(); });
+
+    SAAS.drawer = {
+      open() {
+        d.classList.add('show');
+        renderProjects();
+      },
+      close() { d.classList.remove('show'); },
+      saveCurrent() {
+        const list = loadProjects();
+        const form = window.getFormState ? window.getFormState() : {};
+        const name = form.projectName || 'Untitled Project';
+        const id = SAAS.state.currentProjectId || ('p' + Date.now());
+        const data = {
+          id,
+          name,
+          customer: form.customerName || '',
+          updatedAt: Date.now(),
+          form,
+          layout: host_layout(),
+          nextSec: host_nextSec(),
+          nextRow: host_nextRow()
+        };
+        const idx = list.findIndex(p => p.id === id);
+        if (idx >= 0) list[idx] = data; else list.unshift(data);
+        saveProjects(list);
+        SAAS.state.currentProjectId = id;
+        const layer = loadLayer(); layer.currentProjectId = id; saveLayer(layer);
+        renderProjects();
+        safeToast('Saved “' + name + '”');
+      },
+      load(id) {
+        const list = loadProjects();
+        const p = list.find(x => x.id === id);
+        if (!p) return;
+        SAAS.state.capturing = false;
+        if (p.form && window.setFormState) window.setFormState(p.form);
+        if (window.syncPanelFields) window.syncPanelFields();
+        host_setLayout(JSON.parse(JSON.stringify(p.layout || [])));
+        if (typeof p.nextSec === 'number') host_setNextSec(p.nextSec);
+        if (typeof p.nextRow === 'number') host_setNextRow(p.nextRow);
+        if (window.renderCanvas) window.renderCanvas();
+        if (window.recalcAll) window.recalcAll();
+        SAAS.state.capturing = true;
+        SAAS.state.undo = []; SAAS.state.redo = [];
+        SAAS.state.currentProjectId = id;
+        const layer = loadLayer(); layer.currentProjectId = id; saveLayer(layer);
+        renderProjects();
+        refreshAll();
+        safeToast('Loaded “' + p.name + '”');
+        this.close();
+      },
+      duplicate(id) {
+        const list = loadProjects();
+        const p = list.find(x => x.id === id); if (!p) return;
+        const copy = JSON.parse(JSON.stringify(p));
+        copy.id = 'p' + Date.now();
+        copy.name = p.name + ' (copy)';
+        copy.updatedAt = Date.now();
+        list.unshift(copy);
+        saveProjects(list);
+        renderProjects();
+      },
+      rename(id) {
+        const list = loadProjects();
+        const p = list.find(x => x.id === id); if (!p) return;
+        const name = prompt('Rename project', p.name);
+        if (!name) return;
+        p.name = name; p.updatedAt = Date.now();
+        saveProjects(list);
+        renderProjects();
+      },
+      remove(id) {
+        if (!confirm('Delete this project? This cannot be undone.')) return;
+        let list = loadProjects();
+        list = list.filter(x => x.id !== id);
+        saveProjects(list);
+        if (SAAS.state.currentProjectId === id) {
+          SAAS.state.currentProjectId = null;
+          const layer = loadLayer(); layer.currentProjectId = null; saveLayer(layer);
+        }
+        renderProjects();
+      }
+    };
+  }
+
+  function renderProjects() {
+    const body = document.getElementById('saas-drawer-body');
+    if (!body) return;
+    const list = loadProjects().slice().sort((a, b) => b.updatedAt - a.updatedAt);
+    if (!list.length) {
+      body.innerHTML = `<div class="saas-proj-empty">No saved projects yet. Click <strong>Save current</strong> below or create from a template.</div>`;
+      return;
+    }
+    body.innerHTML = list.map(p => {
+      const initials = (p.name || '?').split(/\s+/).map(s => s[0] || '').join('').slice(0, 2).toUpperCase();
+      const date = new Date(p.updatedAt);
+      const meta = date.toLocaleDateString() + ' · ' + (p.customer || 'No customer');
+      const active = p.id === SAAS.state.currentProjectId;
+      return `
+        <div class="saas-proj-item ${active ? 'active' : ''}" data-id="${p.id}">
+          <div class="saas-proj-mark">${initials}</div>
+          <div class="saas-proj-info">
+            <div class="saas-proj-name">${escapeHtml(p.name)}</div>
+            <div class="saas-proj-meta">${escapeHtml(meta)}</div>
+          </div>
+          <div class="saas-proj-actions">
+            <button class="saas-proj-iconbtn" data-act="rename" title="Rename">✎</button>
+            <button class="saas-proj-iconbtn" data-act="dup" title="Duplicate">⎘</button>
+            <button class="saas-proj-iconbtn" data-act="del" title="Delete">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    body.querySelectorAll('.saas-proj-item').forEach(it => {
+      const id = it.dataset.id;
+      it.addEventListener('click', e => {
+        const btn = e.target.closest('button[data-act]');
+        if (btn) {
+          e.stopPropagation();
+          const act = btn.dataset.act;
+          if (act === 'rename') SAAS.drawer.rename(id);
+          if (act === 'dup') SAAS.drawer.duplicate(id);
+          if (act === 'del') SAAS.drawer.remove(id);
+          return;
+        }
+        SAAS.drawer.load(id);
+      });
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     7. FIRST-RUN TOUR
+     ──────────────────────────────────────────────────────────────────────── */
+  const TOUR_STEPS = [
+    {
+      target: null,
+      title: 'Welcome to the SEMS Configurator',
+      body: 'This tool lets you design storm-hardened solar arrays end-to-end — layout, engineering, BOM, and quote. The 60-second tour shows you the essentials. You can replay it anytime from the help button.'
+    },
+    {
+      target: '#saas-rail',
+      title: 'Section navigator',
+      body: 'Every part of a project lives in its own card. Click any icon on the left rail to jump to that section. A green check means it’s complete; an amber dot means it still needs input.'
+    },
+    {
+      target: '#saas-progress',
+      title: 'Live progress & undo',
+      body: 'Track project completion, total kW, and section count at a glance. Use ⌘Z / ⌘⇧Z to undo and redo any change to the layout or form.'
+    },
+    {
+      target: '#card-builder',
+      title: 'Visual array builder',
+      body: 'Drag sections onto the canvas, or use the auto-presets (250 kW, 500 kW, 1 MW). Every BOM line and every engineering output flows from what you build here.'
+    },
+    {
+      target: '#card-site',
+      title: 'Engineering inputs',
+      body: 'Wind, soil, seismic, and snow. The configurator runs ASCE 7-22 calculations live as you type. All inputs are saved to your local browser and never leave your machine.'
+    },
+    {
+      target: null,
+      title: 'You’re ready to build.',
+      body: 'Press ⌘K (or Ctrl+K) at any time to open the command palette — the fastest way to do anything in this tool. Try it now: type "generate 250 kW" and hit Enter.'
+    }
+  ];
+
+  function buildTour() {
+    const overlay = document.createElement('div');
+    overlay.className = 'saas-tour-overlay';
+    overlay.id = 'saas-tour-overlay';
+    overlay.innerHTML = `
+      <div class="saas-tour-mask" id="saas-tour-mask"></div>
+    `;
+    document.body.appendChild(overlay);
+
+    const popover = document.createElement('div');
+    popover.className = 'saas-tour-popover';
+    popover.id = 'saas-tour-popover';
+    popover.style.display = 'none';
+    document.body.appendChild(popover);
+
+    let stepIdx = 0;
+
+    function show(idx) {
+      stepIdx = idx;
+      const step = TOUR_STEPS[idx];
+      if (!step) { close(); return; }
+      overlay.classList.add('show');
+      popover.style.display = 'block';
+
+      // Move highlight
+      document.querySelectorAll('.saas-tour-target').forEach(el => el.classList.remove('saas-tour-target'));
+      let mask = 'none';
+      if (step.target) {
+        const tgt = document.querySelector(step.target);
+        if (tgt) {
+          tgt.classList.add('saas-tour-target');
+          tgt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const r = tgt.getBoundingClientRect();
+          mask = `radial-gradient(ellipse ${(r.width / 2) + 24}px ${(r.height / 2) + 24}px at ${r.left + r.width / 2}px ${r.top + r.height / 2}px, transparent 70%, black 100%)`;
+        }
+      }
+      document.getElementById('saas-tour-mask').style.setProperty('--mask', mask);
+
+      // Position popover
+      setTimeout(() => positionPopover(step), 120);
+
+      const dots = TOUR_STEPS.map((_, i) =>
+        `<span class="saas-tour-dot ${i === idx ? 'active' : i < idx ? 'done' : ''}"></span>`
+      ).join('');
+
+      popover.innerHTML = `
+        <div class="saas-tour-step">Step ${idx + 1} of ${TOUR_STEPS.length}</div>
+        <div class="saas-tour-title">${step.title}</div>
+        <div class="saas-tour-body">${step.body}</div>
+        <div class="saas-tour-actions">
+          <div class="saas-tour-progress">${dots}</div>
+          <div class="saas-tour-buttons">
+            <button class="saas-btn saas-btn-ghost" data-tour="skip">Skip</button>
+            ${idx > 0 ? '<button class="saas-btn saas-btn-out" data-tour="prev">Back</button>' : ''}
+            <button class="saas-btn saas-btn-pri" data-tour="${idx === TOUR_STEPS.length - 1 ? 'finish' : 'next'}">${idx === TOUR_STEPS.length - 1 ? 'Got it' : 'Next →'}</button>
+          </div>
+        </div>
+      `;
+
+      popover.querySelectorAll('[data-tour]').forEach(b => {
+        b.addEventListener('click', () => {
+          const a = b.dataset.tour;
+          if (a === 'next') show(idx + 1);
+          else if (a === 'prev') show(idx - 1);
+          else if (a === 'skip' || a === 'finish') close();
+        });
+      });
+    }
+
+    function positionPopover(step) {
+      const popoverEl = document.getElementById('saas-tour-popover');
+      if (!popoverEl) return;
+      if (!step.target) {
+        // Center
+        popoverEl.style.left = (window.innerWidth / 2 - 180) + 'px';
+        popoverEl.style.top = (window.innerHeight / 2 - 120) + 'px';
+        return;
+      }
+      const tgt = document.querySelector(step.target);
+      if (!tgt) {
+        popoverEl.style.left = (window.innerWidth / 2 - 180) + 'px';
+        popoverEl.style.top = '120px';
+        return;
+      }
+      const r = tgt.getBoundingClientRect();
+      const pw = 360, ph = 200;
+      let left = r.right + 18;
+      let top = r.top;
+      if (left + pw > window.innerWidth - 12) {
+        left = Math.max(12, r.left - pw - 18);
+        if (left < 12) { left = 80; top = r.bottom + 14; }
+      }
+      if (top + ph > window.innerHeight - 12) top = window.innerHeight - ph - 14;
+      if (top < 90) top = 90;
+      popoverEl.style.left = left + 'px';
+      popoverEl.style.top = top + 'px';
+    }
+
+    function close() {
+      overlay.classList.remove('show');
+      popover.style.display = 'none';
+      document.querySelectorAll('.saas-tour-target').forEach(el => el.classList.remove('saas-tour-target'));
+      const layer = loadLayer();
+      layer.tourCompleted = true;
+      saveLayer(layer);
+      SAAS.state.tourCompleted = true;
+    }
+
+    SAAS.tour = {
+      start(force) {
+        if (force) {
+          const layer = loadLayer(); layer.tourCompleted = false; saveLayer(layer);
+        }
+        show(0);
+      }
+    };
+
+    window.addEventListener('resize', () => {
+      if (overlay.classList.contains('show')) show(stepIdx);
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     8. WIZARD MODE (Quick Start)
+     ──────────────────────────────────────────────────────────────────────── */
+  const WIZARD_STEPS = ['Project', 'System size', 'Site', 'Equipment', 'Review'];
+
+  function buildWizard() {
+    const w = document.createElement('div');
+    w.className = 'saas-wizard';
+    w.id = 'saas-wizard';
+    w.innerHTML = `
+      <div class="saas-wizard-header">
+        <div class="saas-wizard-brand">
+          <div class="saas-wizard-brand-mark">S</div>
+          <div>SEMS · Quick Start</div>
+        </div>
+        <div class="saas-wizard-stepper" id="saas-wiz-stepper"></div>
+        <button class="saas-btn saas-btn-ghost" id="saas-wiz-exit">Exit · use Pro mode</button>
+      </div>
+      <div class="saas-wizard-body" id="saas-wiz-body"></div>
+      <div class="saas-wizard-footer">
+        <button class="saas-btn saas-btn-ghost" id="saas-wiz-back">← Back</button>
+        <div class="saas-wizard-spacer"></div>
+        <button class="saas-btn saas-btn-pri" id="saas-wiz-next">Continue →</button>
+      </div>
+    `;
+    document.body.appendChild(w);
+
+    document.getElementById('saas-wiz-exit').addEventListener('click', () => SAAS.wizard.close());
+    document.getElementById('saas-wiz-back').addEventListener('click', () => SAAS.wizard.back());
+    document.getElementById('saas-wiz-next').addEventListener('click', () => SAAS.wizard.next());
+
+    let step = 0;
+    const draft = {
+      projectName: '', customerName: '', siteAddress: '',
+      kw: 250,
+      terrain: 'B', soil: 'SM', special: 'none',
+      panelModel: '', inverterModel: ''
+    };
+
+    function renderStepper() {
+      const el = document.getElementById('saas-wiz-stepper');
+      let html = '';
+      WIZARD_STEPS.forEach((name, i) => {
+        const cls = i < step ? 'done' : (i === step ? 'active' : '');
+        html += `<div class="saas-wizard-stepnum ${cls}">${i < step ? '✓' : i + 1}</div>`;
+        if (i < WIZARD_STEPS.length - 1) html += `<div class="saas-wizard-stepline ${i < step ? 'done' : ''}"></div>`;
+      });
+      el.innerHTML = html;
+    }
+
+    function renderBody() {
+      const body = document.getElementById('saas-wiz-body');
+      const back = document.getElementById('saas-wiz-back');
+      const next = document.getElementById('saas-wiz-next');
+      back.style.visibility = step === 0 ? 'hidden' : 'visible';
+      next.textContent = step === WIZARD_STEPS.length - 1 ? 'Build & finish ✓' : 'Continue →';
+
+      if (step === 0) {
+        body.innerHTML = `
+          <div class="saas-wizard-eyebrow">Step 1 of 5</div>
+          <h1 class="saas-wizard-h1">Tell us about your project.</h1>
+          <p class="saas-wizard-lead">Just the basics — you can edit anything later in Pro mode.</p>
+          <div class="saas-wizard-card">
+            <div class="saas-wizard-grid">
+              <div class="saas-wizard-input">
+                <label>Project name</label>
+                <input type="text" id="wiz-projname" value="${escapeAttr(draft.projectName)}" placeholder="e.g. Acme Manufacturing 250 kW">
+              </div>
+              <div class="saas-wizard-input">
+                <label>Customer / Owner</label>
+                <input type="text" id="wiz-customer" value="${escapeAttr(draft.customerName)}" placeholder="Customer name">
+              </div>
+              <div class="saas-wizard-input" style="grid-column:1/-1">
+                <label>Site address</label>
+                <input type="text" id="wiz-addr" value="${escapeAttr(draft.siteAddress)}" placeholder="Full site address — used for code defaults">
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (step === 1) {
+        body.innerHTML = `
+          <div class="saas-wizard-eyebrow">Step 2 of 5</div>
+          <h1 class="saas-wizard-h1">How big is the system?</h1>
+          <p class="saas-wizard-lead">Slide to set a target. We’ll lay out the array using 10.0 Series sections — you can fine-tune in Pro mode.</p>
+          <div class="saas-wizard-card">
+            <div class="saas-wizard-bignum" id="wiz-kw-num">${draft.kw} kW</div>
+            <div class="saas-wizard-bigsub" id="wiz-kw-sub">DC nameplate · approximately</div>
+            <input type="range" class="saas-wizard-slider" id="wiz-kw" min="50" max="5000" step="50" value="${draft.kw}">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray-400);margin-top:4px;font-weight:700;letter-spacing:.05em">
+              <span>50 kW</span><span>1 MW</span><span>5 MW</span>
+            </div>
+            <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="saas-btn saas-btn-out" data-preset="100">100 kW</button>
+              <button class="saas-btn saas-btn-out" data-preset="250">250 kW</button>
+              <button class="saas-btn saas-btn-out" data-preset="500">500 kW</button>
+              <button class="saas-btn saas-btn-out" data-preset="1000">1 MW</button>
+              <button class="saas-btn saas-btn-out" data-preset="2500">2.5 MW</button>
+            </div>
+          </div>
+        `;
+        const slider = document.getElementById('wiz-kw');
+        const num = document.getElementById('wiz-kw-num');
+        slider.addEventListener('input', e => {
+          const v = parseInt(e.target.value, 10);
+          draft.kw = v;
+          num.textContent = v >= 1000 ? (v/1000).toFixed(2) + ' MW' : v + ' kW';
+        });
+        body.querySelectorAll('[data-preset]').forEach(b => {
+          b.addEventListener('click', () => {
+            const v = parseInt(b.dataset.preset, 10);
+            draft.kw = v;
+            slider.value = v;
+            num.textContent = v >= 1000 ? (v/1000).toFixed(2) + ' MW' : v + ' kW';
+          });
+        });
+      }
+
+      if (step === 2) {
+        body.innerHTML = `
+          <div class="saas-wizard-eyebrow">Step 3 of 5</div>
+          <h1 class="saas-wizard-h1">Where is the site?</h1>
+          <p class="saas-wizard-lead">Three quick questions auto-fill 20+ ASCE 7-22 inputs. You can override anything in Pro mode.</p>
+          <div class="saas-wizard-card">
+            <div style="font-size:13px;font-weight:800;color:var(--gray-700);margin-bottom:8px">Terrain & exposure</div>
+            <div class="saas-wizard-pickgrid" data-pick="terrain">
+              <button class="saas-wizard-pick ${draft.terrain==='B'?'selected':''}" data-val="B">
+                <div class="saas-wizard-pick-title">Suburban / wooded</div>
+                <div class="saas-wizard-pick-sub">Exposure B · most common</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.terrain==='C'?'selected':''}" data-val="C">
+                <div class="saas-wizard-pick-title">Open / farmland</div>
+                <div class="saas-wizard-pick-sub">Exposure C · open terrain</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.terrain==='D'?'selected':''}" data-val="D">
+                <div class="saas-wizard-pick-title">Coastal / shoreline</div>
+                <div class="saas-wizard-pick-sub">Exposure D · unobstructed</div>
+              </button>
+            </div>
+          </div>
+          <div class="saas-wizard-card">
+            <div style="font-size:13px;font-weight:800;color:var(--gray-700);margin-bottom:8px">Soil</div>
+            <div class="saas-wizard-pickgrid" data-pick="soil">
+              <button class="saas-wizard-pick ${draft.soil==='GW'?'selected':''}" data-val="GW">
+                <div class="saas-wizard-pick-title">Gravel / rock</div>
+                <div class="saas-wizard-pick-sub">Excellent bearing</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.soil==='SM'?'selected':''}" data-val="SM">
+                <div class="saas-wizard-pick-title">Mixed sand</div>
+                <div class="saas-wizard-pick-sub">Typical · SM</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.soil==='CL'?'selected':''}" data-val="CL">
+                <div class="saas-wizard-pick-title">Clay</div>
+                <div class="saas-wizard-pick-sub">Lower bearing · verify</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.soil==='unknown'?'selected':''}" data-val="unknown">
+                <div class="saas-wizard-pick-title">Unknown</div>
+                <div class="saas-wizard-pick-sub">Use conservative defaults</div>
+              </button>
+            </div>
+          </div>
+          <div class="saas-wizard-card">
+            <div style="font-size:13px;font-weight:800;color:var(--gray-700);margin-bottom:8px">Special hazards</div>
+            <div class="saas-wizard-pickgrid" data-pick="special">
+              <button class="saas-wizard-pick ${draft.special==='none'?'selected':''}" data-val="none">
+                <div class="saas-wizard-pick-title">None</div>
+                <div class="saas-wizard-pick-sub">Standard occupancy</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.special==='hurricane'?'selected':''}" data-val="hurricane">
+                <div class="saas-wizard-pick-title">Hurricane zone</div>
+                <div class="saas-wizard-pick-sub">150+ mph · FL / TX / Carolinas</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.special==='snow'?'selected':''}" data-val="snow">
+                <div class="saas-wizard-pick-title">Heavy snow</div>
+                <div class="saas-wizard-pick-sub">Northern / mountain</div>
+              </button>
+              <button class="saas-wizard-pick ${draft.special==='seismic'?'selected':''}" data-val="seismic">
+                <div class="saas-wizard-pick-title">High seismic</div>
+                <div class="saas-wizard-pick-sub">CA / AK / PR</div>
+              </button>
+            </div>
+          </div>
+        `;
+        body.querySelectorAll('[data-pick]').forEach(group => {
+          group.querySelectorAll('.saas-wizard-pick').forEach(b => {
+            b.addEventListener('click', () => {
+              const k = group.dataset.pick;
+              const v = b.dataset.val;
+              draft[k] = v;
+              group.querySelectorAll('.saas-wizard-pick').forEach(x => x.classList.remove('selected'));
+              b.classList.add('selected');
+            });
+          });
+        });
+      }
+
+      if (step === 3) {
+        const panels = window.PANELS || [];
+        const inverters = window.INVERTERS || [];
+        if (!draft.panelModel && panels.length) draft.panelModel = panels[0].id;
+        if (!draft.inverterModel && inverters.length) draft.inverterModel = inverters[0].id;
+        body.innerHTML = `
+          <div class="saas-wizard-eyebrow">Step 4 of 5</div>
+          <h1 class="saas-wizard-h1">Pick your equipment.</h1>
+          <p class="saas-wizard-lead">From your catalog. Add or change models later in Pro mode.</p>
+          <div class="saas-wizard-card">
+            <div style="font-size:13px;font-weight:800;color:var(--gray-700);margin-bottom:8px">Panel model</div>
+            <div class="saas-wizard-pickgrid" data-pick="panelModel">
+              ${panels.slice(0, 6).map(p => `
+                <button class="saas-wizard-pick ${draft.panelModel===p.id?'selected':''}" data-val="${p.id}">
+                  <div class="saas-wizard-pick-title">${escapeHtml(p.manufacturer || '')}</div>
+                  <div class="saas-wizard-pick-sub">${escapeHtml(p.model || p.id)} · ${p.wattage || '—'} W</div>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          <div class="saas-wizard-card">
+            <div style="font-size:13px;font-weight:800;color:var(--gray-700);margin-bottom:8px">Inverter</div>
+            <div class="saas-wizard-pickgrid" data-pick="inverterModel">
+              ${inverters.slice(0, 6).map(p => `
+                <button class="saas-wizard-pick ${draft.inverterModel===p.id?'selected':''}" data-val="${p.id}">
+                  <div class="saas-wizard-pick-title">${escapeHtml(p.manufacturer || '')}</div>
+                  <div class="saas-wizard-pick-sub">${escapeHtml(p.model || p.id)} · ${p.acKw || '—'} kW AC</div>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        body.querySelectorAll('[data-pick]').forEach(group => {
+          group.querySelectorAll('.saas-wizard-pick').forEach(b => {
+            b.addEventListener('click', () => {
+              draft[group.dataset.pick] = b.dataset.val;
+              group.querySelectorAll('.saas-wizard-pick').forEach(x => x.classList.remove('selected'));
+              b.classList.add('selected');
+            });
+          });
+        });
+      }
+
+      if (step === 4) {
+        const wind = special2wind(draft.special, draft.terrain);
+        const snow = draft.special === 'snow' ? 60 : 15;
+        const seism = draft.special === 'seismic' ? 'D' : 'A';
+        body.innerHTML = `
+          <div class="saas-wizard-eyebrow">Step 5 of 5</div>
+          <h1 class="saas-wizard-h1">Ready to build.</h1>
+          <p class="saas-wizard-lead">Here’s what we’ll send into the dashboard. Edit anything later.</p>
+          <div class="saas-wizard-card">
+            <div class="saas-wizard-summary-grid">
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Project</div>
+                <div class="saas-wizard-summary-value">${escapeHtml(draft.projectName || 'Untitled')}</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Customer</div>
+                <div class="saas-wizard-summary-value">${escapeHtml(draft.customerName || '—')}</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Target size</div>
+                <div class="saas-wizard-summary-value">${draft.kw >= 1000 ? (draft.kw/1000).toFixed(2)+' MW' : draft.kw+' kW'} DC</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Wind speed</div>
+                <div class="saas-wizard-summary-value">${wind} mph</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Exposure</div>
+                <div class="saas-wizard-summary-value">${draft.terrain}</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Soil</div>
+                <div class="saas-wizard-summary-value">${draft.soil === 'unknown' ? 'SM (default)' : draft.soil}</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Snow load</div>
+                <div class="saas-wizard-summary-value">${snow} psf</div>
+              </div>
+              <div class="saas-wizard-summary-item">
+                <div class="saas-wizard-summary-label">Seismic</div>
+                <div class="saas-wizard-summary-value">Cat ${seism}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function applyDraftToHost() {
+      // Project info
+      setVal('projectName', draft.projectName);
+      setVal('customerName', draft.customerName);
+      setVal('siteAddress', draft.siteAddress);
+      // Equipment
+      if (draft.panelModel) setVal('panelModel', draft.panelModel);
+      if (draft.inverterModel) setVal('inverterModel', draft.inverterModel);
+      // Site
+      setVal('exposureCat', draft.terrain || 'B');
+      setVal('soilClass', draft.soil === 'unknown' ? 'SM' : (draft.soil || 'SM'));
+      // Hazard-driven
+      const wind = special2wind(draft.special, draft.terrain);
+      const snow = draft.special === 'snow' ? 60 : 15;
+      const seism = draft.special === 'seismic' ? 'D' : 'A';
+      const sds = draft.special === 'seismic' ? 0.75 : 0.15;
+      setVal('windSpeed', wind);
+      setVal('snowLoad', snow);
+      setVal('seismicCat', seism);
+      setVal('sds', sds);
+      if (draft.special === 'hurricane') setVal('riskCategory', 'III');
+      // Trigger any change handlers the host has wired up.
+      dispatchAll();
+      // Generate the array.
+      if (window.generateSystem) window.generateSystem(draft.kw);
+      if (window.recalcAll) window.recalcAll();
+    }
+
+    SAAS.wizard = {
+      open() {
+        // Pre-populate from existing form if any.
+        const f = window.getFormState ? window.getFormState() : {};
+        draft.projectName = draft.projectName || f.projectName || '';
+        draft.customerName = draft.customerName || f.customerName || '';
+        draft.siteAddress = draft.siteAddress || f.siteAddress || '';
+        step = 0;
+        renderStepper();
+        renderBody();
+        w.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      },
+      close() {
+        w.classList.remove('show');
+        document.body.style.overflow = '';
+      },
+      next() {
+        // Capture this step's input
+        if (step === 0) {
+          draft.projectName = document.getElementById('wiz-projname').value;
+          draft.customerName = document.getElementById('wiz-customer').value;
+          draft.siteAddress = document.getElementById('wiz-addr').value;
+        }
+        if (step === WIZARD_STEPS.length - 1) {
+          captureUndo();
+          withoutCapture(() => applyDraftToHost());
+          this.close();
+          safeToast('Wizard complete — your project is built.');
+          refreshAll();
+          return;
+        }
+        step++;
+        renderStepper();
+        renderBody();
+      },
+      back() {
+        if (step === 0) return;
+        step--;
+        renderStepper();
+        renderBody();
+      }
+    };
+  }
+
+  function special2wind(s, terrain) {
+    if (s === 'hurricane') return 170;
+    if (terrain === 'D') return 130;
+    if (terrain === 'C') return 115;
+    return 110;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     9. TEMPLATES GALLERY
+     ──────────────────────────────────────────────────────────────────────── */
+  const TEMPLATES = [
+    {
+      id: 'blank',
+      name: 'Blank canvas',
+      desc: 'Start fresh with the SEMS defaults.',
+      hero: '◇',
+      colors: ['#5A6578', '#8892A4'],
+      tags: ['empty'],
+      apply: () => {
+        if (window.resetAll) window.resetAll();
+      }
+    },
+    {
+      id: 'pa-250',
+      name: 'PA · 250 kW Commercial',
+      desc: 'Pennsylvania commercial roof-edge — typical inland conditions, 110 mph, B exposure.',
+      hero: '⚡',
+      colors: ['#1B3A5C', '#2660A4'],
+      tags: ['250 kW', 'PA', 'commercial'],
+      apply: () => applyTemplate({
+        projectName: 'PA Commercial 250 kW',
+        siteAddress: 'Pennsylvania, USA',
+        windSpeed: 110, exposureCat: 'B', soilClass: 'SM',
+        snowLoad: 25, sds: 0.15, riskCategory: 'II', frostDepth: 36,
+        kw: 250
+      })
+    },
+    {
+      id: 'fl-500',
+      name: 'FL · 500 kW Hurricane',
+      desc: 'Florida coastal — Cat 4 hurricane zone, 170 mph, exposure D, sandy soil.',
+      hero: '🌀',
+      colors: ['#0e7490', '#06b6d4'],
+      tags: ['500 kW', 'FL', 'hurricane', 'Cat 4'],
+      apply: () => applyTemplate({
+        projectName: 'FL Hurricane 500 kW',
+        siteAddress: 'Florida, USA',
+        windSpeed: 170, exposureCat: 'D', soilClass: 'SP',
+        snowLoad: 0, sds: 0.10, riskCategory: 'III', frostDepth: 0,
+        kw: 500
+      })
+    },
+    {
+      id: 'agri-1mw',
+      name: 'Agri-PV · 1 MW',
+      desc: 'Open farmland · 1 MW utility-scale · exposure C · clay-loam soil.',
+      hero: '🌾',
+      colors: ['#15803d', '#22c55e'],
+      tags: ['1 MW', 'agri', 'utility'],
+      apply: () => applyTemplate({
+        projectName: 'Agri-PV 1 MW',
+        siteAddress: 'Open farmland',
+        windSpeed: 115, exposureCat: 'C', soilClass: 'CL',
+        snowLoad: 20, sds: 0.20, riskCategory: 'II', frostDepth: 30,
+        kw: 1000
+      })
+    },
+    {
+      id: 'high-seismic-750',
+      name: 'CA · 750 kW High Seismic',
+      desc: 'California utility · Seismic Cat D · S_DS 0.85 · stiff soil.',
+      hero: '⚠',
+      colors: ['#b45309', '#f59e0b'],
+      tags: ['750 kW', 'CA', 'seismic'],
+      apply: () => applyTemplate({
+        projectName: 'CA Seismic 750 kW',
+        siteAddress: 'California, USA',
+        windSpeed: 115, exposureCat: 'C', soilClass: 'SC',
+        snowLoad: 5, sds: 0.85, seismicCat: 'D', riskCategory: 'II', frostDepth: 12,
+        kw: 750
+      })
+    },
+    {
+      id: 'demo-100',
+      name: 'Demo · 100 kW',
+      desc: 'Quick 100 kW preset for demos and onboarding.',
+      hero: '▣',
+      colors: ['#3B8FDB', '#7EC8E8'],
+      tags: ['100 kW', 'demo'],
+      apply: () => applyTemplate({
+        projectName: 'Demo 100 kW',
+        siteAddress: 'Demo site',
+        windSpeed: 110, exposureCat: 'B', soilClass: 'SM',
+        snowLoad: 15, sds: 0.15, riskCategory: 'II', frostDepth: 24,
+        kw: 100
+      })
+    }
+  ];
+
+  function applyTemplate(spec) {
+    captureUndo();
+    withoutCapture(() => {
+      if (window.setFormState) window.setFormState(window.APP_DEFAULTS || {});
+      if (window.syncPanelFields) window.syncPanelFields();
+      // Apply template values
+      setVal('projectName', spec.projectName || '');
+      setVal('siteAddress', spec.siteAddress || '');
+      setVal('windSpeed', spec.windSpeed);
+      setVal('exposureCat', spec.exposureCat);
+      setVal('soilClass', spec.soilClass);
+      setVal('snowLoad', spec.snowLoad);
+      setVal('sds', spec.sds);
+      setVal('seismicCat', spec.seismicCat || 'A');
+      setVal('riskCategory', spec.riskCategory);
+      setVal('frostDepth', spec.frostDepth);
+      dispatchAll();
+      host_setLayout([]);
+      host_setNextSec(1);
+      host_setNextRow(1);
+      if (window.generateSystem) window.generateSystem(spec.kw);
+      if (window.recalcAll) window.recalcAll();
+    });
+    refreshAll();
+    safeToast('Template applied: ' + (spec.projectName || ''));
+  }
+
+  function buildModal() {
+    const modal = document.createElement('div');
+    modal.className = 'saas-modal';
+    modal.id = 'saas-templates-modal';
+    modal.innerHTML = `
+      <div class="saas-modal-box">
+        <div class="saas-modal-head">
+          <div>
+            <div class="saas-modal-title">Start a new project</div>
+            <div class="saas-modal-sub">Pick a template, or open the Quick Start wizard for a guided setup.</div>
+          </div>
+          <button class="saas-modal-close" id="saas-templates-close">×</button>
+        </div>
+        <div class="saas-modal-body">
+          <div class="saas-tpl-grid" id="saas-tpl-grid"></div>
+          <div style="margin-top:18px;text-align:center">
+            <button class="saas-btn saas-btn-out" id="saas-tpl-wizard">Or use the 5-step Quick Start wizard →</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('saas-templates-close').addEventListener('click', () => SAAS.modal.closeTemplates());
+    modal.addEventListener('click', e => { if (e.target === modal) SAAS.modal.closeTemplates(); });
+    document.getElementById('saas-tpl-wizard').addEventListener('click', () => {
+      SAAS.modal.closeTemplates();
+      setTimeout(() => SAAS.wizard.open(), 80);
+    });
+
+    SAAS.modal = {
+      openTemplates() {
+        renderTemplates();
+        modal.classList.add('show');
+      },
+      closeTemplates() { modal.classList.remove('show'); }
+    };
+
+    function renderTemplates() {
+      const g = document.getElementById('saas-tpl-grid');
+      g.innerHTML = TEMPLATES.map(t => `
+        <button class="saas-tpl-card" data-tpl="${t.id}" style="--tpl-c1:${t.colors[0]};--tpl-c2:${t.colors[1]}">
+          <div class="saas-tpl-hero">${t.hero}</div>
+          <div class="saas-tpl-name">${t.name}</div>
+          <div class="saas-tpl-desc">${t.desc}</div>
+          <div class="saas-tpl-tags">
+            ${t.tags.map(tag => `<span class="saas-tpl-tag">${tag}</span>`).join('')}
+          </div>
+        </button>
+      `).join('');
+      g.querySelectorAll('[data-tpl]').forEach(b => {
+        b.addEventListener('click', () => {
+          const t = TEMPLATES.find(x => x.id === b.dataset.tpl);
+          SAAS.modal.closeTemplates();
+          setTimeout(() => t && t.apply(), 80);
+        });
+      });
+    }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     FAB STACK (help, wizard, palette quick-access)
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildFabs() {
+    const stack = document.createElement('div');
+    stack.className = 'saas-fabs';
+    stack.id = 'saas-fabs';
+    stack.innerHTML = `
+      <button class="saas-fab" id="saas-fab-tour" title="Replay tour">
+        ?
+        <span class="saas-fab-tooltip">Replay tour</span>
+      </button>
+      <button class="saas-fab" id="saas-fab-templates" title="New from template">
+        ✦
+        <span class="saas-fab-tooltip">Templates</span>
+      </button>
+      <button class="saas-fab primary" id="saas-fab-wizard" title="Quick Start">
+        ⇆
+        <span class="saas-fab-tooltip">Quick Start wizard</span>
+      </button>
+    `;
+    document.body.appendChild(stack);
+    document.getElementById('saas-fab-tour').addEventListener('click', () => SAAS.tour.start(true));
+    document.getElementById('saas-fab-templates').addEventListener('click', () => SAAS.modal.openTemplates());
+    document.getElementById('saas-fab-wizard').addEventListener('click', () => SAAS.wizard.open());
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     KEYBOARD SHORTCUTS
+     ──────────────────────────────────────────────────────────────────────── */
+  function bindShortcuts() {
+    document.addEventListener('keydown', e => {
+      const meta = e.ctrlKey || e.metaKey;
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      const isTyping = ['INPUT','TEXTAREA','SELECT'].includes(tag);
+
+      // ⌘K command palette
+      if (meta && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        SAAS.palette.open();
+        return;
+      }
+      // ⌘Z undo, ⌘⇧Z redo
+      if (meta && (e.key === 'z' || e.key === 'Z')) {
+        if (isTyping) return; // let native undo work in inputs
+        e.preventDefault();
+        if (e.shiftKey) SAAS.undo.redo(); else SAAS.undo.undo();
+        return;
+      }
+      // ⌘S save current project
+      if (meta && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        SAAS.drawer.saveCurrent();
+        return;
+      }
+      // ? show tour
+      if (e.key === '?' && !isTyping) {
+        e.preventDefault();
+        SAAS.tour.start(true);
+      }
+      // ESC close overlays
+      if (e.key === 'Escape') {
+        document.getElementById('saas-palette-overlay')?.classList.remove('show');
+        document.getElementById('saas-templates-modal')?.classList.remove('show');
+        document.getElementById('saas-drawer')?.classList.remove('show');
+      }
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     SCROLL SPY · highlight rail item for current section
+     ──────────────────────────────────────────────────────────────────────── */
+  function bindScrollSpy() {
+    if (typeof IntersectionObserver === 'undefined') return; // jsdom / very old browsers
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          document.querySelectorAll('.saas-rail-item').forEach(i => i.classList.remove('active'));
+          const railItem = document.querySelector(`.saas-rail-item[data-target="${id}"]`);
+          if (railItem) railItem.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 });
+
+    SAAS.sections.forEach(s => {
+      const el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     CHANGE WATCHERS · refresh on form mutations
+     ──────────────────────────────────────────────────────────────────────── */
+  function setupChangeWatchers() {
+    document.addEventListener('input', e => {
+      if (e.target.matches('input, select, textarea')) {
+        // Throttle
+        clearTimeout(SAAS._refreshT);
+        SAAS._refreshT = setTimeout(refreshAll, 200);
+      }
+    });
+    document.addEventListener('change', e => {
+      if (e.target.matches('input, select, textarea')) {
+        // For form changes, capture an undo snapshot too (debounced).
+        clearTimeout(SAAS._undoT);
+        SAAS._undoT = setTimeout(() => {
+          captureUndo();
+          refreshAll();
+        }, 600);
+      }
+    });
+  }
+
+  function refreshAll() {
+    refreshStatuses();
+    refreshProgress();
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     UTILITIES
+     ──────────────────────────────────────────────────────────────────────── */
+  function setVal(id, v) {
+    const el = document.getElementById(id);
+    if (!el || v === undefined || v === null) return;
+    if (el.tagName === 'SELECT' || el.type === 'checkbox') {
+      el.value = v;
+    } else {
+      el.value = v;
+    }
+  }
+  function dispatchAll() {
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+
+  // Expose for debugging
+  window.SAAS = SAAS;
+})();
+</script>
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  END SEMS SAAS LAYER · Phase 1 + 2
+  ════════════════════════════════════════════════════════════════════════════
+-->
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  SEMS SAAS LAYER · Phase 3 (Intelligence)
+  ════════════════════════════════════════════════════════════════════════════
+  Drop-in module that extends Phase 1 + 2. Paste this entire block
+  immediately AFTER the Phase 1+2 layer (still before </body>).
+  Order matters: Phase 1+2 must load first because Phase 3 extends window.SAAS.
+
+  WHAT YOU GET
+  ────────────
+  10. ZIP code defaults · type a ZIP, auto-suggest 8 ASCE 7-22 inputs
+  11. Engineering console · live "why?" explanations under wind/snow/seismic
+      values, with the actual ASCE formula and intermediate steps
+  12. Live PV production · year-1 kWh + capacity factor + revenue estimate
+      using a simplified PVWatts model with region-aware irradiance
+  13. Cost roll-up · per-line BOM costing with $/W toggle and category breakdown
+
+  © 2014–2026 Sustainable Energy Management Systems LLC
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<style>
+/* ══════════ ENG CONSOLE (right rail) ══════════ */
+.saas-engcon {
+  position: fixed;
+  top: calc(var(--nav-h, 80px) + 56px);
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 92vw;
+  background: var(--pure-white, #F5F6F8);
+  border-left: 1px solid var(--gray-200, #C8D0DC);
+  z-index: 996;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 30px rgba(27, 58, 92, 0.14);
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-engcon.show { transform: translateX(0); }
+
+.saas-engcon-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-100, #DDE2EA);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.saas-engcon-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.saas-engcon-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+  animation: saas-pulse 2.4s ease-in-out infinite;
+}
+.saas-engcon-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px 60px;
+}
+
+.saas-eng-block {
+  background: var(--white, #EBEEF2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.saas-eng-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.saas-eng-block-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gray-700, #353B44);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.saas-eng-block-result {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blue-900, #1B3A5C);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.saas-eng-formula {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--gray-600, #424A56);
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px dashed var(--gray-200, #C8D0DC);
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.saas-eng-formula em { color: var(--blue-700, #2660A4); font-style: normal; font-weight: 700; }
+.saas-eng-formula b  { color: var(--gray-900, #1A1E24); font-weight: 700; }
+
+.saas-eng-step {
+  display: flex;
+  font-size: 11px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--gray-100, #DDE2EA);
+  font-variant-numeric: tabular-nums;
+}
+.saas-eng-step:last-child { border-bottom: none; }
+.saas-eng-step-label { color: var(--gray-500, #5A6578); flex: 1; }
+.saas-eng-step-val { font-weight: 700; color: var(--gray-700, #353B44); }
+
+.saas-eng-cite {
+  font-size: 10px;
+  color: var(--gray-400, #8892A4);
+  margin-top: 8px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+.saas-eng-flag {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.5;
+}
+.saas-eng-flag::before { content: '⚠'; flex-shrink: 0; }
+
+/* ══════════ PROD / COST CARDS (injected after summary) ══════════ */
+.saas-intel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.saas-intel-card {
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(27,58,92,0.1));
+  position: relative;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-intel-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--blue-500, #3B8FDB);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.saas-intel-big {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--blue-900, #1B3A5C);
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.saas-intel-sub {
+  font-size: 11px;
+  color: var(--gray-500, #5A6578);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.saas-intel-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--gray-100, #DDE2EA);
+  font-variant-numeric: tabular-nums;
+}
+.saas-intel-row:last-child { border-bottom: none; }
+.saas-intel-row-label { color: var(--gray-500, #5A6578); font-weight: 500; }
+.saas-intel-row-val { color: var(--gray-700, #353B44); font-weight: 700; }
+
+.saas-intel-toggle {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  background: var(--white, #EBEEF2);
+  border-radius: 999px;
+  padding: 2px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.saas-intel-toggle button {
+  background: transparent;
+  border: none;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: var(--gray-500, #5A6578);
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+}
+.saas-intel-toggle button.active {
+  background: var(--blue-700, #2660A4);
+  color: white;
+}
+
+.saas-intel-cat-bar {
+  height: 10px;
+  display: flex;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--gray-100, #DDE2EA);
+  margin: 10px 0 6px;
+}
+.saas-intel-cat-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.saas-intel-cat-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+  font-size: 10px;
+  margin-top: 6px;
+}
+.saas-intel-cat-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  color: var(--gray-600, #424A56);
+}
+.saas-intel-cat-leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* ══════════ ZIP HELPER chip on site address ══════════ */
+.saas-zip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--blue-50, #DFE7EE);
+  color: var(--blue-700, #2660A4);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  letter-spacing: 0.02em;
+}
+.saas-zip-chip:hover { background: var(--blue-700, #2660A4); color: white; }
+.saas-zip-chip::before { content: '📍'; font-size: 10px; }
+
+.saas-zip-popover {
+  position: absolute;
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 14px;
+  box-shadow: var(--shadow-xl, 0 24px 60px rgba(27,58,92,0.16));
+  padding: 18px;
+  width: 380px;
+  max-width: 90vw;
+  z-index: 1500;
+  animation: saas-pop-in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.saas-zip-popover h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.saas-zip-popover p {
+  font-size: 12px;
+  color: var(--gray-500, #5A6578);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.saas-zip-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+.saas-zip-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--gray-100, #DDE2EA);
+  font-size: 12px;
+}
+.saas-zip-item-key { color: var(--gray-700, #353B44); font-weight: 600; }
+.saas-zip-item-val { color: var(--blue-700, #2660A4); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+@media print {
+  .saas-engcon, .saas-zip-popover { display: none !important; }
+}
+</style>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SAAS PHASE 3 ENGINE
+   Extends window.SAAS (must load AFTER Phase 1+2)
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  // Wait for Phase 1+2 to be present.
+  if (!window.SAAS) {
+    console.warn('[SAAS Phase 3] window.SAAS not found — Phase 1+2 layer must load first.');
+    return;
+  }
+
+  // Reuse host accessors from Phase 1+2 if exposed; otherwise build our own.
+  const _getLayout = new Function('return typeof layoutState!=="undefined"?layoutState:[];');
+  function host_layout() { return _getLayout() || []; }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ZIP DEFAULTS DATA · state-level baseline + ZIP-prefix overrides for
+     hurricane / high-snow / high-seismic zones. Values map to ASCE 7-22.
+     ──────────────────────────────────────────────────────────────────────── */
+  const ZIP_PREFIX_TO_STATE = {
+    // Northeast
+    '00': 'PR', '01': 'MA', '02': 'MA', '03': 'NH', '04': 'ME', '05': 'VT',
+    '06': 'CT', '07': 'NJ', '08': 'NJ', '09': 'NY',
+    '10': 'NY', '11': 'NY', '12': 'NY', '13': 'NY', '14': 'NY',
+    '15': 'PA', '16': 'PA', '17': 'PA', '18': 'PA', '19': 'PA',
+    // Mid-Atlantic
+    '20': 'DC', '21': 'MD', '22': 'VA', '23': 'VA', '24': 'WV', '25': 'WV',
+    '26': 'WV', '27': 'NC', '28': 'NC', '29': 'SC',
+    // Southeast
+    '30': 'GA', '31': 'GA', '32': 'FL', '33': 'FL', '34': 'FL',
+    '35': 'AL', '36': 'AL', '37': 'TN', '38': 'TN', '39': 'MS',
+    // Midwest
+    '40': 'KY', '41': 'KY', '42': 'KY', '43': 'OH', '44': 'OH', '45': 'OH',
+    '46': 'IN', '47': 'IN', '48': 'MI', '49': 'MI',
+    '50': 'IA', '51': 'IA', '52': 'IA', '53': 'WI', '54': 'WI',
+    '55': 'MN', '56': 'MN', '57': 'SD', '58': 'ND', '59': 'MT',
+    '60': 'IL', '61': 'IL', '62': 'IL', '63': 'MO', '64': 'MO', '65': 'MO',
+    '66': 'KS', '67': 'KS', '68': 'NE', '69': 'NE',
+    // South Central
+    '70': 'LA', '71': 'LA', '72': 'AR', '73': 'OK', '74': 'OK',
+    '75': 'TX', '76': 'TX', '77': 'TX', '78': 'TX', '79': 'TX',
+    // Mountain
+    '80': 'CO', '81': 'CO', '82': 'WY', '83': 'ID', '84': 'UT',
+    '85': 'AZ', '86': 'AZ', '87': 'NM', '88': 'NM', '89': 'NV',
+    // West
+    '90': 'CA', '91': 'CA', '92': 'CA', '93': 'CA', '94': 'CA', '95': 'CA', '96': 'CA',
+    '97': 'OR', '98': 'WA', '99': 'AK'
+  };
+
+  // Climate defaults per state · ASCE 7-22 design values (typical, not absolute)
+  const STATE_CLIMATE = {
+    AK: { wind: 130, exp: 'C', snow: 60, frost: 60, sds: 0.50, seismic: 'C', irr: 3.8, descr: 'Alaska — heavy snow, high seismic in southern coast, extreme cold' },
+    AL: { wind: 135, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Alabama — Gulf hurricane risk, mild winters' },
+    AR: { wind: 115, exp: 'C', snow: 8,  frost: 24, sds: 0.40, seismic: 'C', irr: 4.6, descr: 'Arkansas — New Madrid seismic zone, tornado-prone' },
+    AZ: { wind: 110, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 6.0, descr: 'Arizona — high irradiance, desert, low snow' },
+    CA: { wind: 110, exp: 'C', snow: 5,  frost: 6,  sds: 0.85, seismic: 'D', irr: 5.5, descr: 'California — high seismic statewide, mild winters' },
+    CO: { wind: 115, exp: 'C', snow: 30, frost: 36, sds: 0.30, seismic: 'B', irr: 5.4, descr: 'Colorado — variable snow by elevation' },
+    CT: { wind: 115, exp: 'B', snow: 35, frost: 42, sds: 0.20, seismic: 'B', irr: 4.3, descr: 'Connecticut — moderate snow, low seismic' },
+    DC: { wind: 110, exp: 'B', snow: 25, frost: 30, sds: 0.18, seismic: 'B', irr: 4.5, descr: 'D.C. — moderate snow, low wind' },
+    DE: { wind: 115, exp: 'B', snow: 20, frost: 30, sds: 0.18, seismic: 'B', irr: 4.5, descr: 'Delaware — coastal moderate winds' },
+    FL: { wind: 150, exp: 'C', snow: 0,  frost: 0,  sds: 0.10, seismic: 'A', irr: 5.2, descr: 'Florida — hurricane zone, near-zero snow' },
+    GA: { wind: 120, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Georgia — coastal hurricane risk near Atlantic' },
+    HI: { wind: 130, exp: 'D', snow: 0,  frost: 0,  sds: 0.50, seismic: 'C', irr: 5.5, descr: 'Hawaii — trade winds, volcanic / seismic' },
+    IA: { wind: 110, exp: 'C', snow: 30, frost: 42, sds: 0.20, seismic: 'B', irr: 4.5, descr: 'Iowa — heavy snow, derecho exposure' },
+    ID: { wind: 110, exp: 'C', snow: 35, frost: 36, sds: 0.30, seismic: 'C', irr: 4.7, descr: 'Idaho — mountain snow, moderate seismic' },
+    IL: { wind: 110, exp: 'C', snow: 25, frost: 36, sds: 0.30, seismic: 'B', irr: 4.4, descr: 'Illinois — New Madrid in south' },
+    IN: { wind: 110, exp: 'C', snow: 25, frost: 36, sds: 0.20, seismic: 'B', irr: 4.3, descr: 'Indiana — moderate climate' },
+    KS: { wind: 115, exp: 'C', snow: 18, frost: 36, sds: 0.20, seismic: 'B', irr: 4.8, descr: 'Kansas — tornado alley, low snow south' },
+    KY: { wind: 110, exp: 'C', snow: 18, frost: 24, sds: 0.30, seismic: 'C', irr: 4.4, descr: 'Kentucky — New Madrid seismic risk west' },
+    LA: { wind: 150, exp: 'C', snow: 0,  frost: 0,  sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Louisiana — Gulf hurricanes, no snow' },
+    MA: { wind: 130, exp: 'B', snow: 50, frost: 48, sds: 0.20, seismic: 'B', irr: 4.2, descr: 'Massachusetts — heavy snow, coastal nor\'easters' },
+    MD: { wind: 115, exp: 'B', snow: 25, frost: 30, sds: 0.18, seismic: 'B', irr: 4.5, descr: 'Maryland — moderate everything' },
+    ME: { wind: 130, exp: 'B', snow: 60, frost: 60, sds: 0.20, seismic: 'B', irr: 4.1, descr: 'Maine — heavy snow, coastal exposure' },
+    MI: { wind: 105, exp: 'C', snow: 40, frost: 42, sds: 0.18, seismic: 'A', irr: 3.9, descr: 'Michigan — lake-effect snow' },
+    MN: { wind: 110, exp: 'C', snow: 50, frost: 60, sds: 0.18, seismic: 'A', irr: 4.2, descr: 'Minnesota — heavy snow, deep frost' },
+    MO: { wind: 115, exp: 'C', snow: 18, frost: 30, sds: 0.50, seismic: 'D', irr: 4.6, descr: 'Missouri — New Madrid seismic in southeast' },
+    MS: { wind: 140, exp: 'C', snow: 2,  frost: 6,  sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Mississippi — Gulf hurricane risk' },
+    MT: { wind: 120, exp: 'C', snow: 40, frost: 60, sds: 0.30, seismic: 'C', irr: 4.7, descr: 'Montana — variable, mountain snow' },
+    NC: { wind: 130, exp: 'C', snow: 12, frost: 18, sds: 0.20, seismic: 'B', irr: 4.7, descr: 'North Carolina — coastal hurricane risk' },
+    ND: { wind: 115, exp: 'C', snow: 50, frost: 72, sds: 0.18, seismic: 'A', irr: 4.4, descr: 'North Dakota — extreme winters, deep frost' },
+    NE: { wind: 115, exp: 'C', snow: 25, frost: 42, sds: 0.18, seismic: 'A', irr: 4.7, descr: 'Nebraska — derecho and tornado exposure' },
+    NH: { wind: 120, exp: 'B', snow: 60, frost: 54, sds: 0.20, seismic: 'B', irr: 4.2, descr: 'New Hampshire — heavy snow' },
+    NJ: { wind: 130, exp: 'B', snow: 25, frost: 36, sds: 0.20, seismic: 'B', irr: 4.4, descr: 'New Jersey — coastal exposure' },
+    NM: { wind: 110, exp: 'C', snow: 12, frost: 18, sds: 0.20, seismic: 'B', irr: 5.6, descr: 'New Mexico — high irradiance' },
+    NV: { wind: 110, exp: 'C', snow: 8,  frost: 12, sds: 0.50, seismic: 'D', irr: 5.7, descr: 'Nevada — high seismic, high irradiance' },
+    NY: { wind: 115, exp: 'B', snow: 35, frost: 42, sds: 0.20, seismic: 'B', irr: 4.0, descr: 'New York — variable, lake-effect upstate' },
+    OH: { wind: 105, exp: 'C', snow: 25, frost: 36, sds: 0.18, seismic: 'B', irr: 4.0, descr: 'Ohio — moderate climate' },
+    OK: { wind: 120, exp: 'C', snow: 10, frost: 18, sds: 0.30, seismic: 'B', irr: 4.9, descr: 'Oklahoma — tornado alley, induced seismicity' },
+    OR: { wind: 110, exp: 'C', snow: 20, frost: 18, sds: 0.50, seismic: 'D', irr: 4.0, descr: 'Oregon — Cascadia seismic, mild coast' },
+    PA: { wind: 110, exp: 'B', snow: 30, frost: 36, sds: 0.15, seismic: 'B', irr: 4.2, descr: 'Pennsylvania — moderate snow, low seismic' },
+    PR: { wind: 165, exp: 'D', snow: 0,  frost: 0,  sds: 0.85, seismic: 'D', irr: 5.5, descr: 'Puerto Rico — Cat 5 hurricane + high seismic' },
+    RI: { wind: 130, exp: 'B', snow: 40, frost: 42, sds: 0.20, seismic: 'B', irr: 4.3, descr: 'Rhode Island — coastal nor\'easters' },
+    SC: { wind: 130, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 4.8, descr: 'South Carolina — coastal hurricane risk' },
+    SD: { wind: 115, exp: 'C', snow: 35, frost: 60, sds: 0.18, seismic: 'A', irr: 4.6, descr: 'South Dakota — heavy snow, deep frost' },
+    TN: { wind: 115, exp: 'C', snow: 12, frost: 24, sds: 0.40, seismic: 'C', irr: 4.4, descr: 'Tennessee — New Madrid seismic west' },
+    TX: { wind: 130, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 5.2, descr: 'Texas — coastal hurricane / inland tornado' },
+    UT: { wind: 110, exp: 'C', snow: 30, frost: 30, sds: 0.50, seismic: 'D', irr: 5.3, descr: 'Utah — Wasatch fault, variable snow' },
+    VA: { wind: 115, exp: 'C', snow: 18, frost: 24, sds: 0.20, seismic: 'B', irr: 4.5, descr: 'Virginia — coastal exposure east' },
+    VT: { wind: 110, exp: 'B', snow: 60, frost: 54, sds: 0.18, seismic: 'B', irr: 4.0, descr: 'Vermont — heavy snow' },
+    WA: { wind: 110, exp: 'C', snow: 25, frost: 18, sds: 0.50, seismic: 'D', irr: 3.7, descr: 'Washington — Cascadia seismic, wet coast' },
+    WI: { wind: 105, exp: 'C', snow: 40, frost: 48, sds: 0.18, seismic: 'A', irr: 4.1, descr: 'Wisconsin — heavy snow, low wind' },
+    WV: { wind: 110, exp: 'B', snow: 25, frost: 30, sds: 0.20, seismic: 'B', irr: 4.0, descr: 'West Virginia — moderate' },
+    WY: { wind: 115, exp: 'C', snow: 35, frost: 48, sds: 0.30, seismic: 'C', irr: 5.0, descr: 'Wyoming — high winds, mountain snow' }
+  };
+
+  // ZIP prefix (3-digit) overlays for special hazard zones
+  const ZIP3_OVERLAY = {
+    // South Florida hurricane zone (Cat 4-5) · prefix 330 also covers FL Keys (33040-33050)
+    '330': { wind: 175, exp: 'D', descr: 'South Florida coastal / Keys — Cat 5 wind' },
+    '331': { wind: 170, exp: 'D' }, '332': { wind: 170, exp: 'D' },
+    '333': { wind: 170, exp: 'D' }, '334': { wind: 165, exp: 'D' },
+    // North Carolina Outer Banks
+    '275': { wind: 150, exp: 'D' }, '278': { wind: 145, exp: 'D' },
+    // Texas Gulf Coast
+    '770': { wind: 150, exp: 'D' }, '773': { wind: 150, exp: 'D' },
+    '774': { wind: 145, exp: 'D' }, '775': { wind: 145, exp: 'D' },
+    '779': { wind: 140, exp: 'D' },
+    // San Francisco Bay (high seismic)
+    '940': { sds: 1.0, seismic: 'D' }, '941': { sds: 1.0, seismic: 'D' },
+    '945': { sds: 0.95, seismic: 'D' }, '946': { sds: 0.95, seismic: 'D' },
+    // Los Angeles
+    '900': { sds: 1.1, seismic: 'D' }, '902': { sds: 1.0, seismic: 'D' },
+    // Buffalo / lake effect
+    '142': { snow: 80 },
+    // Northern Maine
+    '047': { snow: 80, frost: 72 },
+    // Colorado mountains
+    '816': { snow: 60, frost: 48 }, '814': { snow: 70, frost: 48 }
+  };
+
+  function lookupZip(zip) {
+    if (!zip || typeof zip !== 'string') return null;
+    const five = zip.replace(/[^\d]/g, '').slice(0, 5);
+    if (five.length !== 5) return null;
+
+    const prefix2 = five.slice(0, 2);
+    const prefix3 = five.slice(0, 3);
+    const state = ZIP_PREFIX_TO_STATE[prefix2];
+    if (!state) return null;
+
+    const base = STATE_CLIMATE[state];
+    if (!base) return null;
+
+    const overlay = ZIP3_OVERLAY[prefix3] || {};
+    return {
+      zip: five,
+      state,
+      wind:    overlay.wind    ?? base.wind,
+      exp:     overlay.exp     ?? base.exp,
+      snow:    overlay.snow    ?? base.snow,
+      frost:   overlay.frost   ?? base.frost,
+      sds:     overlay.sds     ?? base.sds,
+      seismic: overlay.seismic ?? base.seismic,
+      irr:     overlay.irr     ?? base.irr,
+      descr:   overlay.descr   ?? base.descr
+    };
+  }
+
+  // Try to extract a 5-digit ZIP from any address-like string
+  function findZipInString(s) {
+    if (!s) return null;
+    const m = String(s).match(/\b(\d{5})\b/);
+    return m ? m[1] : null;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ENGINEERING CALCS · ASCE 7-22 simplified (matches host configurator
+     where possible; explanations make the math visible).
+     ──────────────────────────────────────────────────────────────────────── */
+  function v(id, fb) {
+    const el = document.getElementById(id);
+    if (!el) return fb;
+    const n = parseFloat(el.value);
+    return isNaN(n) ? fb : n;
+  }
+  function s(id, fb) {
+    const el = document.getElementById(id);
+    return el ? (el.value || fb || '') : (fb || '');
+  }
+
+  // Velocity pressure exposure coefficient Kz · ASCE 7-22 Table 26.10-1
+  // Uses simplified formula: Kz = 2.01 * (z/zg)^(2/alpha)
+  // For solar arrays the typical mean roof height z is 6-15 ft (low rise).
+  function computeKz(exp, height) {
+    const params = { B: { alpha: 7.0, zg: 1200 }, C: { alpha: 9.5, zg: 900 }, D: { alpha: 11.5, zg: 700 } };
+    const p = params[exp] || params.C;
+    const z = Math.max(15, height); // ASCE 7-22 §26.10.1 minimum z = 15 ft
+    return 2.01 * Math.pow(z / p.zg, 2 / p.alpha);
+  }
+
+  function computeWindPressure() {
+    const V    = v('windSpeed', 110);
+    const exp  = s('exposureCat', 'C');
+    const Kzt  = v('kzt', 1.0);
+    const Ke   = v('ke', 1.0);
+    const Kd   = 0.85; // ASCE 7-22 Table 26.6-1 for solar panels (other structures)
+    const G    = 0.85; // gust effect factor
+    const z    = 8;    // typical mean height of low-tilt PV array in ft
+    const Kz   = computeKz(exp, z);
+
+    // q_z = 0.00256 * Kz * Kzt * Kd * Ke * V^2  (psf, V in mph)
+    const qz = 0.00256 * Kz * Kzt * Kd * Ke * V * V;
+
+    // Net design pressure (simplified all-zone envelope for components & cladding)
+    // p = qz * G * (GCp - GCpi). For rooftop solar, conservative GCp range ≈ +1.0 / -1.6.
+    const GCp_max = -1.6, GCpi = 0.18;
+    const p_uplift = qz * G * (Math.abs(GCp_max) + GCpi);
+
+    return { V, exp, Kzt, Ke, Kd, G, z, Kz, qz, p_uplift };
+  }
+
+  function computeSnowLoad() {
+    const pg = v('snowLoad', 25);          // ground snow load (psf)
+    const Ce = 1.0, Ct = 1.2, Is = 1.0;    // exposure / thermal / importance
+    // Solar arrays at low tilt typically use Cs ≈ 1.0 (no slope reduction below 30°)
+    const Cs = 1.0;
+    const pf = 0.7 * Ce * Ct * Is * pg;
+    const ps = Cs * pf;
+    return { pg, Ce, Ct, Is, pf, Cs, ps };
+  }
+
+  function computeSeismic() {
+    const SDS  = v('sds', 0.15);
+    const cat  = s('seismicCat', 'A');
+    const Ip   = 1.0;       // importance factor for solar
+    const ap   = 1.0;       // component amplification (rigid)
+    const Rp   = 2.5;       // response modification
+    const z_h  = 0.3;       // low-rise: assume z/h ≈ 0.3
+    // F_p / W_p = 0.4 * a_p * S_DS * (1 + 2*z/h) * I_p / R_p
+    const fpw  = 0.4 * ap * SDS * (1 + 2 * z_h) * Ip / Rp;
+    return { SDS, cat, Ip, ap, Rp, z_h, fpw };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     PV PRODUCTION · simplified PVWatts model
+     ──────────────────────────────────────────────────────────────────────── */
+  function computeProduction() {
+    const layout = host_layout();
+    const panelW = v('panelWidth', 41.3);
+    const panelWatt = v('panelWattage', 430);
+    let modules = 0;
+    layout.forEach(r => (r.sections || []).forEach(sec => {
+      try {
+        const mc = window.getSectionModuleCount(sec.type, panelW);
+        modules += mc.modules || 0;
+      } catch {}
+    }));
+    const kwDC = (modules * panelWatt) / 1000;
+
+    // Determine site irradiance from ZIP / state.
+    const addr = s('siteAddress', '') + ' ' + s('siteName', '');
+    const zip = findZipInString(addr);
+    const z = zip ? lookupZip(zip) : null;
+    const stateCode = z?.state;
+    const irr = z?.irr || (stateCode && STATE_CLIMATE[stateCode]?.irr) || 4.5; // default kWh/m²/day
+
+    // PVWatts-style derate
+    const losses = {
+      soiling: 0.02,
+      shading: 0.03,
+      snow: 0.00,
+      mismatch: 0.02,
+      wiring: 0.02,
+      connections: 0.005,
+      lightInducedDeg: 0.015,
+      nameplate: 0.01,
+      age: 0.015
+    };
+    const totalLoss = Object.values(losses).reduce((a, b) => a + b, 0);
+    const dcAcRatio = 1.20;
+    const inverterEff = 0.96;
+    const tempCoeff = 0.85;     // typical year-round derate for fixed tilt
+
+    // Annual energy: kWh/year ≈ kW_DC × irradiance × 365 × tempCoeff × (1 - losses) × inverterEff
+    const kwhYear = kwDC * irr * 365 * tempCoeff * (1 - totalLoss) * inverterEff;
+    const cf = kwDC > 0 ? (kwhYear / (kwDC * 8760)) : 0;
+    const valuePerKwh = 0.10; // default $/kWh
+    const valueYr = kwhYear * valuePerKwh;
+
+    return { kwDC, modules, irr, kwhYear, cf, valueYr, losses, totalLoss, dcAcRatio, inverterEff, tempCoeff, zip };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     COST ROLL-UP · per-line BOM costs
+     ──────────────────────────────────────────────────────────────────────── */
+  // Default unit costs (editable in the UI later). Values are conservative
+  // 2025 estimates for utility-scale ground-mount; intentionally rough.
+  const COST_TABLE = {
+    modules: 0.28,            // $/W
+    inverter: 0.06,           // $/W
+    optimizer: 0.05,          // $/W (when optimizers enabled)
+    racking: 0.13,            // $/W (Avans series racking)
+    foundation: 0.08,         // $/W (driven pile)
+    bos: 0.07,                // $/W (wire, conduit, MLPE allowance)
+    labor: 0.20,              // $/W (turnkey labor)
+    overhead: 0.05,           // $/W (project mgmt, permits, design)
+    contingency: 0.04         // $/W (5% bucket)
+  };
+
+  function computeCost() {
+    const prod = computeProduction();
+    const kwDC = prod.kwDC;
+    const watts = kwDC * 1000;
+    const optEnabled = document.getElementById('optimizerEnabled')?.checked;
+
+    const lines = [
+      { key: 'modules',     label: 'Modules',                 perW: COST_TABLE.modules,     color: '#2660A4' },
+      { key: 'inverter',    label: 'Inverters',               perW: COST_TABLE.inverter,    color: '#3B8FDB' },
+      ...(optEnabled ? [{ key: 'optimizer', label: 'DC optimizers', perW: COST_TABLE.optimizer, color: '#5BBCE4' }] : []),
+      { key: 'racking',     label: 'Avans racking',           perW: COST_TABLE.racking,     color: '#1B3A5C' },
+      { key: 'foundation',  label: 'Foundations',             perW: COST_TABLE.foundation,  color: '#0e7490' },
+      { key: 'bos',         label: 'Balance of system',       perW: COST_TABLE.bos,         color: '#15803d' },
+      { key: 'labor',       label: 'Labor',                   perW: COST_TABLE.labor,       color: '#b45309' },
+      { key: 'overhead',    label: 'Permitting / overhead',   perW: COST_TABLE.overhead,    color: '#7c3aed' },
+      { key: 'contingency', label: 'Contingency',             perW: COST_TABLE.contingency, color: '#475569' }
+    ];
+
+    lines.forEach(l => l.cost = l.perW * watts);
+    const total = lines.reduce((a, l) => a + l.cost, 0);
+    const totalPerW = kwDC > 0 ? (total / watts) : 0;
+    return { lines, total, totalPerW, kwDC };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ENGINEERING CONSOLE
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildEngConsole() {
+    const c = document.createElement('aside');
+    c.className = 'saas-engcon';
+    c.id = 'saas-engcon';
+    c.innerHTML = `
+      <div class="saas-engcon-head">
+        <div class="saas-engcon-title">Live Engineering</div>
+        <button class="saas-modal-close" id="saas-engcon-close">×</button>
+      </div>
+      <div class="saas-engcon-body" id="saas-engcon-body"></div>
+    `;
+    document.body.appendChild(c);
+    document.getElementById('saas-engcon-close').addEventListener('click', () => SAAS.engcon.close());
+
+    SAAS.engcon = {
+      open() {
+        c.classList.add('show');
+        renderEng();
+      },
+      close() { c.classList.remove('show'); },
+      refresh: renderEng
+    };
+
+    // Add to FAB stack and palette.
+    const fabs = document.getElementById('saas-fabs');
+    if (fabs) {
+      const btn = document.createElement('button');
+      btn.className = 'saas-fab';
+      btn.id = 'saas-fab-engcon';
+      btn.innerHTML = `Σ<span class="saas-fab-tooltip">Live engineering</span>`;
+      btn.addEventListener('click', () => SAAS.engcon.open());
+      // Insert below the templates fab so the wizard stays primary
+      fabs.insertBefore(btn, fabs.firstChild);
+    }
+
+    // Add a rail icon too
+    const rail = document.getElementById('saas-rail');
+    if (rail) {
+      const railBtn = document.createElement('button');
+      railBtn.className = 'saas-rail-item';
+      railBtn.dataset.action = 'engcon';
+      railBtn.innerHTML = `<span>Σ</span><span class="saas-rail-tooltip">Live engineering console</span>`;
+      railBtn.addEventListener('click', () => SAAS.engcon.open());
+      // Insert before the spacer + palette/projects buttons
+      const spacer = rail.querySelector('.saas-rail-spacer');
+      if (spacer) rail.insertBefore(railBtn, spacer);
+    }
+  }
+
+  function renderEng() {
+    const body = document.getElementById('saas-engcon-body');
+    if (!body) return;
+
+    const wind = computeWindPressure();
+    const snow = computeSnowLoad();
+    const seism = computeSeismic();
+    const prod = computeProduction();
+
+    // Flag conflicting tolerances if applicable
+    const tiltTolFlag = '<div class="saas-eng-flag">Engineering note: Avans Assembly Guide states ±10° E/W slope tolerance, while the 8.0 / 10.0 datasheet shows ±1°. Resolve before publishing project drawings.</div>';
+
+    body.innerHTML = `
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Wind uplift pressure</div>
+          <div class="saas-eng-block-result">${wind.p_uplift.toFixed(1)} psf</div>
+        </div>
+        <div class="saas-eng-formula">qz = 0.00256 × <em>Kz</em> × <em>Kzt</em> × <em>Kd</em> × <em>Ke</em> × <em>V²</em>
+   = 0.00256 × ${wind.Kz.toFixed(3)} × ${wind.Kzt.toFixed(2)} × ${wind.Kd} × ${wind.Ke.toFixed(2)} × ${wind.V}²
+   = <b>${wind.qz.toFixed(2)} psf</b> (velocity pressure)
+
+p = qz × G × |GCp - GCpi|
+  = ${wind.qz.toFixed(2)} × ${wind.G} × (1.6 + 0.18)
+  = <b>${wind.p_uplift.toFixed(1)} psf</b> (design uplift)</div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Basic wind speed V</span>
+          <span class="saas-eng-step-val">${wind.V} mph</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Exposure</span>
+          <span class="saas-eng-step-val">${wind.exp}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Kz at z = ${wind.z} ft</span>
+          <span class="saas-eng-step-val">${wind.Kz.toFixed(3)}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Topographic Kzt</span>
+          <span class="saas-eng-step-val">${wind.Kzt.toFixed(2)}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Directionality Kd</span>
+          <span class="saas-eng-step-val">${wind.Kd}</span>
+        </div>
+        <div class="saas-eng-cite">ASCE 7-22 §26.10 (velocity pressure) · §30 (components &amp; cladding)</div>
+      </div>
+
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Snow load on collector</div>
+          <div class="saas-eng-block-result">${snow.ps.toFixed(1)} psf</div>
+        </div>
+        <div class="saas-eng-formula">pf = 0.7 × <em>Ce</em> × <em>Ct</em> × <em>Is</em> × <em>pg</em>
+   = 0.7 × ${snow.Ce} × ${snow.Ct} × ${snow.Is} × ${snow.pg}
+   = <b>${snow.pf.toFixed(2)} psf</b> (flat roof snow)
+
+ps = <em>Cs</em> × pf
+   = ${snow.Cs} × ${snow.pf.toFixed(2)}
+   = <b>${snow.ps.toFixed(1)} psf</b> (sloped collector)</div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Ground snow pg</span>
+          <span class="saas-eng-step-val">${snow.pg} psf</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Ct (heated frame) · solar</span>
+          <span class="saas-eng-step-val">${snow.Ct} (cold roof)</span>
+        </div>
+        <div class="saas-eng-cite">ASCE 7-22 §7.3 (snow loads on roofs &amp; structures)</div>
+      </div>
+
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Seismic horizontal force</div>
+          <div class="saas-eng-block-result">${(seism.fpw * 100).toFixed(1)}% W</div>
+        </div>
+        <div class="saas-eng-formula">Fp/Wp = 0.4 × <em>ap</em> × <em>S_DS</em> × (1 + 2·z/h) × <em>Ip</em> / <em>Rp</em>
+       = 0.4 × ${seism.ap} × ${seism.SDS.toFixed(2)} × (1 + 2·${seism.z_h}) × ${seism.Ip} / ${seism.Rp}
+       = <b>${seism.fpw.toFixed(3)}</b>  (= ${(seism.fpw * 100).toFixed(1)}% of self-weight)</div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">SDS (design spectral accel)</span>
+          <span class="saas-eng-step-val">${seism.SDS.toFixed(2)} g</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Seismic Design Cat</span>
+          <span class="saas-eng-step-val">${seism.cat}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Component Rp / ap</span>
+          <span class="saas-eng-step-val">${seism.Rp} / ${seism.ap}</span>
+        </div>
+        <div class="saas-eng-cite">ASCE 7-22 §13.3.1 (nonstructural components)</div>
+      </div>
+
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Year-1 production</div>
+          <div class="saas-eng-block-result">${kwhFmt(prod.kwhYear)}</div>
+        </div>
+        <div class="saas-eng-formula">E = kW_DC × <em>I</em> × 365 × <em>η_temp</em> × (1 - <em>L</em>) × <em>η_inv</em>
+  = ${prod.kwDC.toFixed(1)} × ${prod.irr} × 365 × ${prod.tempCoeff} × (1 - ${prod.totalLoss.toFixed(3)}) × ${prod.inverterEff}
+  = <b>${kwhFmt(prod.kwhYear)}/yr</b></div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Site irradiance I</span>
+          <span class="saas-eng-step-val">${prod.irr} kWh/m²/day</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Capacity factor</span>
+          <span class="saas-eng-step-val">${(prod.cf * 100).toFixed(1)}%</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Total system losses</span>
+          <span class="saas-eng-step-val">${(prod.totalLoss * 100).toFixed(1)}%</span>
+        </div>
+        ${prod.zip ? `<div class="saas-eng-step"><span class="saas-eng-step-label">ZIP detected</span><span class="saas-eng-step-val">${prod.zip}</span></div>` : ''}
+        <div class="saas-eng-cite">PVWatts-style model (NREL TMY3 statewide averages)</div>
+      </div>
+
+      ${tiltTolFlag}
+    `;
+  }
+
+  function kwhFmt(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + ' TWh';
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + ' GWh';
+    if (v >= 1e3) return Math.round(v / 1e3).toLocaleString() + ' MWh';
+    return Math.round(v).toLocaleString() + ' kWh';
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     PRODUCTION + COST CARDS · injected after card-summary
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildIntelCards() {
+    const summary = document.getElementById('card-summary');
+    if (!summary) return;
+    if (document.getElementById('saas-intel-grid')) return;
+
+    const grid = document.createElement('div');
+    grid.id = 'saas-intel-grid';
+    grid.className = 'saas-intel-grid';
+    grid.innerHTML = `
+      <div class="saas-intel-card" id="saas-intel-prod">
+        <div class="saas-intel-eyebrow">Year-1 production</div>
+        <div class="saas-intel-big" id="saas-intel-prod-big">—</div>
+        <div class="saas-intel-sub" id="saas-intel-prod-sub">awaiting layout</div>
+        <div style="margin-top:14px" id="saas-intel-prod-rows"></div>
+      </div>
+      <div class="saas-intel-card" id="saas-intel-cost">
+        <div class="saas-intel-eyebrow">Project cost (rough)</div>
+        <div class="saas-intel-toggle">
+          <button data-mode="total" class="active">Total</button>
+          <button data-mode="perW">$/W</button>
+        </div>
+        <div class="saas-intel-big" id="saas-intel-cost-big">—</div>
+        <div class="saas-intel-sub" id="saas-intel-cost-sub">enter system size</div>
+        <div class="saas-intel-cat-bar" id="saas-intel-cost-bar"></div>
+        <div class="saas-intel-cat-legend" id="saas-intel-cost-legend"></div>
+      </div>
+    `;
+    // Append it inside the summary card body if available, else after the card.
+    const body = summary.querySelector('.cfg-card-body') || summary;
+    body.appendChild(grid);
+
+    // Toggle handlers
+    let costMode = 'total';
+    grid.querySelectorAll('.saas-intel-toggle button').forEach(b => {
+      b.addEventListener('click', () => {
+        costMode = b.dataset.mode;
+        grid.querySelectorAll('.saas-intel-toggle button').forEach(x => x.classList.toggle('active', x === b));
+        renderCost(costMode);
+      });
+    });
+
+    SAAS.intel = {
+      refresh() {
+        renderProd();
+        renderCost(costMode);
+      }
+    };
+  }
+
+  function renderProd() {
+    const big = document.getElementById('saas-intel-prod-big');
+    const sub = document.getElementById('saas-intel-prod-sub');
+    const rows = document.getElementById('saas-intel-prod-rows');
+    if (!big) return;
+    const p = computeProduction();
+    if (p.kwDC <= 0) {
+      big.textContent = '—';
+      sub.textContent = 'add sections to see production';
+      rows.innerHTML = '';
+      return;
+    }
+    big.textContent = kwhFmt(p.kwhYear) + '/yr';
+    sub.textContent = `${p.kwDC.toFixed(1)} kW DC · capacity factor ${(p.cf * 100).toFixed(1)}%`;
+    const valueFmt = '$' + Math.round(p.valueYr).toLocaleString();
+    rows.innerHTML = `
+      <div class="saas-intel-row"><span class="saas-intel-row-label">Site irradiance</span><span class="saas-intel-row-val">${p.irr} kWh/m²/day</span></div>
+      <div class="saas-intel-row"><span class="saas-intel-row-label">DC/AC ratio</span><span class="saas-intel-row-val">${p.dcAcRatio.toFixed(2)}</span></div>
+      <div class="saas-intel-row"><span class="saas-intel-row-label">System losses</span><span class="saas-intel-row-val">${(p.totalLoss * 100).toFixed(1)}%</span></div>
+      <div class="saas-intel-row"><span class="saas-intel-row-label">Year-1 revenue @ $0.10</span><span class="saas-intel-row-val">${valueFmt}</span></div>
+    `;
+  }
+
+  function renderCost(mode) {
+    const big = document.getElementById('saas-intel-cost-big');
+    const sub = document.getElementById('saas-intel-cost-sub');
+    const bar = document.getElementById('saas-intel-cost-bar');
+    const leg = document.getElementById('saas-intel-cost-legend');
+    if (!big) return;
+    const c = computeCost();
+    if (c.kwDC <= 0) {
+      big.textContent = '—';
+      sub.textContent = 'add sections to estimate';
+      bar.innerHTML = '';
+      leg.innerHTML = '';
+      return;
+    }
+    if (mode === 'perW') {
+      big.textContent = '$' + c.totalPerW.toFixed(2) + '/W';
+      sub.textContent = 'turnkey installed · USD';
+    } else {
+      const tot = c.total >= 1e6
+        ? '$' + (c.total / 1e6).toFixed(2) + 'M'
+        : '$' + Math.round(c.total).toLocaleString();
+      big.textContent = tot;
+      sub.textContent = '$' + c.totalPerW.toFixed(2) + '/W · ' + c.kwDC.toFixed(1) + ' kW DC';
+    }
+    // Bar
+    bar.innerHTML = c.lines.map(l => {
+      const pct = c.total > 0 ? (l.cost / c.total) * 100 : 0;
+      return `<span class="saas-intel-cat-seg" style="width:${pct.toFixed(2)}%;background:${l.color}" title="${l.label}: ${pct.toFixed(1)}%"></span>`;
+    }).join('');
+    // Legend
+    leg.innerHTML = c.lines.map(l => {
+      const dollars = mode === 'perW' ? '$' + l.perW.toFixed(2) + '/W' : '$' + Math.round(l.cost).toLocaleString();
+      return `<div class="saas-intel-cat-leg-item">
+        <span class="saas-intel-cat-leg-dot" style="background:${l.color}"></span>
+        <span style="flex:1">${l.label}</span>
+        <span style="font-weight:800;color:var(--gray-700)">${dollars}</span>
+      </div>`;
+    }).join('');
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ZIP CHIP & POPOVER · attached to the Site Address field
+     ──────────────────────────────────────────────────────────────────────── */
+  function attachZipChip() {
+    const addr = document.getElementById('siteAddress');
+    if (!addr) return;
+    if (document.getElementById('saas-zip-chip')) return;
+
+    const chip = document.createElement('button');
+    chip.id = 'saas-zip-chip';
+    chip.className = 'saas-zip-chip';
+    chip.type = 'button';
+    chip.textContent = 'Auto-fill from ZIP';
+    chip.style.display = 'none';
+    addr.parentNode.appendChild(chip);
+
+    chip.addEventListener('click', () => openZipPopover(chip, addr.value));
+
+    function update() {
+      const z = findZipInString(addr.value);
+      const data = z ? lookupZip(z) : null;
+      if (data) {
+        chip.style.display = 'inline-flex';
+        chip.textContent = `Auto-fill defaults · ${data.state} ${z}`;
+      } else {
+        chip.style.display = 'none';
+      }
+    }
+    addr.addEventListener('input', update);
+    update();
+  }
+
+  function openZipPopover(anchor, addrText) {
+    closeZipPopover();
+    const z = findZipInString(addrText);
+    if (!z) return;
+    const data = lookupZip(z);
+    if (!data) return;
+
+    const pop = document.createElement('div');
+    pop.className = 'saas-zip-popover';
+    pop.id = 'saas-zip-popover';
+    pop.innerHTML = `
+      <h4>${data.state} · ${data.zip}</h4>
+      <p>${data.descr}</p>
+      <div class="saas-zip-list">
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Wind speed (V)</span><span class="saas-zip-item-val">${data.wind} mph</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Exposure</span><span class="saas-zip-item-val">${data.exp}</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Ground snow load</span><span class="saas-zip-item-val">${data.snow} psf</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Frost depth</span><span class="saas-zip-item-val">${data.frost}"</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">SDS</span><span class="saas-zip-item-val">${data.sds.toFixed(2)} g</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Seismic Cat</span><span class="saas-zip-item-val">${data.seismic}</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Avg irradiance</span><span class="saas-zip-item-val">${data.irr} kWh/m²/day</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="saas-btn saas-btn-ghost" id="saas-zip-cancel">Cancel</button>
+        <button class="saas-btn saas-btn-pri" id="saas-zip-apply" style="flex:1">Apply all 7 defaults</button>
+      </div>
+    `;
+    document.body.appendChild(pop);
+
+    // Position next to anchor
+    const r = anchor.getBoundingClientRect();
+    let left = r.left;
+    let top = r.bottom + window.scrollY + 8;
+    pop.style.left = Math.min(left, window.innerWidth - 400) + 'px';
+    pop.style.top = top + 'px';
+
+    document.getElementById('saas-zip-apply').addEventListener('click', () => {
+      // Capture undo first
+      if (window.SAAS && SAAS.undo && typeof SAAS.undo._captureUndo === 'function') SAAS.undo._captureUndo();
+      setVal('windSpeed', data.wind);
+      setVal('exposureCat', data.exp);
+      setVal('snowLoad', data.snow);
+      setVal('frostDepth', data.frost);
+      setVal('sds', data.sds);
+      setVal('seismicCat', data.seismic);
+      // Trigger change events so host recalcs
+      ['windSpeed','exposureCat','snowLoad','frostDepth','sds','seismicCat'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+      if (typeof window.recalcAll === 'function') window.recalcAll();
+      if (typeof window.toast === 'function') window.toast(`Applied ${data.state} defaults`);
+      if (SAAS.intel) SAAS.intel.refresh();
+      if (SAAS.engcon) SAAS.engcon.refresh();
+      closeZipPopover();
+    });
+    document.getElementById('saas-zip-cancel').addEventListener('click', closeZipPopover);
+
+    setTimeout(() => document.addEventListener('click', outsideClose), 50);
+    function outsideClose(e) {
+      if (!pop.contains(e.target) && e.target !== anchor) {
+        closeZipPopover();
+        document.removeEventListener('click', outsideClose);
+      }
+    }
+  }
+  function closeZipPopover() {
+    const old = document.getElementById('saas-zip-popover');
+    if (old) old.remove();
+  }
+  function setVal(id, v) {
+    const el = document.getElementById(id);
+    if (!el || v === undefined || v === null) return;
+    el.value = v;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     WIRE-UP · refresh on changes, hook into Phase 1+2 events
+     ──────────────────────────────────────────────────────────────────────── */
+  function init() {
+    buildEngConsole();
+    buildIntelCards();
+    attachZipChip();
+
+    // Hook into form changes to refresh the live engineering console & cost.
+    let t = null;
+    document.addEventListener('input', e => {
+      if (!e.target.matches('input, select, textarea')) return;
+      clearTimeout(t);
+      t = setTimeout(() => {
+        if (SAAS.engcon && document.getElementById('saas-engcon')?.classList.contains('show')) {
+          SAAS.engcon.refresh();
+        }
+        if (SAAS.intel) SAAS.intel.refresh();
+      }, 200);
+    });
+
+    // Refresh whenever the canvas re-renders (wraps the host's renderCanvas)
+    if (typeof window.renderCanvas === 'function') {
+      const orig = window.renderCanvas;
+      window.renderCanvas = function () {
+        const r = orig.apply(this, arguments);
+        if (SAAS.intel) SAAS.intel.refresh();
+        if (SAAS.engcon && document.getElementById('saas-engcon')?.classList.contains('show')) SAAS.engcon.refresh();
+        return r;
+      };
+    }
+
+    // Initial refresh
+    setTimeout(() => {
+      if (SAAS.intel) SAAS.intel.refresh();
+    }, 100);
+
+    console.log('[SEMS SaaS Layer] Phase 3 (Intelligence) ready.');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 120));
+  } else {
+    setTimeout(init, 120);
+  }
+
+  // Expose helpers for Phase 4+ extensibility
+  SAAS.zip = { lookupZip, findZipInString, STATE_CLIMATE };
+  SAAS.compute = { computeWindPressure, computeSnowLoad, computeSeismic, computeProduction, computeCost };
+})();
+</script>
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  END SEMS SAAS LAYER · Phase 3 (Intelligence)
+  ════════════════════════════════════════════════════════════════════════════
+-->
+
+
+</body>
+</html>

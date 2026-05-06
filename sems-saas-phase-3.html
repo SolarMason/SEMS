@@ -1,0 +1,1112 @@
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  SEMS SAAS LAYER · Phase 3 (Intelligence)
+  ════════════════════════════════════════════════════════════════════════════
+  Drop-in module that extends Phase 1 + 2. Paste this entire block
+  immediately AFTER the Phase 1+2 layer (still before </body>).
+  Order matters: Phase 1+2 must load first because Phase 3 extends window.SAAS.
+
+  WHAT YOU GET
+  ────────────
+  10. ZIP code defaults · type a ZIP, auto-suggest 8 ASCE 7-22 inputs
+  11. Engineering console · live "why?" explanations under wind/snow/seismic
+      values, with the actual ASCE formula and intermediate steps
+  12. Live PV production · year-1 kWh + capacity factor + revenue estimate
+      using a simplified PVWatts model with region-aware irradiance
+  13. Cost roll-up · per-line BOM costing with $/W toggle and category breakdown
+
+  © 2014–2026 Sustainable Energy Management Systems LLC
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<style>
+/* ══════════ ENG CONSOLE (right rail) ══════════ */
+.saas-engcon {
+  position: fixed;
+  top: calc(var(--nav-h, 80px) + 56px);
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 92vw;
+  background: var(--pure-white, #F5F6F8);
+  border-left: 1px solid var(--gray-200, #C8D0DC);
+  z-index: 996;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 30px rgba(27, 58, 92, 0.14);
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-engcon.show { transform: translateX(0); }
+
+.saas-engcon-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-100, #DDE2EA);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.saas-engcon-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.saas-engcon-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+  animation: saas-pulse 2.4s ease-in-out infinite;
+}
+.saas-engcon-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px 60px;
+}
+
+.saas-eng-block {
+  background: var(--white, #EBEEF2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.saas-eng-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.saas-eng-block-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gray-700, #353B44);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.saas-eng-block-result {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blue-900, #1B3A5C);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.saas-eng-formula {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--gray-600, #424A56);
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px dashed var(--gray-200, #C8D0DC);
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.saas-eng-formula em { color: var(--blue-700, #2660A4); font-style: normal; font-weight: 700; }
+.saas-eng-formula b  { color: var(--gray-900, #1A1E24); font-weight: 700; }
+
+.saas-eng-step {
+  display: flex;
+  font-size: 11px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--gray-100, #DDE2EA);
+  font-variant-numeric: tabular-nums;
+}
+.saas-eng-step:last-child { border-bottom: none; }
+.saas-eng-step-label { color: var(--gray-500, #5A6578); flex: 1; }
+.saas-eng-step-val { font-weight: 700; color: var(--gray-700, #353B44); }
+
+.saas-eng-cite {
+  font-size: 10px;
+  color: var(--gray-400, #8892A4);
+  margin-top: 8px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+.saas-eng-flag {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.5;
+}
+.saas-eng-flag::before { content: '⚠'; flex-shrink: 0; }
+
+/* ══════════ PROD / COST CARDS (injected after summary) ══════════ */
+.saas-intel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.saas-intel-card {
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(27,58,92,0.1));
+  position: relative;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+.saas-intel-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--blue-500, #3B8FDB);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.saas-intel-big {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--blue-900, #1B3A5C);
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.saas-intel-sub {
+  font-size: 11px;
+  color: var(--gray-500, #5A6578);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.saas-intel-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--gray-100, #DDE2EA);
+  font-variant-numeric: tabular-nums;
+}
+.saas-intel-row:last-child { border-bottom: none; }
+.saas-intel-row-label { color: var(--gray-500, #5A6578); font-weight: 500; }
+.saas-intel-row-val { color: var(--gray-700, #353B44); font-weight: 700; }
+
+.saas-intel-toggle {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  background: var(--white, #EBEEF2);
+  border-radius: 999px;
+  padding: 2px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.saas-intel-toggle button {
+  background: transparent;
+  border: none;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: var(--gray-500, #5A6578);
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+}
+.saas-intel-toggle button.active {
+  background: var(--blue-700, #2660A4);
+  color: white;
+}
+
+.saas-intel-cat-bar {
+  height: 10px;
+  display: flex;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--gray-100, #DDE2EA);
+  margin: 10px 0 6px;
+}
+.saas-intel-cat-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.saas-intel-cat-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+  font-size: 10px;
+  margin-top: 6px;
+}
+.saas-intel-cat-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  color: var(--gray-600, #424A56);
+}
+.saas-intel-cat-leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* ══════════ ZIP HELPER chip on site address ══════════ */
+.saas-zip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--blue-50, #DFE7EE);
+  color: var(--blue-700, #2660A4);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  letter-spacing: 0.02em;
+}
+.saas-zip-chip:hover { background: var(--blue-700, #2660A4); color: white; }
+.saas-zip-chip::before { content: '📍'; font-size: 10px; }
+
+.saas-zip-popover {
+  position: absolute;
+  background: var(--pure-white, #F5F6F8);
+  border-radius: 14px;
+  box-shadow: var(--shadow-xl, 0 24px 60px rgba(27,58,92,0.16));
+  padding: 18px;
+  width: 380px;
+  max-width: 90vw;
+  z-index: 1500;
+  animation: saas-pop-in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.saas-zip-popover h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gray-900, #1A1E24);
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.saas-zip-popover p {
+  font-size: 12px;
+  color: var(--gray-500, #5A6578);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.saas-zip-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+.saas-zip-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--gray-100, #DDE2EA);
+  font-size: 12px;
+}
+.saas-zip-item-key { color: var(--gray-700, #353B44); font-weight: 600; }
+.saas-zip-item-val { color: var(--blue-700, #2660A4); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+@media print {
+  .saas-engcon, .saas-zip-popover { display: none !important; }
+}
+</style>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SAAS PHASE 3 ENGINE
+   Extends window.SAAS (must load AFTER Phase 1+2)
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  // Wait for Phase 1+2 to be present.
+  if (!window.SAAS) {
+    console.warn('[SAAS Phase 3] window.SAAS not found — Phase 1+2 layer must load first.');
+    return;
+  }
+
+  // Reuse host accessors from Phase 1+2 if exposed; otherwise build our own.
+  const _getLayout = new Function('return typeof layoutState!=="undefined"?layoutState:[];');
+  function host_layout() { return _getLayout() || []; }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ZIP DEFAULTS DATA · state-level baseline + ZIP-prefix overrides for
+     hurricane / high-snow / high-seismic zones. Values map to ASCE 7-22.
+     ──────────────────────────────────────────────────────────────────────── */
+  const ZIP_PREFIX_TO_STATE = {
+    // Northeast
+    '00': 'PR', '01': 'MA', '02': 'MA', '03': 'NH', '04': 'ME', '05': 'VT',
+    '06': 'CT', '07': 'NJ', '08': 'NJ', '09': 'NY',
+    '10': 'NY', '11': 'NY', '12': 'NY', '13': 'NY', '14': 'NY',
+    '15': 'PA', '16': 'PA', '17': 'PA', '18': 'PA', '19': 'PA',
+    // Mid-Atlantic
+    '20': 'DC', '21': 'MD', '22': 'VA', '23': 'VA', '24': 'WV', '25': 'WV',
+    '26': 'WV', '27': 'NC', '28': 'NC', '29': 'SC',
+    // Southeast
+    '30': 'GA', '31': 'GA', '32': 'FL', '33': 'FL', '34': 'FL',
+    '35': 'AL', '36': 'AL', '37': 'TN', '38': 'TN', '39': 'MS',
+    // Midwest
+    '40': 'KY', '41': 'KY', '42': 'KY', '43': 'OH', '44': 'OH', '45': 'OH',
+    '46': 'IN', '47': 'IN', '48': 'MI', '49': 'MI',
+    '50': 'IA', '51': 'IA', '52': 'IA', '53': 'WI', '54': 'WI',
+    '55': 'MN', '56': 'MN', '57': 'SD', '58': 'ND', '59': 'MT',
+    '60': 'IL', '61': 'IL', '62': 'IL', '63': 'MO', '64': 'MO', '65': 'MO',
+    '66': 'KS', '67': 'KS', '68': 'NE', '69': 'NE',
+    // South Central
+    '70': 'LA', '71': 'LA', '72': 'AR', '73': 'OK', '74': 'OK',
+    '75': 'TX', '76': 'TX', '77': 'TX', '78': 'TX', '79': 'TX',
+    // Mountain
+    '80': 'CO', '81': 'CO', '82': 'WY', '83': 'ID', '84': 'UT',
+    '85': 'AZ', '86': 'AZ', '87': 'NM', '88': 'NM', '89': 'NV',
+    // West
+    '90': 'CA', '91': 'CA', '92': 'CA', '93': 'CA', '94': 'CA', '95': 'CA', '96': 'CA',
+    '97': 'OR', '98': 'WA', '99': 'AK'
+  };
+
+  // Climate defaults per state · ASCE 7-22 design values (typical, not absolute)
+  const STATE_CLIMATE = {
+    AK: { wind: 130, exp: 'C', snow: 60, frost: 60, sds: 0.50, seismic: 'C', irr: 3.8, descr: 'Alaska — heavy snow, high seismic in southern coast, extreme cold' },
+    AL: { wind: 135, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Alabama — Gulf hurricane risk, mild winters' },
+    AR: { wind: 115, exp: 'C', snow: 8,  frost: 24, sds: 0.40, seismic: 'C', irr: 4.6, descr: 'Arkansas — New Madrid seismic zone, tornado-prone' },
+    AZ: { wind: 110, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 6.0, descr: 'Arizona — high irradiance, desert, low snow' },
+    CA: { wind: 110, exp: 'C', snow: 5,  frost: 6,  sds: 0.85, seismic: 'D', irr: 5.5, descr: 'California — high seismic statewide, mild winters' },
+    CO: { wind: 115, exp: 'C', snow: 30, frost: 36, sds: 0.30, seismic: 'B', irr: 5.4, descr: 'Colorado — variable snow by elevation' },
+    CT: { wind: 115, exp: 'B', snow: 35, frost: 42, sds: 0.20, seismic: 'B', irr: 4.3, descr: 'Connecticut — moderate snow, low seismic' },
+    DC: { wind: 110, exp: 'B', snow: 25, frost: 30, sds: 0.18, seismic: 'B', irr: 4.5, descr: 'D.C. — moderate snow, low wind' },
+    DE: { wind: 115, exp: 'B', snow: 20, frost: 30, sds: 0.18, seismic: 'B', irr: 4.5, descr: 'Delaware — coastal moderate winds' },
+    FL: { wind: 150, exp: 'C', snow: 0,  frost: 0,  sds: 0.10, seismic: 'A', irr: 5.2, descr: 'Florida — hurricane zone, near-zero snow' },
+    GA: { wind: 120, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Georgia — coastal hurricane risk near Atlantic' },
+    HI: { wind: 130, exp: 'D', snow: 0,  frost: 0,  sds: 0.50, seismic: 'C', irr: 5.5, descr: 'Hawaii — trade winds, volcanic / seismic' },
+    IA: { wind: 110, exp: 'C', snow: 30, frost: 42, sds: 0.20, seismic: 'B', irr: 4.5, descr: 'Iowa — heavy snow, derecho exposure' },
+    ID: { wind: 110, exp: 'C', snow: 35, frost: 36, sds: 0.30, seismic: 'C', irr: 4.7, descr: 'Idaho — mountain snow, moderate seismic' },
+    IL: { wind: 110, exp: 'C', snow: 25, frost: 36, sds: 0.30, seismic: 'B', irr: 4.4, descr: 'Illinois — New Madrid in south' },
+    IN: { wind: 110, exp: 'C', snow: 25, frost: 36, sds: 0.20, seismic: 'B', irr: 4.3, descr: 'Indiana — moderate climate' },
+    KS: { wind: 115, exp: 'C', snow: 18, frost: 36, sds: 0.20, seismic: 'B', irr: 4.8, descr: 'Kansas — tornado alley, low snow south' },
+    KY: { wind: 110, exp: 'C', snow: 18, frost: 24, sds: 0.30, seismic: 'C', irr: 4.4, descr: 'Kentucky — New Madrid seismic risk west' },
+    LA: { wind: 150, exp: 'C', snow: 0,  frost: 0,  sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Louisiana — Gulf hurricanes, no snow' },
+    MA: { wind: 130, exp: 'B', snow: 50, frost: 48, sds: 0.20, seismic: 'B', irr: 4.2, descr: 'Massachusetts — heavy snow, coastal nor\'easters' },
+    MD: { wind: 115, exp: 'B', snow: 25, frost: 30, sds: 0.18, seismic: 'B', irr: 4.5, descr: 'Maryland — moderate everything' },
+    ME: { wind: 130, exp: 'B', snow: 60, frost: 60, sds: 0.20, seismic: 'B', irr: 4.1, descr: 'Maine — heavy snow, coastal exposure' },
+    MI: { wind: 105, exp: 'C', snow: 40, frost: 42, sds: 0.18, seismic: 'A', irr: 3.9, descr: 'Michigan — lake-effect snow' },
+    MN: { wind: 110, exp: 'C', snow: 50, frost: 60, sds: 0.18, seismic: 'A', irr: 4.2, descr: 'Minnesota — heavy snow, deep frost' },
+    MO: { wind: 115, exp: 'C', snow: 18, frost: 30, sds: 0.50, seismic: 'D', irr: 4.6, descr: 'Missouri — New Madrid seismic in southeast' },
+    MS: { wind: 140, exp: 'C', snow: 2,  frost: 6,  sds: 0.20, seismic: 'B', irr: 4.7, descr: 'Mississippi — Gulf hurricane risk' },
+    MT: { wind: 120, exp: 'C', snow: 40, frost: 60, sds: 0.30, seismic: 'C', irr: 4.7, descr: 'Montana — variable, mountain snow' },
+    NC: { wind: 130, exp: 'C', snow: 12, frost: 18, sds: 0.20, seismic: 'B', irr: 4.7, descr: 'North Carolina — coastal hurricane risk' },
+    ND: { wind: 115, exp: 'C', snow: 50, frost: 72, sds: 0.18, seismic: 'A', irr: 4.4, descr: 'North Dakota — extreme winters, deep frost' },
+    NE: { wind: 115, exp: 'C', snow: 25, frost: 42, sds: 0.18, seismic: 'A', irr: 4.7, descr: 'Nebraska — derecho and tornado exposure' },
+    NH: { wind: 120, exp: 'B', snow: 60, frost: 54, sds: 0.20, seismic: 'B', irr: 4.2, descr: 'New Hampshire — heavy snow' },
+    NJ: { wind: 130, exp: 'B', snow: 25, frost: 36, sds: 0.20, seismic: 'B', irr: 4.4, descr: 'New Jersey — coastal exposure' },
+    NM: { wind: 110, exp: 'C', snow: 12, frost: 18, sds: 0.20, seismic: 'B', irr: 5.6, descr: 'New Mexico — high irradiance' },
+    NV: { wind: 110, exp: 'C', snow: 8,  frost: 12, sds: 0.50, seismic: 'D', irr: 5.7, descr: 'Nevada — high seismic, high irradiance' },
+    NY: { wind: 115, exp: 'B', snow: 35, frost: 42, sds: 0.20, seismic: 'B', irr: 4.0, descr: 'New York — variable, lake-effect upstate' },
+    OH: { wind: 105, exp: 'C', snow: 25, frost: 36, sds: 0.18, seismic: 'B', irr: 4.0, descr: 'Ohio — moderate climate' },
+    OK: { wind: 120, exp: 'C', snow: 10, frost: 18, sds: 0.30, seismic: 'B', irr: 4.9, descr: 'Oklahoma — tornado alley, induced seismicity' },
+    OR: { wind: 110, exp: 'C', snow: 20, frost: 18, sds: 0.50, seismic: 'D', irr: 4.0, descr: 'Oregon — Cascadia seismic, mild coast' },
+    PA: { wind: 110, exp: 'B', snow: 30, frost: 36, sds: 0.15, seismic: 'B', irr: 4.2, descr: 'Pennsylvania — moderate snow, low seismic' },
+    PR: { wind: 165, exp: 'D', snow: 0,  frost: 0,  sds: 0.85, seismic: 'D', irr: 5.5, descr: 'Puerto Rico — Cat 5 hurricane + high seismic' },
+    RI: { wind: 130, exp: 'B', snow: 40, frost: 42, sds: 0.20, seismic: 'B', irr: 4.3, descr: 'Rhode Island — coastal nor\'easters' },
+    SC: { wind: 130, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 4.8, descr: 'South Carolina — coastal hurricane risk' },
+    SD: { wind: 115, exp: 'C', snow: 35, frost: 60, sds: 0.18, seismic: 'A', irr: 4.6, descr: 'South Dakota — heavy snow, deep frost' },
+    TN: { wind: 115, exp: 'C', snow: 12, frost: 24, sds: 0.40, seismic: 'C', irr: 4.4, descr: 'Tennessee — New Madrid seismic west' },
+    TX: { wind: 130, exp: 'C', snow: 5,  frost: 12, sds: 0.20, seismic: 'B', irr: 5.2, descr: 'Texas — coastal hurricane / inland tornado' },
+    UT: { wind: 110, exp: 'C', snow: 30, frost: 30, sds: 0.50, seismic: 'D', irr: 5.3, descr: 'Utah — Wasatch fault, variable snow' },
+    VA: { wind: 115, exp: 'C', snow: 18, frost: 24, sds: 0.20, seismic: 'B', irr: 4.5, descr: 'Virginia — coastal exposure east' },
+    VT: { wind: 110, exp: 'B', snow: 60, frost: 54, sds: 0.18, seismic: 'B', irr: 4.0, descr: 'Vermont — heavy snow' },
+    WA: { wind: 110, exp: 'C', snow: 25, frost: 18, sds: 0.50, seismic: 'D', irr: 3.7, descr: 'Washington — Cascadia seismic, wet coast' },
+    WI: { wind: 105, exp: 'C', snow: 40, frost: 48, sds: 0.18, seismic: 'A', irr: 4.1, descr: 'Wisconsin — heavy snow, low wind' },
+    WV: { wind: 110, exp: 'B', snow: 25, frost: 30, sds: 0.20, seismic: 'B', irr: 4.0, descr: 'West Virginia — moderate' },
+    WY: { wind: 115, exp: 'C', snow: 35, frost: 48, sds: 0.30, seismic: 'C', irr: 5.0, descr: 'Wyoming — high winds, mountain snow' }
+  };
+
+  // ZIP prefix (3-digit) overlays for special hazard zones
+  const ZIP3_OVERLAY = {
+    // South Florida hurricane zone (Cat 4-5) · prefix 330 also covers FL Keys (33040-33050)
+    '330': { wind: 175, exp: 'D', descr: 'South Florida coastal / Keys — Cat 5 wind' },
+    '331': { wind: 170, exp: 'D' }, '332': { wind: 170, exp: 'D' },
+    '333': { wind: 170, exp: 'D' }, '334': { wind: 165, exp: 'D' },
+    // North Carolina Outer Banks
+    '275': { wind: 150, exp: 'D' }, '278': { wind: 145, exp: 'D' },
+    // Texas Gulf Coast
+    '770': { wind: 150, exp: 'D' }, '773': { wind: 150, exp: 'D' },
+    '774': { wind: 145, exp: 'D' }, '775': { wind: 145, exp: 'D' },
+    '779': { wind: 140, exp: 'D' },
+    // San Francisco Bay (high seismic)
+    '940': { sds: 1.0, seismic: 'D' }, '941': { sds: 1.0, seismic: 'D' },
+    '945': { sds: 0.95, seismic: 'D' }, '946': { sds: 0.95, seismic: 'D' },
+    // Los Angeles
+    '900': { sds: 1.1, seismic: 'D' }, '902': { sds: 1.0, seismic: 'D' },
+    // Buffalo / lake effect
+    '142': { snow: 80 },
+    // Northern Maine
+    '047': { snow: 80, frost: 72 },
+    // Colorado mountains
+    '816': { snow: 60, frost: 48 }, '814': { snow: 70, frost: 48 }
+  };
+
+  function lookupZip(zip) {
+    if (!zip || typeof zip !== 'string') return null;
+    const five = zip.replace(/[^\d]/g, '').slice(0, 5);
+    if (five.length !== 5) return null;
+
+    const prefix2 = five.slice(0, 2);
+    const prefix3 = five.slice(0, 3);
+    const state = ZIP_PREFIX_TO_STATE[prefix2];
+    if (!state) return null;
+
+    const base = STATE_CLIMATE[state];
+    if (!base) return null;
+
+    const overlay = ZIP3_OVERLAY[prefix3] || {};
+    return {
+      zip: five,
+      state,
+      wind:    overlay.wind    ?? base.wind,
+      exp:     overlay.exp     ?? base.exp,
+      snow:    overlay.snow    ?? base.snow,
+      frost:   overlay.frost   ?? base.frost,
+      sds:     overlay.sds     ?? base.sds,
+      seismic: overlay.seismic ?? base.seismic,
+      irr:     overlay.irr     ?? base.irr,
+      descr:   overlay.descr   ?? base.descr
+    };
+  }
+
+  // Try to extract a 5-digit ZIP from any address-like string
+  function findZipInString(s) {
+    if (!s) return null;
+    const m = String(s).match(/\b(\d{5})\b/);
+    return m ? m[1] : null;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ENGINEERING CALCS · ASCE 7-22 simplified (matches host configurator
+     where possible; explanations make the math visible).
+     ──────────────────────────────────────────────────────────────────────── */
+  function v(id, fb) {
+    const el = document.getElementById(id);
+    if (!el) return fb;
+    const n = parseFloat(el.value);
+    return isNaN(n) ? fb : n;
+  }
+  function s(id, fb) {
+    const el = document.getElementById(id);
+    return el ? (el.value || fb || '') : (fb || '');
+  }
+
+  // Velocity pressure exposure coefficient Kz · ASCE 7-22 Table 26.10-1
+  // Uses simplified formula: Kz = 2.01 * (z/zg)^(2/alpha)
+  // For solar arrays the typical mean roof height z is 6-15 ft (low rise).
+  function computeKz(exp, height) {
+    const params = { B: { alpha: 7.0, zg: 1200 }, C: { alpha: 9.5, zg: 900 }, D: { alpha: 11.5, zg: 700 } };
+    const p = params[exp] || params.C;
+    const z = Math.max(15, height); // ASCE 7-22 §26.10.1 minimum z = 15 ft
+    return 2.01 * Math.pow(z / p.zg, 2 / p.alpha);
+  }
+
+  function computeWindPressure() {
+    const V    = v('windSpeed', 110);
+    const exp  = s('exposureCat', 'C');
+    const Kzt  = v('kzt', 1.0);
+    const Ke   = v('ke', 1.0);
+    const Kd   = 0.85; // ASCE 7-22 Table 26.6-1 for solar panels (other structures)
+    const G    = 0.85; // gust effect factor
+    const z    = 8;    // typical mean height of low-tilt PV array in ft
+    const Kz   = computeKz(exp, z);
+
+    // q_z = 0.00256 * Kz * Kzt * Kd * Ke * V^2  (psf, V in mph)
+    const qz = 0.00256 * Kz * Kzt * Kd * Ke * V * V;
+
+    // Net design pressure (simplified all-zone envelope for components & cladding)
+    // p = qz * G * (GCp - GCpi). For rooftop solar, conservative GCp range ≈ +1.0 / -1.6.
+    const GCp_max = -1.6, GCpi = 0.18;
+    const p_uplift = qz * G * (Math.abs(GCp_max) + GCpi);
+
+    return { V, exp, Kzt, Ke, Kd, G, z, Kz, qz, p_uplift };
+  }
+
+  function computeSnowLoad() {
+    const pg = v('snowLoad', 25);          // ground snow load (psf)
+    const Ce = 1.0, Ct = 1.2, Is = 1.0;    // exposure / thermal / importance
+    // Solar arrays at low tilt typically use Cs ≈ 1.0 (no slope reduction below 30°)
+    const Cs = 1.0;
+    const pf = 0.7 * Ce * Ct * Is * pg;
+    const ps = Cs * pf;
+    return { pg, Ce, Ct, Is, pf, Cs, ps };
+  }
+
+  function computeSeismic() {
+    const SDS  = v('sds', 0.15);
+    const cat  = s('seismicCat', 'A');
+    const Ip   = 1.0;       // importance factor for solar
+    const ap   = 1.0;       // component amplification (rigid)
+    const Rp   = 2.5;       // response modification
+    const z_h  = 0.3;       // low-rise: assume z/h ≈ 0.3
+    // F_p / W_p = 0.4 * a_p * S_DS * (1 + 2*z/h) * I_p / R_p
+    const fpw  = 0.4 * ap * SDS * (1 + 2 * z_h) * Ip / Rp;
+    return { SDS, cat, Ip, ap, Rp, z_h, fpw };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     PV PRODUCTION · simplified PVWatts model
+     ──────────────────────────────────────────────────────────────────────── */
+  function computeProduction() {
+    const layout = host_layout();
+    const panelW = v('panelWidth', 41.3);
+    const panelWatt = v('panelWattage', 430);
+    let modules = 0;
+    layout.forEach(r => (r.sections || []).forEach(sec => {
+      try {
+        const mc = window.getSectionModuleCount(sec.type, panelW);
+        modules += mc.modules || 0;
+      } catch {}
+    }));
+    const kwDC = (modules * panelWatt) / 1000;
+
+    // Determine site irradiance from ZIP / state.
+    const addr = s('siteAddress', '') + ' ' + s('siteName', '');
+    const zip = findZipInString(addr);
+    const z = zip ? lookupZip(zip) : null;
+    const stateCode = z?.state;
+    const irr = z?.irr || (stateCode && STATE_CLIMATE[stateCode]?.irr) || 4.5; // default kWh/m²/day
+
+    // PVWatts-style derate
+    const losses = {
+      soiling: 0.02,
+      shading: 0.03,
+      snow: 0.00,
+      mismatch: 0.02,
+      wiring: 0.02,
+      connections: 0.005,
+      lightInducedDeg: 0.015,
+      nameplate: 0.01,
+      age: 0.015
+    };
+    const totalLoss = Object.values(losses).reduce((a, b) => a + b, 0);
+    const dcAcRatio = 1.20;
+    const inverterEff = 0.96;
+    const tempCoeff = 0.85;     // typical year-round derate for fixed tilt
+
+    // Annual energy: kWh/year ≈ kW_DC × irradiance × 365 × tempCoeff × (1 - losses) × inverterEff
+    const kwhYear = kwDC * irr * 365 * tempCoeff * (1 - totalLoss) * inverterEff;
+    const cf = kwDC > 0 ? (kwhYear / (kwDC * 8760)) : 0;
+    const valuePerKwh = 0.10; // default $/kWh
+    const valueYr = kwhYear * valuePerKwh;
+
+    return { kwDC, modules, irr, kwhYear, cf, valueYr, losses, totalLoss, dcAcRatio, inverterEff, tempCoeff, zip };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     COST ROLL-UP · per-line BOM costs
+     ──────────────────────────────────────────────────────────────────────── */
+  // Default unit costs (editable in the UI later). Values are conservative
+  // 2025 estimates for utility-scale ground-mount; intentionally rough.
+  const COST_TABLE = {
+    modules: 0.28,            // $/W
+    inverter: 0.06,           // $/W
+    optimizer: 0.05,          // $/W (when optimizers enabled)
+    racking: 0.13,            // $/W (Avans series racking)
+    foundation: 0.08,         // $/W (driven pile)
+    bos: 0.07,                // $/W (wire, conduit, MLPE allowance)
+    labor: 0.20,              // $/W (turnkey labor)
+    overhead: 0.05,           // $/W (project mgmt, permits, design)
+    contingency: 0.04         // $/W (5% bucket)
+  };
+
+  function computeCost() {
+    const prod = computeProduction();
+    const kwDC = prod.kwDC;
+    const watts = kwDC * 1000;
+    const optEnabled = document.getElementById('optimizerEnabled')?.checked;
+
+    const lines = [
+      { key: 'modules',     label: 'Modules',                 perW: COST_TABLE.modules,     color: '#2660A4' },
+      { key: 'inverter',    label: 'Inverters',               perW: COST_TABLE.inverter,    color: '#3B8FDB' },
+      ...(optEnabled ? [{ key: 'optimizer', label: 'DC optimizers', perW: COST_TABLE.optimizer, color: '#5BBCE4' }] : []),
+      { key: 'racking',     label: 'Avans racking',           perW: COST_TABLE.racking,     color: '#1B3A5C' },
+      { key: 'foundation',  label: 'Foundations',             perW: COST_TABLE.foundation,  color: '#0e7490' },
+      { key: 'bos',         label: 'Balance of system',       perW: COST_TABLE.bos,         color: '#15803d' },
+      { key: 'labor',       label: 'Labor',                   perW: COST_TABLE.labor,       color: '#b45309' },
+      { key: 'overhead',    label: 'Permitting / overhead',   perW: COST_TABLE.overhead,    color: '#7c3aed' },
+      { key: 'contingency', label: 'Contingency',             perW: COST_TABLE.contingency, color: '#475569' }
+    ];
+
+    lines.forEach(l => l.cost = l.perW * watts);
+    const total = lines.reduce((a, l) => a + l.cost, 0);
+    const totalPerW = kwDC > 0 ? (total / watts) : 0;
+    return { lines, total, totalPerW, kwDC };
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ENGINEERING CONSOLE
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildEngConsole() {
+    const c = document.createElement('aside');
+    c.className = 'saas-engcon';
+    c.id = 'saas-engcon';
+    c.innerHTML = `
+      <div class="saas-engcon-head">
+        <div class="saas-engcon-title">Live Engineering</div>
+        <button class="saas-modal-close" id="saas-engcon-close">×</button>
+      </div>
+      <div class="saas-engcon-body" id="saas-engcon-body"></div>
+    `;
+    document.body.appendChild(c);
+    document.getElementById('saas-engcon-close').addEventListener('click', () => SAAS.engcon.close());
+
+    SAAS.engcon = {
+      open() {
+        c.classList.add('show');
+        renderEng();
+      },
+      close() { c.classList.remove('show'); },
+      refresh: renderEng
+    };
+
+    // Add to FAB stack and palette.
+    const fabs = document.getElementById('saas-fabs');
+    if (fabs) {
+      const btn = document.createElement('button');
+      btn.className = 'saas-fab';
+      btn.id = 'saas-fab-engcon';
+      btn.innerHTML = `Σ<span class="saas-fab-tooltip">Live engineering</span>`;
+      btn.addEventListener('click', () => SAAS.engcon.open());
+      // Insert below the templates fab so the wizard stays primary
+      fabs.insertBefore(btn, fabs.firstChild);
+    }
+
+    // Add a rail icon too
+    const rail = document.getElementById('saas-rail');
+    if (rail) {
+      const railBtn = document.createElement('button');
+      railBtn.className = 'saas-rail-item';
+      railBtn.dataset.action = 'engcon';
+      railBtn.innerHTML = `<span>Σ</span><span class="saas-rail-tooltip">Live engineering console</span>`;
+      railBtn.addEventListener('click', () => SAAS.engcon.open());
+      // Insert before the spacer + palette/projects buttons
+      const spacer = rail.querySelector('.saas-rail-spacer');
+      if (spacer) rail.insertBefore(railBtn, spacer);
+    }
+  }
+
+  function renderEng() {
+    const body = document.getElementById('saas-engcon-body');
+    if (!body) return;
+
+    const wind = computeWindPressure();
+    const snow = computeSnowLoad();
+    const seism = computeSeismic();
+    const prod = computeProduction();
+
+    // Flag conflicting tolerances if applicable
+    const tiltTolFlag = '<div class="saas-eng-flag">Engineering note: Avans Assembly Guide states ±10° E/W slope tolerance, while the 8.0 / 10.0 datasheet shows ±1°. Resolve before publishing project drawings.</div>';
+
+    body.innerHTML = `
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Wind uplift pressure</div>
+          <div class="saas-eng-block-result">${wind.p_uplift.toFixed(1)} psf</div>
+        </div>
+        <div class="saas-eng-formula">qz = 0.00256 × <em>Kz</em> × <em>Kzt</em> × <em>Kd</em> × <em>Ke</em> × <em>V²</em>
+   = 0.00256 × ${wind.Kz.toFixed(3)} × ${wind.Kzt.toFixed(2)} × ${wind.Kd} × ${wind.Ke.toFixed(2)} × ${wind.V}²
+   = <b>${wind.qz.toFixed(2)} psf</b> (velocity pressure)
+
+p = qz × G × |GCp - GCpi|
+  = ${wind.qz.toFixed(2)} × ${wind.G} × (1.6 + 0.18)
+  = <b>${wind.p_uplift.toFixed(1)} psf</b> (design uplift)</div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Basic wind speed V</span>
+          <span class="saas-eng-step-val">${wind.V} mph</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Exposure</span>
+          <span class="saas-eng-step-val">${wind.exp}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Kz at z = ${wind.z} ft</span>
+          <span class="saas-eng-step-val">${wind.Kz.toFixed(3)}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Topographic Kzt</span>
+          <span class="saas-eng-step-val">${wind.Kzt.toFixed(2)}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Directionality Kd</span>
+          <span class="saas-eng-step-val">${wind.Kd}</span>
+        </div>
+        <div class="saas-eng-cite">ASCE 7-22 §26.10 (velocity pressure) · §30 (components &amp; cladding)</div>
+      </div>
+
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Snow load on collector</div>
+          <div class="saas-eng-block-result">${snow.ps.toFixed(1)} psf</div>
+        </div>
+        <div class="saas-eng-formula">pf = 0.7 × <em>Ce</em> × <em>Ct</em> × <em>Is</em> × <em>pg</em>
+   = 0.7 × ${snow.Ce} × ${snow.Ct} × ${snow.Is} × ${snow.pg}
+   = <b>${snow.pf.toFixed(2)} psf</b> (flat roof snow)
+
+ps = <em>Cs</em> × pf
+   = ${snow.Cs} × ${snow.pf.toFixed(2)}
+   = <b>${snow.ps.toFixed(1)} psf</b> (sloped collector)</div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Ground snow pg</span>
+          <span class="saas-eng-step-val">${snow.pg} psf</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Ct (heated frame) · solar</span>
+          <span class="saas-eng-step-val">${snow.Ct} (cold roof)</span>
+        </div>
+        <div class="saas-eng-cite">ASCE 7-22 §7.3 (snow loads on roofs &amp; structures)</div>
+      </div>
+
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Seismic horizontal force</div>
+          <div class="saas-eng-block-result">${(seism.fpw * 100).toFixed(1)}% W</div>
+        </div>
+        <div class="saas-eng-formula">Fp/Wp = 0.4 × <em>ap</em> × <em>S_DS</em> × (1 + 2·z/h) × <em>Ip</em> / <em>Rp</em>
+       = 0.4 × ${seism.ap} × ${seism.SDS.toFixed(2)} × (1 + 2·${seism.z_h}) × ${seism.Ip} / ${seism.Rp}
+       = <b>${seism.fpw.toFixed(3)}</b>  (= ${(seism.fpw * 100).toFixed(1)}% of self-weight)</div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">SDS (design spectral accel)</span>
+          <span class="saas-eng-step-val">${seism.SDS.toFixed(2)} g</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Seismic Design Cat</span>
+          <span class="saas-eng-step-val">${seism.cat}</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Component Rp / ap</span>
+          <span class="saas-eng-step-val">${seism.Rp} / ${seism.ap}</span>
+        </div>
+        <div class="saas-eng-cite">ASCE 7-22 §13.3.1 (nonstructural components)</div>
+      </div>
+
+      <div class="saas-eng-block">
+        <div class="saas-eng-block-head">
+          <div class="saas-eng-block-title">Year-1 production</div>
+          <div class="saas-eng-block-result">${kwhFmt(prod.kwhYear)}</div>
+        </div>
+        <div class="saas-eng-formula">E = kW_DC × <em>I</em> × 365 × <em>η_temp</em> × (1 - <em>L</em>) × <em>η_inv</em>
+  = ${prod.kwDC.toFixed(1)} × ${prod.irr} × 365 × ${prod.tempCoeff} × (1 - ${prod.totalLoss.toFixed(3)}) × ${prod.inverterEff}
+  = <b>${kwhFmt(prod.kwhYear)}/yr</b></div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Site irradiance I</span>
+          <span class="saas-eng-step-val">${prod.irr} kWh/m²/day</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Capacity factor</span>
+          <span class="saas-eng-step-val">${(prod.cf * 100).toFixed(1)}%</span>
+        </div>
+        <div class="saas-eng-step">
+          <span class="saas-eng-step-label">Total system losses</span>
+          <span class="saas-eng-step-val">${(prod.totalLoss * 100).toFixed(1)}%</span>
+        </div>
+        ${prod.zip ? `<div class="saas-eng-step"><span class="saas-eng-step-label">ZIP detected</span><span class="saas-eng-step-val">${prod.zip}</span></div>` : ''}
+        <div class="saas-eng-cite">PVWatts-style model (NREL TMY3 statewide averages)</div>
+      </div>
+
+      ${tiltTolFlag}
+    `;
+  }
+
+  function kwhFmt(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + ' TWh';
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + ' GWh';
+    if (v >= 1e3) return Math.round(v / 1e3).toLocaleString() + ' MWh';
+    return Math.round(v).toLocaleString() + ' kWh';
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     PRODUCTION + COST CARDS · injected after card-summary
+     ──────────────────────────────────────────────────────────────────────── */
+  function buildIntelCards() {
+    const summary = document.getElementById('card-summary');
+    if (!summary) return;
+    if (document.getElementById('saas-intel-grid')) return;
+
+    const grid = document.createElement('div');
+    grid.id = 'saas-intel-grid';
+    grid.className = 'saas-intel-grid';
+    grid.innerHTML = `
+      <div class="saas-intel-card" id="saas-intel-prod">
+        <div class="saas-intel-eyebrow">Year-1 production</div>
+        <div class="saas-intel-big" id="saas-intel-prod-big">—</div>
+        <div class="saas-intel-sub" id="saas-intel-prod-sub">awaiting layout</div>
+        <div style="margin-top:14px" id="saas-intel-prod-rows"></div>
+      </div>
+      <div class="saas-intel-card" id="saas-intel-cost">
+        <div class="saas-intel-eyebrow">Project cost (rough)</div>
+        <div class="saas-intel-toggle">
+          <button data-mode="total" class="active">Total</button>
+          <button data-mode="perW">$/W</button>
+        </div>
+        <div class="saas-intel-big" id="saas-intel-cost-big">—</div>
+        <div class="saas-intel-sub" id="saas-intel-cost-sub">enter system size</div>
+        <div class="saas-intel-cat-bar" id="saas-intel-cost-bar"></div>
+        <div class="saas-intel-cat-legend" id="saas-intel-cost-legend"></div>
+      </div>
+    `;
+    // Append it inside the summary card body if available, else after the card.
+    const body = summary.querySelector('.cfg-card-body') || summary;
+    body.appendChild(grid);
+
+    // Toggle handlers
+    let costMode = 'total';
+    grid.querySelectorAll('.saas-intel-toggle button').forEach(b => {
+      b.addEventListener('click', () => {
+        costMode = b.dataset.mode;
+        grid.querySelectorAll('.saas-intel-toggle button').forEach(x => x.classList.toggle('active', x === b));
+        renderCost(costMode);
+      });
+    });
+
+    SAAS.intel = {
+      refresh() {
+        renderProd();
+        renderCost(costMode);
+      }
+    };
+  }
+
+  function renderProd() {
+    const big = document.getElementById('saas-intel-prod-big');
+    const sub = document.getElementById('saas-intel-prod-sub');
+    const rows = document.getElementById('saas-intel-prod-rows');
+    if (!big) return;
+    const p = computeProduction();
+    if (p.kwDC <= 0) {
+      big.textContent = '—';
+      sub.textContent = 'add sections to see production';
+      rows.innerHTML = '';
+      return;
+    }
+    big.textContent = kwhFmt(p.kwhYear) + '/yr';
+    sub.textContent = `${p.kwDC.toFixed(1)} kW DC · capacity factor ${(p.cf * 100).toFixed(1)}%`;
+    const valueFmt = '$' + Math.round(p.valueYr).toLocaleString();
+    rows.innerHTML = `
+      <div class="saas-intel-row"><span class="saas-intel-row-label">Site irradiance</span><span class="saas-intel-row-val">${p.irr} kWh/m²/day</span></div>
+      <div class="saas-intel-row"><span class="saas-intel-row-label">DC/AC ratio</span><span class="saas-intel-row-val">${p.dcAcRatio.toFixed(2)}</span></div>
+      <div class="saas-intel-row"><span class="saas-intel-row-label">System losses</span><span class="saas-intel-row-val">${(p.totalLoss * 100).toFixed(1)}%</span></div>
+      <div class="saas-intel-row"><span class="saas-intel-row-label">Year-1 revenue @ $0.10</span><span class="saas-intel-row-val">${valueFmt}</span></div>
+    `;
+  }
+
+  function renderCost(mode) {
+    const big = document.getElementById('saas-intel-cost-big');
+    const sub = document.getElementById('saas-intel-cost-sub');
+    const bar = document.getElementById('saas-intel-cost-bar');
+    const leg = document.getElementById('saas-intel-cost-legend');
+    if (!big) return;
+    const c = computeCost();
+    if (c.kwDC <= 0) {
+      big.textContent = '—';
+      sub.textContent = 'add sections to estimate';
+      bar.innerHTML = '';
+      leg.innerHTML = '';
+      return;
+    }
+    if (mode === 'perW') {
+      big.textContent = '$' + c.totalPerW.toFixed(2) + '/W';
+      sub.textContent = 'turnkey installed · USD';
+    } else {
+      const tot = c.total >= 1e6
+        ? '$' + (c.total / 1e6).toFixed(2) + 'M'
+        : '$' + Math.round(c.total).toLocaleString();
+      big.textContent = tot;
+      sub.textContent = '$' + c.totalPerW.toFixed(2) + '/W · ' + c.kwDC.toFixed(1) + ' kW DC';
+    }
+    // Bar
+    bar.innerHTML = c.lines.map(l => {
+      const pct = c.total > 0 ? (l.cost / c.total) * 100 : 0;
+      return `<span class="saas-intel-cat-seg" style="width:${pct.toFixed(2)}%;background:${l.color}" title="${l.label}: ${pct.toFixed(1)}%"></span>`;
+    }).join('');
+    // Legend
+    leg.innerHTML = c.lines.map(l => {
+      const dollars = mode === 'perW' ? '$' + l.perW.toFixed(2) + '/W' : '$' + Math.round(l.cost).toLocaleString();
+      return `<div class="saas-intel-cat-leg-item">
+        <span class="saas-intel-cat-leg-dot" style="background:${l.color}"></span>
+        <span style="flex:1">${l.label}</span>
+        <span style="font-weight:800;color:var(--gray-700)">${dollars}</span>
+      </div>`;
+    }).join('');
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ZIP CHIP & POPOVER · attached to the Site Address field
+     ──────────────────────────────────────────────────────────────────────── */
+  function attachZipChip() {
+    const addr = document.getElementById('siteAddress');
+    if (!addr) return;
+    if (document.getElementById('saas-zip-chip')) return;
+
+    const chip = document.createElement('button');
+    chip.id = 'saas-zip-chip';
+    chip.className = 'saas-zip-chip';
+    chip.type = 'button';
+    chip.textContent = 'Auto-fill from ZIP';
+    chip.style.display = 'none';
+    addr.parentNode.appendChild(chip);
+
+    chip.addEventListener('click', () => openZipPopover(chip, addr.value));
+
+    function update() {
+      const z = findZipInString(addr.value);
+      const data = z ? lookupZip(z) : null;
+      if (data) {
+        chip.style.display = 'inline-flex';
+        chip.textContent = `Auto-fill defaults · ${data.state} ${z}`;
+      } else {
+        chip.style.display = 'none';
+      }
+    }
+    addr.addEventListener('input', update);
+    update();
+  }
+
+  function openZipPopover(anchor, addrText) {
+    closeZipPopover();
+    const z = findZipInString(addrText);
+    if (!z) return;
+    const data = lookupZip(z);
+    if (!data) return;
+
+    const pop = document.createElement('div');
+    pop.className = 'saas-zip-popover';
+    pop.id = 'saas-zip-popover';
+    pop.innerHTML = `
+      <h4>${data.state} · ${data.zip}</h4>
+      <p>${data.descr}</p>
+      <div class="saas-zip-list">
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Wind speed (V)</span><span class="saas-zip-item-val">${data.wind} mph</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Exposure</span><span class="saas-zip-item-val">${data.exp}</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Ground snow load</span><span class="saas-zip-item-val">${data.snow} psf</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Frost depth</span><span class="saas-zip-item-val">${data.frost}"</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">SDS</span><span class="saas-zip-item-val">${data.sds.toFixed(2)} g</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Seismic Cat</span><span class="saas-zip-item-val">${data.seismic}</span></div>
+        <div class="saas-zip-item"><span class="saas-zip-item-key">Avg irradiance</span><span class="saas-zip-item-val">${data.irr} kWh/m²/day</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="saas-btn saas-btn-ghost" id="saas-zip-cancel">Cancel</button>
+        <button class="saas-btn saas-btn-pri" id="saas-zip-apply" style="flex:1">Apply all 7 defaults</button>
+      </div>
+    `;
+    document.body.appendChild(pop);
+
+    // Position next to anchor
+    const r = anchor.getBoundingClientRect();
+    let left = r.left;
+    let top = r.bottom + window.scrollY + 8;
+    pop.style.left = Math.min(left, window.innerWidth - 400) + 'px';
+    pop.style.top = top + 'px';
+
+    document.getElementById('saas-zip-apply').addEventListener('click', () => {
+      // Capture undo first
+      if (window.SAAS && SAAS.undo && typeof SAAS.undo._captureUndo === 'function') SAAS.undo._captureUndo();
+      setVal('windSpeed', data.wind);
+      setVal('exposureCat', data.exp);
+      setVal('snowLoad', data.snow);
+      setVal('frostDepth', data.frost);
+      setVal('sds', data.sds);
+      setVal('seismicCat', data.seismic);
+      // Trigger change events so host recalcs
+      ['windSpeed','exposureCat','snowLoad','frostDepth','sds','seismicCat'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+      if (typeof window.recalcAll === 'function') window.recalcAll();
+      if (typeof window.toast === 'function') window.toast(`Applied ${data.state} defaults`);
+      if (SAAS.intel) SAAS.intel.refresh();
+      if (SAAS.engcon) SAAS.engcon.refresh();
+      closeZipPopover();
+    });
+    document.getElementById('saas-zip-cancel').addEventListener('click', closeZipPopover);
+
+    setTimeout(() => document.addEventListener('click', outsideClose), 50);
+    function outsideClose(e) {
+      if (!pop.contains(e.target) && e.target !== anchor) {
+        closeZipPopover();
+        document.removeEventListener('click', outsideClose);
+      }
+    }
+  }
+  function closeZipPopover() {
+    const old = document.getElementById('saas-zip-popover');
+    if (old) old.remove();
+  }
+  function setVal(id, v) {
+    const el = document.getElementById(id);
+    if (!el || v === undefined || v === null) return;
+    el.value = v;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     WIRE-UP · refresh on changes, hook into Phase 1+2 events
+     ──────────────────────────────────────────────────────────────────────── */
+  function init() {
+    buildEngConsole();
+    buildIntelCards();
+    attachZipChip();
+
+    // Hook into form changes to refresh the live engineering console & cost.
+    let t = null;
+    document.addEventListener('input', e => {
+      if (!e.target.matches('input, select, textarea')) return;
+      clearTimeout(t);
+      t = setTimeout(() => {
+        if (SAAS.engcon && document.getElementById('saas-engcon')?.classList.contains('show')) {
+          SAAS.engcon.refresh();
+        }
+        if (SAAS.intel) SAAS.intel.refresh();
+      }, 200);
+    });
+
+    // Refresh whenever the canvas re-renders (wraps the host's renderCanvas)
+    if (typeof window.renderCanvas === 'function') {
+      const orig = window.renderCanvas;
+      window.renderCanvas = function () {
+        const r = orig.apply(this, arguments);
+        if (SAAS.intel) SAAS.intel.refresh();
+        if (SAAS.engcon && document.getElementById('saas-engcon')?.classList.contains('show')) SAAS.engcon.refresh();
+        return r;
+      };
+    }
+
+    // Initial refresh
+    setTimeout(() => {
+      if (SAAS.intel) SAAS.intel.refresh();
+    }, 100);
+
+    console.log('[SEMS SaaS Layer] Phase 3 (Intelligence) ready.');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 120));
+  } else {
+    setTimeout(init, 120);
+  }
+
+  // Expose helpers for Phase 4+ extensibility
+  SAAS.zip = { lookupZip, findZipInString, STATE_CLIMATE };
+  SAAS.compute = { computeWindPressure, computeSnowLoad, computeSeismic, computeProduction, computeCost };
+})();
+</script>
+
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  END SEMS SAAS LAYER · Phase 3 (Intelligence)
+  ════════════════════════════════════════════════════════════════════════════
+-->
